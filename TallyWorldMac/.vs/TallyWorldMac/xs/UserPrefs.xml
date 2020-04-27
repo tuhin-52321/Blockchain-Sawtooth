@@ -1,0 +1,27 @@
+﻿<Properties StartupConfiguration="{80157B8A-871F-4DE4-96C0-A46733789959}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="../../../SharedProjects/ScratchPadApplications/TWSample.Xamarin.iOS/AppDelegate.cs">
+    <Files>
+      <File FileName="../../../SharedProjects/ScratchPadApplications/TWSample.Xamarin.iOS/AppDelegate.cs" Line="52" Column="26" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="TallyWorldMac" expanded="True">
+            <Node name="TWSample.Xamarin.iOS" expanded="True">
+              <Node name="NativeReferenceFolder" expanded="True" />
+              <Node name="AppDelegate.cs" selected="True" />
+            </Node>
+            <Node name="TWXApplicationWrapper" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.TWSample.Xamarin.iOS PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.ECA5F7A8-773E-4397-9073-93AD9E529343" />
+</Properties>

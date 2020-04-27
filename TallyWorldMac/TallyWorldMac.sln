@@ -1,0 +1,25 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TWXApplicationWrapper", "..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.shproj", "{5AB2A9B6-1DAC-4B22-A20F-36D9D44EB218}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWSample.Xamarin.iOS", "..\..\..\SharedProjects\ScratchPadApplications\TWSample.Xamarin.iOS\TWSample.Xamarin.iOS.csproj", "{80157B8A-871F-4DE4-96C0-A46733789959}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|iPhoneSimulator = Debug|iPhoneSimulator
+		Release|iPhoneSimulator = Release|iPhoneSimulator
+		Debug|iPhone = Debug|iPhone
+		Release|iPhone = Release|iPhone
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Debug|iPhone.Build.0 = Debug|iPhone
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Release|iPhone.ActiveCfg = Release|iPhone
+		{80157B8A-871F-4DE4-96C0-A46733789959}.Release|iPhone.Build.0 = Release|iPhone
+	EndGlobalSection
+EndGlobal
