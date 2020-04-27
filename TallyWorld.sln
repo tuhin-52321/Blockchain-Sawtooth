@@ -66,57 +66,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MacOS", "MacOS", "{CD5410F1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWSample.Xamarin.iOS", "..\..\..\SharedProjects\ScratchPadApplications\TWSample.Xamarin.iOS\TWSample.Xamarin.iOS.csproj", "{80157B8A-871F-4DE4-96C0-A46733789959}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCore", "..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems", "{F26ACE5E-C717-4BCF-9805-34AD95CC97AE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCore", "..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems", "{F26ACE5E-C717-4BCF-9805-34AD95CC97AE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplication", "..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems", "{BB9094D0-9C4D-4799-B313-459354BE922B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplication", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems", "{BB9094D0-9C4D-4799-B313-459354BE922B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreData", "..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems", "{24983A5B-168A-46D3-80E1-B644E187DCA4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreData", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems", "{24983A5B-168A-46D3-80E1-B644E187DCA4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcess", "..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems", "{AA3DDA14-0D51-4541-BF0D-01C059742CC8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcess", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems", "{AA3DDA14-0D51-4541-BF0D-01C059742CC8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServer", "..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems", "{1DA555C7-EE05-425C-9C63-C84494286F14}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServer", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems", "{1DA555C7-EE05-425C-9C63-C84494286F14}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibMac", "..\..\..\TallyWorld\CoreLibraries\TWCore\PlatformProjects\TWCoreLibMac\TWCoreLibMac.vcxproj", "{7F9320CD-9DAA-45FF-99C1-95A983AE9B83}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibMac", "..\..\..\TallyWorld\CoreLibraries.Source\TWCore\PlatformProjects\TWCoreLibMac\TWCoreLibMac.vcxproj", "{7F9320CD-9DAA-45FF-99C1-95A983AE9B83}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibMac", "..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\PlatformProjects\TWCoreApplicationLibMac\TWCoreApplicationLibMac.vcxproj", "{72802134-CE06-4A33-8DB5-C5191A6236BD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibMac", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\PlatformProjects\TWCoreApplicationLibMac\TWCoreApplicationLibMac.vcxproj", "{72802134-CE06-4A33-8DB5-C5191A6236BD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibMac", "..\..\..\TallyWorld\CoreLibraries\TWCoreData\PlatformProjects\TWCoreDataLibMac\TWCoreDataLibMac.vcxproj", "{ABE86944-9294-4C80-A508-10DB071CAA1E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibMac", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\PlatformProjects\TWCoreDataLibMac\TWCoreDataLibMac.vcxproj", "{ABE86944-9294-4C80-A508-10DB071CAA1E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibMac", "..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\PlatformProjects\TWCoreProcessLibMac\TWCoreProcessLibMac.vcxproj", "{752EA70B-FB3E-4AA1-A7F8-A6C2FF5A2928}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibMac", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\PlatformProjects\TWCoreProcessLibMac\TWCoreProcessLibMac.vcxproj", "{752EA70B-FB3E-4AA1-A7F8-A6C2FF5A2928}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibMac", "..\..\..\TallyWorld\CoreLibraries\TWCoreServer\PlatformProjects\TWCoreServerLibMac\TWCoreServerLibMac.vcxproj", "{FAA9AA05-172C-4C33-A14B-3EAD48912F2C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibMac", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\PlatformProjects\TWCoreServerLibMac\TWCoreServerLibMac.vcxproj", "{FAA9AA05-172C-4C33-A14B-3EAD48912F2C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MacOS", "MacOS", "{7DABE198-1E8E-4DAA-B52E-7ADCBD71988A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibAndroid", "..\..\..\TallyWorld\CoreLibraries\TWCoreServer\PlatformProjects\TWCoreServerLibAndroid\TWCoreServerLibAndroid.vcxproj", "{A20EE7CC-0E78-4E63-93E1-4AFACB541B69}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibAndroid", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\PlatformProjects\TWCoreServerLibAndroid\TWCoreServerLibAndroid.vcxproj", "{A20EE7CC-0E78-4E63-93E1-4AFACB541B69}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibAndroid", "..\..\..\TallyWorld\CoreLibraries\TWCore\PlatformProjects\TWCoreLibAndroid\TWCoreLibAndroid.vcxproj", "{DBA69540-DE77-436B-8B8D-FB4D0CE77B9C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibAndroid", "..\..\..\TallyWorld\CoreLibraries.Source\TWCore\PlatformProjects\TWCoreLibAndroid\TWCoreLibAndroid.vcxproj", "{DBA69540-DE77-436B-8B8D-FB4D0CE77B9C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibAndroid", "..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\PlatformProjects\TWCoreApplicationLibAndroid\TWCoreApplicationLibAndroid.vcxproj", "{9BAD3C32-1287-4C7A-8543-ACFFD76E213B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibAndroid", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\PlatformProjects\TWCoreApplicationLibAndroid\TWCoreApplicationLibAndroid.vcxproj", "{9BAD3C32-1287-4C7A-8543-ACFFD76E213B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibAndroid", "..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\PlatformProjects\TWCoreProcessLibAndroid\TWCoreProcessLibAndroid.vcxproj", "{60070543-15B2-4E8F-94A4-915647195C0A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibAndroid", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\PlatformProjects\TWCoreProcessLibAndroid\TWCoreProcessLibAndroid.vcxproj", "{60070543-15B2-4E8F-94A4-915647195C0A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibAndroid", "..\..\..\TallyWorld\CoreLibraries\TWCoreData\PlatformProjects\TWCoreDataLibAndroid\TWCoreDataLibAndroid.vcxproj", "{9D068818-9B61-4B92-8CB5-A8FFB77DF1F1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibAndroid", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\PlatformProjects\TWCoreDataLibAndroid\TWCoreDataLibAndroid.vcxproj", "{9D068818-9B61-4B92-8CB5-A8FFB77DF1F1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibiOS", "..\..\..\TallyWorld\CoreLibraries\TWCoreData\PlatformProjects\TWCoreDataLibiOS\TWCoreDataLibiOS.vcxproj", "{485628CC-5EF7-46ED-82B1-95E48EBC9BDC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibiOS", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\PlatformProjects\TWCoreDataLibiOS\TWCoreDataLibiOS.vcxproj", "{485628CC-5EF7-46ED-82B1-95E48EBC9BDC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibIOS", "..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\PlatformProjects\TWCoreProcessLibIOS\TWCoreProcessLibIOS.vcxproj", "{15917E69-F0E2-4DC0-B436-9554364B5294}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibIOS", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\PlatformProjects\TWCoreProcessLibIOS\TWCoreProcessLibIOS.vcxproj", "{15917E69-F0E2-4DC0-B436-9554364B5294}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibiOS", "..\..\..\TallyWorld\CoreLibraries\TWCoreServer\PlatformProjects\TWCoreServerLibIOS\TWCoreServerLibiOS.vcxproj", "{9C7D25B8-B94A-48B2-857D-DA6435BCC506}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibiOS", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\PlatformProjects\TWCoreServerLibIOS\TWCoreServerLibiOS.vcxproj", "{9C7D25B8-B94A-48B2-857D-DA6435BCC506}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibiOS", "..\..\..\TallyWorld\CoreLibraries\TWCore\PlatformProjects\TWCoreLibIOS\TWCoreLibiOS.vcxproj", "{21A59AB6-5B88-406C-9076-7CF1E24E88DA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibiOS", "..\..\..\TallyWorld\CoreLibraries.Source\TWCore\PlatformProjects\TWCoreLibIOS\TWCoreLibiOS.vcxproj", "{21A59AB6-5B88-406C-9076-7CF1E24E88DA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibiOS", "..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\PlatformProjects\TWCoreApplicationLibIOS\TWCoreApplicationLibiOS.vcxproj", "{447D8CEC-FBAC-429D-8C1A-2D97318D878E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibiOS", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\PlatformProjects\TWCoreApplicationLibIOS\TWCoreApplicationLibiOS.vcxproj", "{447D8CEC-FBAC-429D-8C1A-2D97318D878E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibWin", "..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\PlatformProjects\TWCoreApplicationLibWin\TWCoreApplicationLibWin.vcxproj", "{BB605C85-42C8-4DAE-A231-A183D72FEF7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreApplicationLibWin", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\PlatformProjects\TWCoreApplicationLibWin\TWCoreApplicationLibWin.vcxproj", "{BB605C85-42C8-4DAE-A231-A183D72FEF7B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibWin", "..\..\..\TallyWorld\CoreLibraries\TWCore\PlatformProjects\TWCoreLibWin\TWCoreLibWin.vcxproj", "{CD3F13A9-4B7A-4134-BC6D-3D55B486F8C1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreLibWin", "..\..\..\TallyWorld\CoreLibraries.Source\TWCore\PlatformProjects\TWCoreLibWin\TWCoreLibWin.vcxproj", "{CD3F13A9-4B7A-4134-BC6D-3D55B486F8C1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibWin", "..\..\..\TallyWorld\CoreLibraries\TWCoreData\PlatformProjects\TWCoreDataLibWin\TWCoreDataLibWin.vcxproj", "{3A5F13CC-992A-4CA7-A03C-98ABFDF28B77}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreDataLibWin", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\PlatformProjects\TWCoreDataLibWin\TWCoreDataLibWin.vcxproj", "{3A5F13CC-992A-4CA7-A03C-98ABFDF28B77}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibWin", "..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\PlatformProjects\TWCoreProcessLibWin\TWCoreProcessLibWin.vcxproj", "{ADAABD4D-ED6E-4F76-BA84-6A01035EF130}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreProcessLibWin", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\PlatformProjects\TWCoreProcessLibWin\TWCoreProcessLibWin.vcxproj", "{ADAABD4D-ED6E-4F76-BA84-6A01035EF130}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibWin", "..\..\..\TallyWorld\CoreLibraries\TWCoreServer\PlatformProjects\TWCoreServerLibWin\TWCoreServerLibWin.vcxproj", "{2527B9E4-5065-4ACF-AD21-8DA7850D207B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TWCoreServerLibWin", "..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\PlatformProjects\TWCoreServerLibWin\TWCoreServerLibWin.vcxproj", "{2527B9E4-5065-4ACF-AD21-8DA7850D207B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWSample.Cocoa.MacOS", "..\..\..\SharedProjects\ScratchPadApplications\TWSample.Cocoa.MacOS\TWSample.Cocoa.MacOS.csproj", "{9E34AC59-1091-4E23-BA19-AB4715EEBB26}"
 EndProject
@@ -141,43 +141,43 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{11e718d0-baf3-4003-b9a6-5cab16c153e1}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems*{15917e69-f0e2-4dc0-b436-9554364b5294}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems*{1da555c7-ee05-425c-9c63-c84494286f14}*SharedItemsImports = 9
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems*{15917e69-f0e2-4dc0-b436-9554364b5294}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems*{1da555c7-ee05-425c-9c63-c84494286f14}*SharedItemsImports = 9
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{20063223-5809-4b19-9d77-62ca83063ecd}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems*{21a59ab6-5b88-406c-9076-7cf1e24e88da}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems*{24983a5b-168a-46d3-80e1-b644e187dca4}*SharedItemsImports = 9
-		..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems*{2527b9e4-5065-4acf-ad21-8da7850d207b}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems*{21a59ab6-5b88-406c-9076-7cf1e24e88da}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems*{24983a5b-168a-46d3-80e1-b644e187dca4}*SharedItemsImports = 9
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems*{2527b9e4-5065-4acf-ad21-8da7850d207b}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{2fec38c8-9474-48e4-87df-a07c212e9d82}*SharedItemsImports = 9
-		..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems*{3a5f13cc-992a-4ca7-a03c-98abfdf28b77}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems*{447d8cec-fbac-429d-8c1a-2d97318d878e}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems*{485628cc-5ef7-46ed-82b1-95e48ebc9bdc}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems*{3a5f13cc-992a-4ca7-a03c-98abfdf28b77}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems*{447d8cec-fbac-429d-8c1a-2d97318d878e}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems*{485628cc-5ef7-46ed-82b1-95e48ebc9bdc}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{5ab2a9b6-1dac-4b22-a20f-36d9d44eb218}*SharedItemsImports = 13
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{5edcb4ae-e581-4066-847e-0dc8e77b82fa}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems*{60070543-15b2-4e8f-94a4-915647195c0a}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems*{60070543-15b2-4e8f-94a4-915647195c0a}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{60fe9492-8568-4028-bfdb-99d553fc1347}*SharedItemsImports = 5
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{68d1a752-f491-4993-a5a7-faf2b6188fc9}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems*{72802134-ce06-4a33-8db5-c5191a6236bd}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems*{752ea70b-fb3e-4aa1-a7f8-a6c2ff5a2928}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems*{7f9320cd-9daa-45ff-99c1-95a983ae9b83}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems*{72802134-ce06-4a33-8db5-c5191a6236bd}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems*{752ea70b-fb3e-4aa1-a7f8-a6c2ff5a2928}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems*{7f9320cd-9daa-45ff-99c1-95a983ae9b83}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{80157b8a-871f-4de4-96c0-a46733789959}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems*{9bad3c32-1287-4c7a-8543-acffd76e213b}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems*{9c7d25b8-b94a-48b2-857d-da6435bcc506}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems*{9d068818-9b61-4b92-8cb5-a8ffb77df1f1}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems*{9bad3c32-1287-4c7a-8543-acffd76e213b}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems*{9c7d25b8-b94a-48b2-857d-da6435bcc506}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems*{9d068818-9b61-4b92-8cb5-a8ffb77df1f1}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{9e34ac59-1091-4e23-ba19-ab4715eebb26}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems*{a20ee7cc-0e78-4e63-93e1-4afacb541b69}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems*{a20ee7cc-0e78-4e63-93e1-4afacb541b69}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{a3ec23db-bdf3-4889-982e-9160a594fe6e}*SharedItemsImports = 5
-		..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems*{aa3dda14-0d51-4541-bf0d-01c059742cc8}*SharedItemsImports = 9
-		..\..\..\TallyWorld\CoreLibraries\TWCoreData\TWCoreData.vcxitems*{abe86944-9294-4c80-a508-10db071caa1e}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreProcess\TWCoreProcess.vcxitems*{adaabd4d-ed6e-4f76-ba84-6a01035ef130}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems*{aa3dda14-0d51-4541-bf0d-01c059742cc8}*SharedItemsImports = 9
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreData\TWCoreData.vcxitems*{abe86944-9294-4c80-a508-10db071caa1e}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreProcess\TWCoreProcess.vcxitems*{adaabd4d-ed6e-4f76-ba84-6a01035ef130}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplicationWrapper\TWXApplicationWrapper.projitems*{aea87dcb-4b69-44ca-b230-b2455e57b8c4}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems*{bb605c85-42c8-4dae-a231-a183d72fef7b}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreApplication\TWCoreApplication.vcxitems*{bb9094d0-9c4d-4799-b313-459354be922b}*SharedItemsImports = 9
-		..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems*{cd3f13a9-4b7a-4134-bc6d-3d55b486f8c1}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems*{bb605c85-42c8-4dae-a231-a183d72fef7b}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreApplication\TWCoreApplication.vcxitems*{bb9094d0-9c4d-4799-b313-459354be922b}*SharedItemsImports = 9
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems*{cd3f13a9-4b7a-4134-bc6d-3d55b486f8c1}*SharedItemsImports = 4
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{d13b1c64-b55d-4eea-b085-caf8f5b18846}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems*{dba69540-de77-436b-8b8d-fb4d0ce77b9c}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCore\TWCore.vcxitems*{f26ace5e-c717-4bcf-9805-34ad95cc97ae}*SharedItemsImports = 9
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems*{dba69540-de77-436b-8b8d-fb4d0ce77b9c}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCore\TWCore.vcxitems*{f26ace5e-c717-4bcf-9805-34ad95cc97ae}*SharedItemsImports = 9
 		..\..\..\SharedProjects\ProofOfConcepts\TWXApplication\TWXApplication.vcxitems*{f416fe6e-de68-412f-abdf-39afd27b0455}*SharedItemsImports = 4
-		..\..\..\TallyWorld\CoreLibraries\TWCoreServer\TWCoreServer.vcxitems*{faa9aa05-172c-4c33-a14b-3ead48912f2c}*SharedItemsImports = 4
+		..\..\..\TallyWorld\CoreLibraries.Source\TWCoreServer\TWCoreServer.vcxitems*{faa9aa05-172c-4c33-a14b-3ead48912f2c}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
