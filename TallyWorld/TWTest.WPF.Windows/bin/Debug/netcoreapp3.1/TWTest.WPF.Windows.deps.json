@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "TWTest.WPF.Windows/1.0.0": {
+        "runtime": {
+          "TWTest.WPF.Windows.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TWTest.WPF.Windows/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
