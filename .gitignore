@@ -2,7 +2,6 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/TallyWorld/.vs/
-/TallyWorld/.vs/TallyWorld/v16
-/TallyWorld/x64/
+**/x64/**
 **/obj/**
+**/.vs/**
