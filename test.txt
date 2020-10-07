@@ -1,5 +1,8 @@
 This is a test line
 Added another line
+Line added local
+Line Added Local - 2
 Line added in remote
 Line Added in remote - 2
+Line Added Local - 3
 Line Added in Remote - 3
