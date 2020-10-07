@@ -7,3 +7,4 @@ Line Added in remote - 2
 Line Added Local - 3
 Line Added in Remote - 3
 New Line at Remote
+Another line at Remote
