@@ -1,3 +1,4 @@
 demo file at local
 demo file at remote
+Added a line from local
 Added line from remote
