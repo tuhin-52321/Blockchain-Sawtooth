@@ -6,7 +6,8 @@ namespace CSInteroperabilityConsole
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+
+            TWNativeMethods.tw_post_request();
         }
     }
 }
