@@ -9,12 +9,12 @@ namespace PrivateGalleryCreator
 {
     public class FeedWriter
     {
-    private readonly string galleryTitle;
+        private readonly string galleryTitle;
 
-    public FeedWriter(string galleryTitle)
-    {
-      this.galleryTitle = galleryTitle;
-    }
+        public FeedWriter(string galleryTitle)
+        {
+            this.galleryTitle = galleryTitle;
+        }
         public string GetFeed(string fileName, IEnumerable<Package> packages)
         {
             var sb = new StringBuilder();
@@ -61,7 +61,7 @@ namespace PrivateGalleryCreator
 
             writer.WriteStartElement("link");
             writer.WriteAttributeString("rel", "alternate");
-            writer.WriteAttributeString("href", package.FileName);
+            writer.WriteAttributeString("href", package.FullPath);
             writer.WriteEndElement(); // link
 
             writer.WriteStartElement("summary");
@@ -78,7 +78,7 @@ namespace PrivateGalleryCreator
 
             writer.WriteStartElement("content");
             writer.WriteAttributeString("type", "application/octet-stream");
-            writer.WriteAttributeString("src", package.FileName);
+            writer.WriteAttributeString("src", package.FullPath);
             writer.WriteEndElement(); // content
 
             if (!string.IsNullOrEmpty(package.Icon))
