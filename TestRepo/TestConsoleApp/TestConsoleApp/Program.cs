@@ -6,7 +6,7 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World! Change");
+            Console.WriteLine("Hello World! Change from remote");
         }
     }
 }
