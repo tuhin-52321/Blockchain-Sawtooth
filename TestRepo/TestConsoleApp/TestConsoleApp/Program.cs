@@ -6,7 +6,7 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Change from tuhin1");
+            Console.WriteLine("Change from other machine");
         }
     }
 }
