@@ -6,7 +6,7 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Change from local - another test 3 - edited by somebody else");
+            Console.WriteLine("Change from local - another test 3 - new edit by me");
         }
     }
 }
