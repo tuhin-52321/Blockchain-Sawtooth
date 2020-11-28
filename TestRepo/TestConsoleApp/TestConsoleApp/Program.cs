@@ -7,6 +7,8 @@ namespace TestConsoleApp
         static void Main(string[] args)
         {
             Console.WriteLine("Change from remote");
+            Console.WriteLine("Added line 2 in local");
+
         }
     }
 }
