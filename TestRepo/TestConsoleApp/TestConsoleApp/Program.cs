@@ -6,7 +6,7 @@ namespace TestConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!! Tuhin SG");
+            Console.WriteLine("Hello World!!");
         }
     }
 }
