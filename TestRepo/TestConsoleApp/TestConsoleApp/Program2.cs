@@ -6,5 +6,5 @@ using System.Diagnostics;
 
 public class Utils
 {
-    
+    //Add utility functions
 }
