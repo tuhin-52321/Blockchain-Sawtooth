@@ -16,7 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloWorld.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
