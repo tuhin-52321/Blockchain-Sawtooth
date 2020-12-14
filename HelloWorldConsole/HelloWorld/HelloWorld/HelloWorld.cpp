@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::cout << "Hello World! v 7.8 test screenshot - multi commit scenario\n";
+    std::cout << "Hello World! Demo Changes\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
