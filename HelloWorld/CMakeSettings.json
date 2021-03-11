@@ -353,7 +353,7 @@
     {
       "name": "Windows-x64-TWRelease",
       "generator": "Ninja",
-      "configurationType": "Release",
+      "configurationType": "MinSizeRel",
       "inheritEnvironments": [
         "clang_cl_x64"
       ],
@@ -753,7 +753,7 @@
     {
       "name": "Windows-ARM64-TWRelease",
       "generator": "Ninja",
-      "configurationType": "Release",
+      "configurationType": "MinSizeRel",
       "inheritEnvironments": [
         "clang_cl_arm64"
       ],

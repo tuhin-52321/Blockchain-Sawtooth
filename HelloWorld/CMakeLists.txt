@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.18)
 project(HelloWorld LANGUAGES CXX)
 include($ENV{TWWorkspaceHome}/TallyWorldPMT/TallyWorld/TWPMT.VSSetup/Wizard/Native/Properties/Common/TWCommon.cmake)
-include_directories(${INCLUDE_DIRECTORIES}
-    ${TWWorkspaceHome}/TallyWorld/DevSupportPlatform/TWDevSupport.Source/Includes
-    ${TWWorkspaceHome}/TallyWorld/UniversalPlatform/TWUniversal.Source/Includes
+
+set(PROJECT_INCLUDES
+    .
 )
-link_directories(${LINK_DIRECTORIES}
-    ${TWWorkspaceHome}/TWBuilds/TWLib/TWUniversal
-    ${TWWorkspaceHome}/TWBuilds/TWLib/TWDevSupport
+
+set(DEPENDENT_LAYERS
+   TWDevSupport,Source,Static,TallyWorld/DevSupportPlatform/TWDevSupport.Source/Includes
+   TWUniversalPremise,Source,Static,TallyWorld/UniversalPlatform/TWUniversal.Source,TWUniversal/Includes
 )
-link_libraries(${LINK_LIBRARIES}
-)
-add_executable(HelloWorld 
+
+add_library(HelloWorld STATIC
     "HelloWorld.cpp"
 )
-set_target_properties(HelloWorld PROPERTIES OUTPUT_NAME "${TW_OUTPUT_NAME}")
+
+setup_tw_library()
