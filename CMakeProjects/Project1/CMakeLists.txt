@@ -9,7 +9,7 @@ set(PROJECT_INCLUDES
 set(DEPENDENT_LAYERS
 )
 
-add_library(Project1 STATIC
+add_library(Project1 STATIC 
     "HelloApi1.cpp"
 )
 
