@@ -5,7 +5,7 @@
 
 int main()
 {
-    std::cout << "Hello World! chanegs at DevTrunk, more changes at work branch - 888\n";
+    std::cout << "Hello World! chanegs at DevTrunk, more changes at work branch - 000\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
