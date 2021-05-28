@@ -1,0 +1,153 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TWBuilds/TWInt/Project1/MacOS-x64/CMakeFiles/3.20.2/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/Darwin-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TWBuilds/TWInt/Project1/MacOS-x64/CMakeFiles/3.20.2/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/Darwin.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/UnixPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Compiler/AppleClang-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Compiler/Clang.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/Apple-AppleClang-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/Apple-Clang-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/Platform/Apple-Clang.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "/Applications/CMake.app/Contents/share/cmake-3.20/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWCommonBuild.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWCommonSetup.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWUtilities.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWFlex.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWBison.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWAppId.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWAppIdCompiler.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWDocumentGenerator.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "/Users/tuhinsengupta/.vs/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake/TWCommonLink.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "/Users/tuhinsengupta/.vs/TWBuilds/TWInt/Project1/MacOS-x64",
+		"source" : "/Users/tuhinsengupta/.vs/Project1"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

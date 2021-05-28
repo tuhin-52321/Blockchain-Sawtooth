@@ -1,0 +1,635 @@
+{
+    "version": 2,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "Default",
+            "hidden": true,
+            "displayName": "Default Config",
+            "description": "Default build ",
+            "binaryDir": "$env{TWWorkspaceHome}/TWBuilds/TWInt/${sourceDirName}/${presetName}",
+            "cacheVariables": {
+                "TWWorkspaceHome": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}"
+                },
+                "CMAKE_MODULE_PATH": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}/TallyWorld/DevSupportPlatform/TWIDESupport.Build/CMake"
+                },
+                "CMAKE_CXX_STANDARD": "17",
+                "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+                "CMAKE_OBJECT_PATH_MAX": "1024",
+                "CMAKE_INSTALL_PREFIX": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}/TWBuilds"
+                },
+                "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}/TWBuilds/TWLib/${presetName}"
+                },
+                "CMAKE_LIBRARY_OUTPUT_DIRECTORY": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}/TWBuilds/TWLib/${presetName}"
+                },
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": {
+                    "type": "FILEPATH",
+                    "value": "$env{TWWorkspaceHome}/TWBuilds/TWBin/${presetName}"
+                },
+                "CMAKE_MESSAGE_LOG_LEVEL": "NOTICE"
+            },
+            "environment": {
+                "CXXFLAGS_Default": "$penv{CXXFLAGS} -flto",
+                "TWDEBUG": "-DTW_DEBUG=1 -DTW_DIAGS=1 -DTW_SIMULATOR=0 -DTW_METRICS=1 -DTW_TRACE=1",
+                "TWSIMULATION": "-DTW_DEBUG=0 -DTW_DIAGS=0 -DTW_SIMULATOR=1 -DTW_METRICS=1 -DTW_TRACE=1",
+                "TWMETRICSONLY": "-DTW_DEBUG=0 -DTW_DIAGS=0 -DTW_SIMULATOR=0 -DTW_METRICS=1 -DTW_TRACE=0",
+                "TWRELEASE": "-DTW_DEBUG=0 -DTW_DIAGS=0 -DTW_SIMULATOR=0 -DTW_METRICS=0 -DTW_TRACE=0"
+            }
+        },
+        {
+            "name": "Ninja",
+            "hidden": true,
+            "displayName": "Ninjs Config",
+            "description": "Default build using Ninja generator",
+            "generator": "Ninja Multi-Config",
+            "cacheVariables": {
+                "CMAKE_CONFIGURATION_TYPES": "TWDebug;TWSimulation;TWMetricsOnly;TWRelease"
+            }
+        },
+        {
+            "name": "XCode",
+            "hidden": true,
+            "displayName": "XCode Config",
+            "description": "Default build using XCode generator",
+            "generator": "Xcode"
+        },
+        {
+            "name": "Windows",
+            "hidden": true,
+            "displayName": "Windows Default Config",
+            "description": "Windows Default configuration",
+            "inherits": [ "Ninja" ],
+            "cacheVariables": {
+                "TW_BUILD_OS": "Windows",
+                "CMAKE_CXX_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "$env{LLVMInstallDir}/bin/clang-cl.exe"
+                },
+                "CMAKE_LINKER": {
+                    "type": "FILEPATH",
+                    "value": "$env{LLVMInstallDir}/bin/lld-link.exe"
+                },
+                "CMAKE_AR": {
+                    "type": "FILEPATH",
+                    "value": "$env{LLVMInstallDir}/bin/llvm-lib.exe"
+                },
+                "CMAKE_RANLIB": {
+                    "type": "FILEPATH",
+                    "value": "$env{LLVMInstallDir}/llvm-ranlib.exe"
+                }
+            },
+            "environment": {
+                "CXXFLAGS_Windows": "-DTW_OS_WINDOWS=1 -DTW_OS_LINUX_KERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0 /Gv",
+                "DEBUGFLAGS": "/Zi /Ob0 /Od /RTC1",
+                "RELEASEFLAGS": "/O2 /Ob2 /DNDEBUG"
+
+            }
+        },
+        {
+            "name": "Android",
+            "hidden": true,
+            "displayName": "Android Default Config",
+            "description": "Android Default configuration",
+            "inherits": [ "Ninja" ],
+            "cacheVariables": {
+
+                "CMAKE_TOOLCHAIN_FILE": "$env{ANDROID_NDK}/build/cmake/android.toolchain.cmake",
+                "ANDROID_NATIVE_API_LEVEL": "23",
+                "ANDROID_TOOLCHAIN": "clang",
+                "TW_BUILD_OS": "Android",
+                "ANDROID_SDK_ROOT": "$env{ANDROID_SDK}",
+                "ANDROID_NDK": "$env{ANDROID_NDK}"
+            },
+            "environment": {
+                "CXXFLAGS_Android": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=1 -DTW_OS_MACOS=0 -DTW_OS_IOS=0",
+                "DEBUGFLAGS": "-O0 -fno-limit-debug-info",
+                "RELEASEFLAGS": "-O2 -DNDEBUG"
+            }
+        },
+        {
+            "name": "Linux",
+            "hidden": true,
+            "displayName": "Linux Default Config",
+            "description": "Linux Default configuration",
+            "inherits": [ "Ninja" ],
+            "cacheVariables": {
+                "TW_BUILD_OS": "Linux",
+                "CMAKE_CXX_COMPILER": {
+                    "type": "FILEPATH",
+                    "value": "clang++"
+                },
+                "CMAKE_LINKER": {
+                    "type": "FILEPATH",
+                    "value": "lld-link"
+                },
+                "CMAKE_AR": {
+                    "type": "FILEPATH",
+                    "value": "llvm-ar"
+                },
+                "CMAKE_RANLIB": {
+                    "type": "FILEPATH",
+                    "value": "llvm-ranlib"
+                }
+            },
+            "environment": {
+                "CXXFLAGS_Linux": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0",
+                "DEBUGFLAGS": "-g",
+                "RELEASEFLAGS": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "MacOS",
+            "hidden": true,
+            "displayName": "MacOS Default Config",
+            "description": "MacOS Default configuration",
+            "inherits": [ "Ninja" ],
+            "cacheVariables": {
+                "TW_BUILD_OS": "MacOS"
+            },
+            "environment": {
+                "CXXFLAGS_MacOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=1 -DTW_OS_IOS=0",
+                "DEBUGFLAGS": "-g",
+                "RELEASEFLAGS": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "iOS",
+            "hidden": true,
+            "displayName": "iOS Default Config",
+            "description": "iOS Default configuration",
+            "inherits": [ "XCode" ],
+            "cacheVariables": {
+                "TW_BUILD_OS": "iOS",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            },
+            "environment": {
+                "CXXFLAGS_iOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=1",
+                "DEBUGFLAGS": "-g",
+                "RELEASEFLAGS": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "iOS.Simulator",
+            "hidden": true,
+            "displayName": "iOS Default Config",
+            "description": "iOS Default configuration",
+            "inherits": [ "XCode" ],
+            "cacheVariables": {
+                "TW_BUILD_OS": "iOS",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            },
+            "environment": {
+                "CXXFLAGS_iOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=1",
+                "DEBUGFLAGS": "-g",
+                "RELEASEFLAGS": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "x64",
+            "hidden": true,
+            "displayName": "TWDebug Default Config",
+            "description": "TWDebug Default configuration",
+            "cacheVariables": {
+                "TW_BUILD_ARCH": "x64"
+            },
+            "environment": {
+                "CXXFLAGS_x64": ""
+            }
+        },
+        {
+            "name": "ARM64",
+            "hidden": true,
+            "displayName": "ARM64 Default Config",
+            "description": "ARM64 Default configuration",
+            "cacheVariables": {
+                "TW_BUILD_ARCH": "ARM64"
+            },
+            "environment": {
+                "CXXFLAGS_ARM64": ""
+            }
+        },
+        {
+            "name": "Windows-x64",
+            "displayName": "Windows/x64 Default Config",
+            "description": "Windows/x64 Default configuration",
+            "inherits": [ "Default", "Windows", "x64" ],
+            "cacheVariables": {
+                "CMAKE_EXE_LINKER_FLAGS": "/ignore:4099",
+                "CMAKE_MODULE_LINKER_FLAGS": "",
+                "CMAKE_SHARED_LINKER_FLAGS": "",
+                "CMAKE_STATIC_LINKER_FLAGS": "",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Windows} $env{CXXFLAGS_x64} $env{CXXFLAGS_Windows_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Windows} $env{CXXFLAGS_x64} $env{CXXFLAGS_Windows_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Windows} $env{CXXFLAGS_x64} $env{CXXFLAGS_Windows_x64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Windows} $env{CXXFLAGS_x64} $env{CXXFLAGS_Windows_x64} $env{RELEASEFLAGS}"
+
+            },
+            "environment": {
+                "CXXFLAGS_Windows_x64": "-m64 -fdiagnostics-absolute-paths"
+            }
+        },
+        {
+            "name": "Windows-ARM64",
+            "displayName": "Windows/ARM64 Default Config",
+            "description": "Windows/ARM64 Default configuration",
+            "inherits": [ "Default", "Windows", "ARM64" ],
+            "cacheVariables": {
+                "CMAKE_EXE_LINKER_FLAGS": "/ignore:4099",
+                "CMAKE_MODULE_LINKER_FLAGS": "",
+                "CMAKE_SHARED_LINKER_FLAGS": "",
+                "CMAKE_STATIC_LINKER_FLAGS": "",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Windows} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Windows_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Windows} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Windows_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Windows} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Windows_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Windows} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Windows_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_Windows_ARM64": "--target=arm64-pc-windows-msvc -fdiagnostics-absolute-paths"
+            }
+        },
+        {
+            "name": "Android-x64",
+            "displayName": "Android/x64 Default Config",
+            "description": "Android/x64 Default configuration",
+            "inherits": [ "Default", "Android", "x64" ],
+            "cacheVariables": {
+                "ANDROID_ABI": "x86_64",
+                "CMAKE_CXX_FLAGS_TWDEBUG": "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Android} $env{CXXFLAGS_x64} $env{CXXFLAGS_Android_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION": "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Android} $env{CXXFLAGS_x64} $env{CXXFLAGS_Android_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Android} $env{CXXFLAGS_x64} $env{CXXFLAGS_Android_x64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE": "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Android} $env{CXXFLAGS_x64} $env{CXXFLAGS_Android_x64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_Android_x64": ""
+            }
+        },
+        {
+            "name": "Android-ARM64",
+            "displayName": "Android/ARM64 Default Config",
+            "description": "Android/ARM64 Default configuration",
+            "inherits": [ "Default", "Android", "ARM64" ],
+            "cacheVariables": {
+                "ANDROID_ABI": "arm64-v8a",
+                "CMAKE_CXX_FLAGS_TWDEBUG": "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Android} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Android_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION": "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Android} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Android_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Android} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Android_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE": "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Android} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Android_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_Android_ARM64": ""
+            }
+        },
+        {
+            "name": "Linux-x64",
+            "displayName": "Linux/x64 Default Config",
+            "description": "Linux/x64 Default configuration",
+            "inherits": [ "Default", "Linux", "x64" ],
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS_TWDEBUG": "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Linux} $env{CXXFLAGS_x64} $env{CXXFLAGS_Linux_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION": "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Linux} $env{CXXFLAGS_x64} $env{CXXFLAGS_Linux_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Linux} $env{CXXFLAGS_x64} $env{CXXFLAGS_Linux_x64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE": "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Linux} $env{CXXFLAGS_x64} $env{CXXFLAGS_Linux_x64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_Linux_x64": ""
+            }
+        },
+        {
+            "name": "Linux-ARM64",
+            "displayName": "Linux/ARM64 Default Config",
+            "description": "Linux/ARM64 Default configuration",
+            "inherits": [ "Default", "Linux", "ARM64" ],
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS_TWDEBUG": "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_Linux} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Linux_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION": "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_Linux} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Linux_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_Linux} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Linux_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE": "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_Linux} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_Linux_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_Linux_ARM64": ""
+            }
+        },
+        {
+            "name": "MacOS-x64",
+            "displayName": "MacOS/x64 Default Config",
+            "description": "MacOS/x64 Default configuration",
+            "inherits": [ "Default", "MacOS", "x64" ],
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "CMAKE_REQUIRED_LINK_OPTIONS": "-arch;x86_64",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_MacOS} $env{CXXFLAGS_x64} $env{CXXFLAGS_MacOS_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_MacOS} $env{CXXFLAGS_x64} $env{CXXFLAGS_MacOS_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_MacOS} $env{CXXFLAGS_x64} $env{CXXFLAGS_MacOS_x64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_MacOS} $env{CXXFLAGS_x64} $env{CXXFLAGS_MacOS_x64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_MacOS_x64": "-arch x86_64"
+            }
+        },
+        {
+            "name": "MacOS-ARM64",
+            "displayName": "MacOS/ARM64 Default Config",
+            "description": "MacOS/ARM64 Default configuration",
+            "inherits": [ "Default", "MacOS", "ARM64" ],
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_REQUIRED_LINK_OPTIONS": "-arch;arm64",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_MacOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_MacOS_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_MacOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_MacOS_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_MacOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_MacOS_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_MacOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_MacOS_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_MacOS_ARM64": "-arch arm64"
+            }
+        },
+        {
+            "name": "iOS-ARM64",
+            "displayName": "iOS/ARM64 Default Config",
+            "description": "iOS/ARM64 Default configuration",
+            "inherits": [ "Default", "iOS", "ARM64" ],
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_REQUIRED_LINK_OPTIONS": "-arch;arm64",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_iOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_iOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_iOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_iOS} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_iOS_ARM64": "-arch arm64"
+            }
+        },
+        {
+            "name": "iOS.Simulator-x64",
+            "displayName": "iOS.Simulator/x64 Default Config",
+            "description": "iOS.Simulator/x64 Default configuration",
+            "inherits": [ "Default", "iOS.Simulator", "x64" ],
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "CMAKE_REQUIRED_LINK_OPTIONS": "-arch;x86_64",
+                "CMAKE_CXX_FLAGS_TWDEBUG": "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_x64} $env{CXXFLAGS_iOS_Simulator_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION": "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_x64} $env{CXXFLAGS_iOS_Simulator_x64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_x64} $env{CXXFLAGS_iOS_Simulator_x64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE": "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_x64} $env{CXXFLAGS_iOS_Simulator_x64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_iOS_Simulator_x64": "-arch x86_64"
+            }
+        },
+        {
+            "name": "iOS.Simulator-ARM64",
+            "displayName": "iOS.Simulator/ARM64 Default Config",
+            "description": "iOS.Simulator/ARM64 Default configuration",
+            "inherits": [ "Default", "iOS.Simulator", "ARM64" ],
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_REQUIRED_LINK_OPTIONS": "-arch;arm64",
+                "CMAKE_CXX_FLAGS_TWDEBUG":       "$env{CXXFLAGS_Default} $env{TWDEBUG}       $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_Simulator_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWSIMULATION":  "$env{CXXFLAGS_Default} $env{TWSIMULATION}  $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_Simulator_ARM64} $env{DEBUGFLAGS}",
+                "CMAKE_CXX_FLAGS_TWMETRICSONLY": "$env{CXXFLAGS_Default} $env{TWMETRICSONLY} $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_Simulator_ARM64} $env{RELEASEFLAGS}",
+                "CMAKE_CXX_FLAGS_TWRELEASE":     "$env{CXXFLAGS_Default} $env{TWRELEASE}     $env{CXXFLAGS_iOS.Simulator} $env{CXXFLAGS_ARM64} $env{CXXFLAGS_iOS_Simulator_ARM64} $env{RELEASEFLAGS}"
+            },
+            "environment": {
+                "CXXFLAGS_iOS_Simulator_ARM64": "-arch arm64"
+            }
+        }
+
+    ],
+    "buildPresets": [
+        {
+            "name": "Windows-x64-TWDebug",
+            "configurePreset": "Windows-x64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Windows-x64-TWSimulation",
+            "configurePreset": "Windows-x64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Windows-x64-TWMetricsOnly",
+            "configurePreset": "Windows-x64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Windows-x64-TWRelease",
+            "configurePreset": "Windows-x64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "Windows-ARM64-TWDebug",
+            "configurePreset": "Windows-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Windows-ARM64-TWSimulation",
+            "configurePreset": "Windows-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Windows-ARM64-TWMetricsOnly",
+            "configurePreset": "Windows-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Windows-ARM64-TWRelease",
+            "configurePreset": "Windows-ARM64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "Android-x64-TWDebug",
+            "configurePreset": "Android-x64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Android-x64-TWSimulation",
+            "configurePreset": "Android-x64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Android-x64-TWMetricsOnly",
+            "configurePreset": "Android-x64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Android-x64-TWRelease",
+            "configurePreset": "Android-x64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "Android-ARM64-TWDebug",
+            "configurePreset": "Android-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Android-ARM64-TWSimulation",
+            "configurePreset": "Android-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Android-ARM64-TWMetricsOnly",
+            "configurePreset": "Android-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Android-ARM64-TWRelease",
+            "configurePreset": "Android-ARM64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "Linux-x64-TWDebug",
+            "configurePreset": "Linux-x64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Linux-x64-TWSimulation",
+            "configurePreset": "Linux-x64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Linux-x64-TWMetricsOnly",
+            "configurePreset": "Linux-x64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Linux-x64-TWRelease",
+            "configurePreset": "Linux-x64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "Linux-ARM64-TWDebug",
+            "configurePreset": "Linux-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "Linux-ARM64-TWSimulation",
+            "configurePreset": "Linux-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "Linux-ARM64-TWMetricsOnly",
+            "configurePreset": "Linux-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "Linux-ARM64-TWRelease",
+            "configurePreset": "Linux-ARM64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "MacOS-x64-TWDebug",
+            "configurePreset": "MacOS-x64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "MacOS-x64-TWSimulation",
+            "configurePreset": "MacOS-x64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "MacOS-x64-TWMetricsOnly",
+            "configurePreset": "MacOS-x64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "MacOS-x64-TWRelease",
+            "configurePreset": "MacOS-x64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "MacOS-ARM64-TWDebug",
+            "configurePreset": "MacOS-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "MacOS-ARM64-TWSimulation",
+            "configurePreset": "MacOS-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "MacOS-ARM64-TWMetricsOnly",
+            "configurePreset": "MacOS-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "MacOS-ARM64-TWRelease",
+            "configurePreset": "MacOS-ARM64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "iOS-ARM64-TWDebug",
+            "configurePreset": "iOS-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "iOS-ARM64-TWSimulation",
+            "configurePreset": "iOS-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "iOS-ARM64-TWMetricsOnly",
+            "configurePreset": "iOS-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "iOS-ARM64-TWRelease",
+            "configurePreset": "iOS-ARM64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "iOS.Simulator-x64-TWDebug",
+            "configurePreset": "iOS.Simulator-x64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "iOS.Simulator-x64-TWSimulation",
+            "configurePreset": "iOS.Simulator-x64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "iOS.Simulator-x64-TWMetricsOnly",
+            "configurePreset": "iOS.Simulator-x64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "iOS.Simulator-x64-TWRelease",
+            "configurePreset": "iOS.Simulator-x64",
+            "configuration": "TWRelease"
+        },
+        {
+            "name": "iOS.Simulator-ARM64-TWDebug",
+            "configurePreset": "iOS.Simulator-ARM64",
+            "configuration": "TWDebug"
+        },
+        {
+            "name": "iOS.Simulator-ARM64-TWSimulation",
+            "configurePreset": "iOS.Simulator-ARM64",
+            "configuration": "TWSimulation"
+        },
+        {
+            "name": "iOS.Simulator-ARM64-TWMetricsOnly",
+            "configurePreset": "iOS.Simulator-ARM64",
+            "configuration": "TWMetricsOnly"
+        },
+        {
+            "name": "iOS.Simulator-ARM64-TWRelease",
+            "configurePreset": "iOS.Simulator-ARM64",
+            "configuration": "TWRelease"
+        }
+    ]
+}

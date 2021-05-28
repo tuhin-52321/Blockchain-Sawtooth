@@ -1,16 +1,30 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.20)
 project(Project1 LANGUAGES CXX)
-include($ENV{TWWorkspaceHome}/TallyWorldPMT/TallyWorld/TWPMT.VSSetup/Wizard/Native/Properties/Common/TWCommon.cmake)
 
-set(PROJECT_INCLUDES
-    Includes
-)
+set(VERBOSE 1)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(DEPENDENT_LAYERS
-)
+message(NOTICE ${CMAKE_CXX_FLAGS})
+message(NOTICE "Debug ->   ${CMAKE_CXX_FLAGS_DEBUG}")
+message(NOTICE "Release -> ${CMAKE_CXX_FLAGS_RELEASE}")
+message(NOTICE ${CMAKE_CXX_FLAGS_TWDEBUG})
+message(NOTICE ${CMAKE_CXX_FLAGS_TWSIMULATION})
+message(NOTICE ${CMAKE_CXX_FLAGS_TWMETRICSONLY})
+message(NOTICE ${CMAKE_CXX_FLAGS_TWRELEASE})
 
-add_library(Project1 STATIC  
+
+set(CMAKE_VERBOSE_MAKEFILE ON)
+add_executable(Project1
     "HelloApi1.cpp"
+    "Includes/HelloApi1.hpp"
+    "Includes/TWMain.hpp"
+    "Includes/TWUniversalDefinitions.twproduct"
+    "main.cpp")
+
+target_include_directories(Project1
+    PRIVATE Includes
 )
 
-setup_tw_library()
+include(TWCommonBuild)
+include(TWUtilities)
+include(TWCommonLink)
