@@ -7,6 +7,8 @@ int main()
 {
     std::cout << "Hello World! chanegs at DevTrunk, more changes at work branch - 119 - local changes\n";
 
+    std::cout << "Hello World! new line added by someone else\n";
+
 
 }
 
