@@ -100,7 +100,7 @@
                 }
             },
             "environment": {
-                "CXXFLAGS_Windows": "-DTW_OS_WINDOWS=1 -DTW_OS_LINUX_KERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0 /Gv",
+                "CXXFLAGS_Windows": "-DTW_OS_WINDOWS=1 -DTW_OS_LINUX_KERNEL=0 -DTW_OS_LINUX=0 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_APPLE_KERNEL=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0 /Gv",
                 "DEBUGFLAGS": "/Zi /Ob0 /Od /RTC1",
                 "RELEASEFLAGS": "/O2 /Ob2 /DNDEBUG"
 
@@ -130,7 +130,7 @@
                 "ANDROID_NDK": "$env{ANDROID_NDK}"
             },
             "environment": {
-                "CXXFLAGS_Android": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=1 -DTW_OS_MACOS=0 -DTW_OS_IOS=0",
+                "CXXFLAGS_Android": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_LINUX=0 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=1 -DTW_OS_APPLE_KERNEL=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0",
                 "DEBUGFLAGS": "-O0 -fno-limit-debug-info",
                 "RELEASEFLAGS": "-O2 -DNDEBUG"
             },
@@ -172,7 +172,7 @@
                 }
             },
             "environment": {
-                "CXXFLAGS_Linux": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0",
+                "CXXFLAGS_Linux": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_LINUX=1 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_APPLE_KERNEL=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=0 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0",
                 "DEBUGFLAGS": "-g",
                 "RELEASEFLAGS": "-O3 -DNDEBUG"
             },
@@ -196,7 +196,7 @@
                 "CMAKE_C_COMPILER": "/usr/bin/clang"
             },
             "environment": {
-                "CXXFLAGS_MacOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=1 -DTW_OS_IOS=0",
+                "CXXFLAGS_MacOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_LINUX=0 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_APPLE_KERNEL=1 -DTW_OS_MACOS=1 -DTW_OS_IOS=0 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0",
                 "DEBUGFLAGS": "-g",
                 "RELEASEFLAGS": "-O3 -DNDEBUG"
             },
@@ -222,7 +222,7 @@
                 "CMAKE_OSX_SYSROOT": "iphoneos"
             },
             "environment": {
-                "CXXFLAGS_iOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=1",
+                "CXXFLAGS_iOS": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_LINUX=0 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_APPLE_KERNEL=1 -DTW_OS_MACOS=0 -DTW_OS_IOS=1 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0",
                 "DEBUGFLAGS": "-g",
                 "RELEASEFLAGS": "-O3 -DNDEBUG"
             },
@@ -249,7 +249,7 @@
 
             },
             "environment": {
-                "CXXFLAGS_iOS_Simulator": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_ANDROID=0 -DTW_OS_MACOS=0 -DTW_OS_IOS=1",
+                "CXXFLAGS_iOS_Simulator": "-DTW_OS_WINDOWS=0 -DTW_OS_LINUX_KERNEL=1 -DTW_OS_LINUX=0 -DTW_OS_UNIKERNEL=0 -DTW_OS_ANDROID=0 -DTW_OS_APPLE_KERNEL=1 -DTW_OS_MACOS=0 -DTW_OS_IOS=1 -DTW_OS_IPADOS=0 -DTW_OS_WATCHOS=0",
                 "DEBUGFLAGS": "-g",
                 "RELEASEFLAGS": "-O3 -DNDEBUG"
             },
