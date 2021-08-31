@@ -14,17 +14,12 @@ message(NOTICE ${CMAKE_CXX_FLAGS_TWRELEASE})
 
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
+
 add_executable(Project1
-    "HelloApi1.cpp"
-    "Includes/HelloApi1.hpp"
-    "Includes/TWMain.hpp"
-    "Includes/TWUniversalDefinitions.twproduct"
-    "main.cpp")
+    "main.cpp"
+)
 
 target_include_directories(Project1
     PRIVATE Includes
 )
 
-include(TWCommonBuild)
-include(TWUtilities)
-include(TWCommonLink)
