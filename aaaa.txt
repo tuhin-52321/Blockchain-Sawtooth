@@ -1,11 +1,1 @@
-from local
-ssdsd
-
-sss
-ssss
-
-sdsdsd
-
-
-
-update at remote
+local changed one line
