@@ -1,4 +1,4 @@
-new remote changed one line
+new remote changed one line 1
 More local changes one line 2
 local new changed one line
 new remote changed one line
