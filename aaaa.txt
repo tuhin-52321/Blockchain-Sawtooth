@@ -1,3 +1,4 @@
+
 Local changes - more change -- FFF
 Local changes - remote ffff -- HHHH
 Deleted all lines , added line by local - changed at remote
