@@ -1,2 +1,3 @@
+Local changes - more change
 Local changes - remote ffff
 Deleted all lines , added line by local - changed at remote
