@@ -1,8 +1,1 @@
-Added a line 1 too by remote as well
-Added a line 1 too again
-
-new remote changed one line
-More local changes one line 2
-local new changed one line
-new remote changed one line
-Remote change on Line2
+Deleted all lines , added line by remote
