@@ -1,1 +1,2 @@
+Deleted all lines , added line by local - changed at local
 Deleted all lines , added line by local - changed at remote
