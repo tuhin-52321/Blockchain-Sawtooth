@@ -31,9 +31,9 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             return "<Null>";
         }
 
-        private async Task GetListAllTestAsync<T>(Func<Task<List<T>>> method)
+        private async Task GetListAllTestAsync<T>(Func<Task<FullList<T>>> method)
         {
-            foreach (T batch in await method())
+            foreach (T? batch in (await method()).List)
             {
                 Console.WriteLine(ToJson<T>(batch));
             }

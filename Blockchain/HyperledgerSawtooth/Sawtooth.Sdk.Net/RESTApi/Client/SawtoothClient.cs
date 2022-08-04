@@ -85,13 +85,13 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
 
             if (response == null) return new PageOf<T> { List = new List<T?>(), Next = null };
 
-            return new PageOf<T> { List = response.Data, Next = response.Paging?.Next };
+            return new PageOf<T> { List = response.Data, Head = response.Head,  Next = response.Paging?.Next };
 
         }
 
-        private async Task<List<T?>> GetAllListAsync<T>(string uri, params (string Name, string? Value)[] query_params)
+        private async Task<FullList<T>> GetAllListAsync<T>(string uri, params (string Name, string? Value)[] query_params)
         {
-            List<T?> list = new List<T?>();
+            FullList<T> list = new FullList<T>();
             string? start_id = null;
             do
             {
@@ -99,7 +99,12 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
 
                 if (response == null) break;
 
-                list.AddRange(response.Data);
+                list.List.AddRange(response.Data);
+
+                if(list.Head == null)
+                {
+                    list.Head = response.Head;
+                }
 
                 if (response.Paging?.Next == null) break;
 
@@ -123,11 +128,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
         }
 
         
-        public async Task<PageOf<Batch>> GetBatchesAsync(string? start = null)
+        public async Task<PageOf<Batch>> GetBatchesAsync(string? start)
         {
             return await GetPagedListAsync<Batch>("batches", start);
         }
-        public async Task<List<Batch?>> GetBatchesAsync()
+        public async Task<FullList<Batch>> GetBatchesAsync()
         {
             return await GetAllListAsync<Batch>("batches");
         }
@@ -136,25 +141,25 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
             return await GetAsync<Batch>($"batches/{batch_id}");
         }
 
-        public async Task<List<BatchStatus>?> GetBatchStatusesAsync(params string[] batch_id)
+        public async Task<List<BatchStatus>?> GetBatchStatusesAsync(params string?[] batch_id)
         {
             return await GetAsync<List<BatchStatus>>("batch_statuses", "?id=" + string.Join(",", batch_id));
         }
 
-        public async Task<PageOf<StateItem>> GetStatesAsync(string? start = null)
+        public async Task<PageOf<StateItem>> GetStatesAsync(string? start)
         {
             return await GetStatesWithFilterAsync(start,null);
         }
 
-        public async Task<PageOf<StateItem>> GetStatesWithFilterAsync(string? start = null, string? address_filter = null)
+        public async Task<PageOf<StateItem>> GetStatesWithFilterAsync(string? start, string? address_filter)
         {
             return await GetPagedListAsync<StateItem>("state", start, ("address_filter", address_filter));
         }
-        public async Task<List<StateItem?>> GetStatesWithFilterAsync(string? address_filter)
+        public async Task<FullList<StateItem>> GetStatesWithFilterAsync(string? address_filter)
         {
             return await GetAllListAsync<StateItem>("state", ("address_filter", address_filter));
         }
-        public async Task<List<StateItem?>> GetStatesAsync()
+        public async Task<FullList<StateItem>> GetStatesAsync()
         {
             return await GetStatesWithFilterAsync(null);
         }
@@ -165,11 +170,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
         }
 
 
-        public async Task<PageOf<Block>> GetBlocksAsync(string? start = null)
+        public async Task<PageOf<Block>> GetBlocksAsync(string? start)
         {
             return await GetPagedListAsync<Block>("blocks", start);
         }
-        public async Task<List<Block?>> GetBlocksAsync()
+        public async Task<FullList<Block>> GetBlocksAsync()
         {
             return await GetAllListAsync<Block>("blocks");
         }
@@ -178,11 +183,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
             return await GetAsync<Block>($"blocks/{block_id}");
         }
 
-        public async Task<PageOf<Transaction>> GetTransactionsAsync(string? start = null)
+        public async Task<PageOf<Transaction>> GetTransactionsAsync(string? start)
         {
             return await GetPagedListAsync<Transaction>("transactions", start);
         }
-        public async Task<List<Transaction?>> GetTransactionsAsync()
+        public async Task<FullList<Transaction>> GetTransactionsAsync()
         {
             return await GetAllListAsync<Transaction>("transactions");
         }

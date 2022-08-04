@@ -1,0 +1,118 @@
+﻿<Window x:Class="SawtoothBrowser.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SawtoothBrowser"
+        mc:Ignorable="d"
+        Title="Sawtooth Browser" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="tbUrl" Text="http://localhost:8008" Grid.Column="0" Margin="5"/>
+            <Button Content="Fetch Data" Grid.Column="1" Margin="5" Click="SubmitAsync"/>
+        </Grid>
+        <TabControl x:Name="tabControl" Grid.Row="1">
+            <TabItem x:Name="tabBlocks" Header="{Binding BlockHeader}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListView Name="lvBlocks" ItemsSource="{Binding Path=Blocks}" Grid.Row="0">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Block Number" Width="Auto" DisplayMemberBinding="{Binding BlockNum}" />
+                                <GridViewColumn Header="Block Id" Width="Auto" >
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Style="{StaticResource LinkButton}" ToolTip="{Binding BlockId}" Content="{Binding BlockIdShort}" Tag="{Binding BlockId}" Click="ShowBatchesOfBlockAsync"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Number Of Batches" Width="Auto" DisplayMemberBinding="{Binding TotalBatches}" />
+                                <!--GridViewColumn Header="Previous Block Id" Width="Auto">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock ToolTip="{Binding PrevBlockId}" Text="{Binding PrevBlockIdShort}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn-->
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <TextBlock x:Name="tbStartBlock" Visibility="Hidden" Text=""/>
+                        <Button x:Name="bBlocksLoadMore" Style="{StaticResource LinkButton}" Content="Load More..." IsEnabled="false" Click="BlocksLoadMoreAsync" Margin="0,5,0,5"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="tabBatches" Header="{Binding BatchHeader}">
+                <ListView Name="lvBaches" ItemsSource="{Binding Path=Batches}" Grid.Row="0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Batch Id" Width="Auto" >
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource LinkButton}" ToolTip="{Binding BatchId}" Content="{Binding BatchIdShort}" Tag="{Binding BatchId}" Click="ShowTrasnactionsOfBatchAsync"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Status" Width="Auto" DisplayMemberBinding="{Binding Status}"/>
+                            <GridViewColumn Header="Total Txns" Width="Auto" DisplayMemberBinding="{Binding TxnCount}"/>
+                            <GridViewColumn Header="Invalid Txns" Width="Auto" DisplayMemberBinding="{Binding InvalidTxnCount}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem x:Name="tabTxn" Header="{Binding TxnHeader}">
+                <ListView Name="lvTxns" ItemsSource="{Binding Path=Transactions}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Txn Id" Width="Auto" >
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource LinkButton}" ToolTip="{Binding TxnId}" Content="{Binding TxnIdShort}" Tag="{Binding TxnId}" Click="ShowTxnDetailAsync"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Family" Width="Auto" DisplayMemberBinding="{Binding Family}"/>
+                            <GridViewColumn Header="Version" Width="Auto" DisplayMemberBinding="{Binding Version}"/>
+                            <GridViewColumn Header="Is Valid?" Width="Auto" DisplayMemberBinding="{Binding IsValid}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem x:Name="tabTxnDetail" Header="{Binding TxnDetailHeader}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Txn Id" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                    <TextBox IsReadOnly="True" Text="{Binding TxnId}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+                    <Label Content="Family Name" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                    <TextBox IsReadOnly="True" Text="{Binding TxnFamily}" Grid.Row="1" Grid.Column="1" Margin="5"/>
+                    <Label Content="Family Version" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                    <TextBox IsReadOnly="True" Text="{Binding TxnVersion}" Grid.Row="2" Grid.Column="1" Margin="5"/>
+                    <Label Content="Payload" Grid.Row="3" Grid.Column="0" Margin="5"/>
+                    <TextBox IsReadOnly="True" Text="{Binding TxnPayload}" VerticalScrollBarVisibility="Auto" Grid.Row="3" Grid.Column="1" Margin="5"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>
