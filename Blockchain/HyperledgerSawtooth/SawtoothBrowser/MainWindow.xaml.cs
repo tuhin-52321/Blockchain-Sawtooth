@@ -1,4 +1,5 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Client;
+﻿using Sawtooth.Sdk.Net.DataHandlers;
+using Sawtooth.Sdk.Net.RESTApi.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
 using SawtoothBrowser.Utils;
 using SawtoothBrowser.ViewModel;
@@ -184,9 +185,9 @@ namespace SawtoothBrowser
                 var txnDetail = await client.GetTransactionAsync(txnId);
                 TxnFamily = txnDetail?.Header?.FamilyName;
                 TxnVersion = txnDetail?.Header?.FamilyVersion;
-                TxnPayload = txnDetail?.Payload;
+                TxnPayload = DataHandlerFactory.GetDataHandler(TxnFamily,TxnVersion).UnwrapPayload(txnDetail?.Payload);
 
-                TxnHeader = $"Txn Detail: {TxnId.Shorten(16)}";
+                TxnDetailHeader = $"Txn Detail: {TxnId.Shorten(16)}";
             }
 
             DataContext = this;
