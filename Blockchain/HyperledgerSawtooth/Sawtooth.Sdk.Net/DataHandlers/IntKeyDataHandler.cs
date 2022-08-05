@@ -21,13 +21,14 @@ namespace Sawtooth.Sdk.Net.DataHandlers
 
             CBORObject cbor = CBORObject.DecodeFromBytes(paylod_raw);
 
-            string name = cbor["Verb"].ToObject<string>();
-            string verb = cbor["Name"].ToObject<string>();
+            string name = cbor["Name"].ToObject<string>();
+            string verb = cbor["Verb"].ToObject<string>();
             int value = cbor["Value"].ToObject<int>();
 
-            return $"Name : {name} \n"
-                 + $"Verb : {verb} \n"
-                 + $"Value: {value} \n";
+            return "[CBOR Object: Map]\n" 
+                 + $"    Name : {name} \n"
+                 + $"    Verb : {verb} \n"
+                 + $"    Value: {value} \n";
 
         }
     }

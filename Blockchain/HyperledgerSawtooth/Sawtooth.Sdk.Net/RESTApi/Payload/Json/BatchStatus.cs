@@ -1,7 +1,6 @@
-﻿using PeterO.Cbor;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Sawtooth.Sdk.Net.RESTApi.Payload
+namespace Sawtooth.Sdk.Net.RESTApi.Payload.Json
 {
 
     public class BatchStatus
@@ -9,19 +8,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Payload
         [JsonPropertyName("id")]
         public string? Id { get; set; }
 
-        [JsonPropertyName( "status")]
+        [JsonPropertyName("status")]
         public string? Status { get; set; }
 
         [JsonPropertyName("invalid_transactions")]
         public List<InvalidTransaction?> InvalidTransaction { get; set; } = new List<InvalidTransaction?>();
-
-        public byte[] ToByteArray()
-        {
-            CBORObject obj = CBORObject.FromObject(this);
-
-            return obj.EncodeToBytes();
-        }
-
 
     }
 

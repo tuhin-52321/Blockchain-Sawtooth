@@ -1,4 +1,5 @@
 ﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
 using System.Net.Http.Headers;
 using System.Text.Json;
 

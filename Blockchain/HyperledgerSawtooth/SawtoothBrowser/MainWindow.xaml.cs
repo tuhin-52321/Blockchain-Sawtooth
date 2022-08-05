@@ -1,6 +1,7 @@
 ﻿using Sawtooth.Sdk.Net.DataHandlers;
 using Sawtooth.Sdk.Net.RESTApi.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
 using SawtoothBrowser.Utils;
 using SawtoothBrowser.ViewModel;
 using System;

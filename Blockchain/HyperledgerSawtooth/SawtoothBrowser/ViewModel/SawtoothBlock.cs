@@ -1,4 +1,4 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
+﻿using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
 using SawtoothBrowser.Utils;
 using System;
 using System.Collections.Generic;

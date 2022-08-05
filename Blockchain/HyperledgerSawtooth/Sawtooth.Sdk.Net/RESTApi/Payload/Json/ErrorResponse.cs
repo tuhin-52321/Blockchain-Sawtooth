@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sawtooth.Sdk.Net.RESTApi.Payload
+namespace Sawtooth.Sdk.Net.RESTApi.Payload.Json
 {
     public class ErrorResponse
     {
@@ -8,7 +8,7 @@ namespace Sawtooth.Sdk.Net.RESTApi.Payload
         public Error? Error { get; set; }
     }
     public class Error
-    { 
+    {
         [JsonPropertyName("code")]
         public int? Code { get; set; }
 

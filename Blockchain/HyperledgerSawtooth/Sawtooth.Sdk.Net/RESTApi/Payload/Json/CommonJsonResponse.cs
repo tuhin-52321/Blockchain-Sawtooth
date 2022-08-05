@@ -1,19 +1,14 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sawtooth.Sdk.Net.RESTApi.Payload
-{
-    public class State
-    {
-        [JsonPropertyName("data")]
-        public string? Data { get; set; }
 
+namespace Sawtooth.Sdk.Net.RESTApi.Payload.Json
+{
+    public class CommonJsonResponse
+    {
         [JsonPropertyName("head")]
         public string? Head { get; set; }
 
         [JsonPropertyName("link")]
         public string? Link { get; set; }
-
-
-
     }
 }

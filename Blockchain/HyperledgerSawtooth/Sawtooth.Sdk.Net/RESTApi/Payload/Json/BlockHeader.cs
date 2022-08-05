@@ -1,7 +1,6 @@
-﻿using PeterO.Cbor;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Sawtooth.Sdk.Net.RESTApi.Payload
+namespace Sawtooth.Sdk.Net.RESTApi.Payload.Json
 {
     public class BlockHeader
     {
@@ -22,15 +21,6 @@ namespace Sawtooth.Sdk.Net.RESTApi.Payload
 
         [JsonPropertyName("state_root_hash")]
         public string? StateRootHash { get; set; }
-
-
-        public byte[] ToByteArray()
-        {
-            CBORObject obj = CBORObject.FromObject(this);
-
-            return obj.EncodeToBytes();
-        }
-
 
     }
 }

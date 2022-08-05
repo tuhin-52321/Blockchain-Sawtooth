@@ -1,4 +1,5 @@
 ﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
 using Sawtooth.Sdk.Net.Utils;
 
 namespace Sawtooth.Sdk.Net.Client
@@ -58,34 +59,7 @@ namespace Sawtooth.Sdk.Net.Client
             return transaction;
         }
 
-        /// <summary>
-        /// Creates new batch.
-        /// </summary>
-        /// <returns>The batch.</returns>
-        /// <param name="transactions">Transactions.</param>
-        public Batch CreateBatch(IEnumerable<Transaction> transactions)
-        {
-            var batchHeader = new BatchHeader();
-            batchHeader.TransactionIds.AddRange(transactions.Select(x => x.HeaderSignature));
-            batchHeader.SignerPublicKey = signer.GetPublicKey().ToHexString();
 
-            var batch = new Batch();
-            batch.Transactions.AddRange(transactions.Select(x => x.Clone()));
-            batch.Header = batchHeader;
-            batch.HeaderSignature = signer.Sign(batchHeader.ToByteArray().ToSha256()).ToHexString();
-
-            return batch;
-        }
-
-        /// <summary>
-        /// Creates new batch.
-        /// </summary>
-        /// <returns>The batch.</returns>
-        /// <param name="transaction">Transaction.</param>
-        public Batch CreateBatch(Transaction transaction)
-        {
-            return CreateBatch(new[] { transaction });
-        }
 
 
     }

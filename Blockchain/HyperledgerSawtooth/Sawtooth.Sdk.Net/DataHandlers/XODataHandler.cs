@@ -23,9 +23,10 @@ namespace Sawtooth.Sdk.Net.DataHandlers
 
             string[] values = data.Split(",");
 
-            return $"Game Name   : {values[0]} \n"
-                 + $"Action      : {values[1]} \n"
-                 + $"Space       : {values[2]} \n"; 
+            return "[Comma separated list as string]\n"+
+                   $"    Game Name   : {values[0]} \n"
+                 + $"    Action      : {values[1]} \n"
+                 + $"    Space       : {values[2]} \n"; 
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using PeterO.Cbor;
 
-namespace Sawtooth.Sdk.Net.RESTApi.Payload
+namespace Sawtooth.Sdk.Net.RESTApi.Payload.Json
 {
     public class TransactionHeader
     {
