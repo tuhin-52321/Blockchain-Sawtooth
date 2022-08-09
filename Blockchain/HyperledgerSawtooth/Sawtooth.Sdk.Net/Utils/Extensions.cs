@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using ProtoBuf;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Sawtooth.Sdk.Net.Utils
@@ -15,7 +16,7 @@ namespace Sawtooth.Sdk.Net.Utils
         /// </summary>
         /// <returns>The hex string.</returns>
         /// <param name="data">Data.</param>
-        public static string ToHexString(this byte[] data) => Convert.ToBase64String(data);
+        public static string ToHexString(this byte[] data) => string.Concat(data.Select(x => x.ToString("x2"))); // => Convert.ToBase64String(data);
 
         /// <summary>
         /// Hashes the specified byte array using Sha256
@@ -37,5 +38,28 @@ namespace Sawtooth.Sdk.Net.Utils
         /// <returns>The byte array.</returns>
         /// <param name="data">Data.</param>
         public static byte[] ToByteArray(this string data) => Encoding.UTF8.GetBytes(data);
+
+        public static byte[] ToProtobufByteArray<T>(this T protobuf_obj)
+        {
+            byte[] msgOut;
+
+            using (var stream = new MemoryStream())
+            {
+                Serializer.Serialize(stream, protobuf_obj);
+                msgOut = stream.GetBuffer();
+            }
+
+            return msgOut;
+        }
+
+        public static string Last(this string data, int length)
+        {
+            return data.Substring(data.Length - length);
+        }
+        public static string First(this string data, int length)
+        {
+            return data.Substring(0, length);
+        }
+
     }
 }

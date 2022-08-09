@@ -1,5 +1,5 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
-using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
+﻿using ProtoBuf;
+using Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf;
 using Sawtooth.Sdk.Net.Utils;
 
 namespace Sawtooth.Sdk.Net.Client
@@ -52,15 +52,70 @@ namespace Sawtooth.Sdk.Net.Client
             header.PayloadSha512 = payload.ToSha512().ToHexString();
 
             var transaction = new Transaction();
-            transaction.Payload = payload.ToHexString();
-            transaction.Header = header;
-            transaction.HeaderSignature = signer.Sign(header.ToByteArray().ToSha256()).ToHexString();
+            transaction.Payload = payload;
+            transaction.Header = header.ToProtobufByteArray();
+            transaction.HeaderSignature = signer.Sign(transaction.Header.ToSha256()).ToHexString();
 
             return transaction;
         }
 
+        /// <summary>
+        /// Creates new batch.
+        /// </summary>
+        /// <returns>The batch.</returns>
+        /// <param name="transactions">Transactions.</param>
+        public Batch CreateBatch(IEnumerable<Transaction> transactions)
+        {
+            var batchHeader = new BatchHeader();
+            batchHeader.TransactionIds.AddRange(transactions.Select(x => x.HeaderSignature));
+            batchHeader.SignerPublicKey = signer.GetPublicKey().ToHexString();
 
+            var batch = new Batch();
+            batch.Transactions.AddRange(transactions.Select(x => x.Clone()));
+            batch.Header = batchHeader.ToProtobufByteArray();
+            batch.HeaderSignature = signer.Sign(batch.Header.ToSha256()).ToHexString();
 
+            return batch;
+        }
+
+        /// <summary>
+        /// Creates new batch.
+        /// </summary>
+        /// <returns>The batch.</returns>
+        /// <param name="transaction">Transaction.</param>
+        public Batch CreateBatch(Transaction transaction)
+        {
+            return CreateBatch(new[] { transaction });
+        }
+
+        /// <summary>
+        /// Encode the specified batches.
+        /// </summary>
+        /// <returns>The encode.</returns>
+        /// <param name="batches">Batches.</param>
+        public BatchList Encode(IEnumerable<Batch> batches)
+        {
+            var batchList = new BatchList();
+            batchList.Batches.AddRange(batches);
+            return batchList;
+        }
+
+        /// <summary>
+        /// Encode the specified batch.
+        /// </summary>
+        /// <returns>The encode.</returns>
+        /// <param name="batch">Batch.</param>
+        public BatchList Encode(Batch batch)
+        {
+            return Encode(new[] { batch });
+        }
+
+        /// <summary>
+        /// Encodes a single transaction.
+        /// </summary>
+        /// <returns>The single transaction.</returns>
+        /// <param name="payload">Payload.</param>
+        public BatchList EncodeSingleTransaction(byte[] payload) => Encode(CreateBatch(CreateTransaction(payload)));
 
     }
 }

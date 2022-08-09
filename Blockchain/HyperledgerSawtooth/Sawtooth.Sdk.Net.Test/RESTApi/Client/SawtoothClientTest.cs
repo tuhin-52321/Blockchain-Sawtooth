@@ -1,4 +1,7 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
+﻿using PeterO.Cbor;
+using Sawtooth.Sdk.Net.Client;
+using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.Utils;
 using System.Text.Json;
 
 namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
@@ -20,12 +23,12 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             client = null;
         }
 
-        private string ToJson<T>(T? batch)
+        private string ToJson<T>(T? json)
         {
-            if (batch != null)
+            if (json != null)
             {
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                return JsonSerializer.Serialize(batch, options);
+                return JsonSerializer.Serialize(json, options);
             }
 
             return "<Null>";
@@ -227,6 +230,53 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             Assert.IsNotNull(client);
 
             await GetSingleTestWithParamAsync(client.GetTransactionAsync, transaction_id);
+        }
+
+        [TestMethod("Post BatchList")]
+        public async Task PostBatchListTestAsync()
+        {
+            Assert.IsNotNull(client);
+
+            var prefix = "intkey".ToByteArray().ToSha512().ToHexString().Substring(0, 6);
+            var signer = new Signer();
+
+            var settings = new EncoderSettings()
+            {
+                BatcherPublicKey = signer.GetPublicKey().ToHexString(),
+                SignerPublickey = signer.GetPublicKey().ToHexString(),
+                FamilyName = "intkey",
+                FamilyVersion = "1.0"
+            };
+            settings.Inputs.Add(prefix);
+            settings.Outputs.Add(prefix);
+
+            var encoder = new Encoder(settings, signer.GetPrivateKey());
+
+            var obj = CBORObject.NewMap()
+                                .Add("Name", "Hello1")
+                                .Add("Verb", "set")
+                                .Add("Value", 99);
+            
+
+            var payload = encoder.EncodeSingleTransaction(obj.EncodeToBytes());
+
+
+            var json =  await client.PostBatchListAsync(payload);
+
+            Console.WriteLine(ToJson(json));
+
+            if (json != null && json.Link != null)
+            {
+                var statuses = await client.GetBatchStatusUsingLinkAsync(json.Link);
+
+                if (statuses != null)
+                {
+                    foreach (var status in statuses)
+                    {
+                        Console.WriteLine(ToJson(status));
+                    }
+                }
+            }
         }
 
     }

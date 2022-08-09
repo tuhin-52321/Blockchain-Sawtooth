@@ -1,7 +1,10 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload;
+﻿using ProtoBuf;
+using Sawtooth.Sdk.Net.RESTApi.Payload;
 using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
+using BatchList = Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf.BatchList;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Sawtooth.Sdk.Net.Utils;
 
 namespace Sawtooth.Sdk.Net.RESTApi.Client
 {
@@ -18,22 +21,14 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 
-        private async Task<RESPONSE_TYPE?> PostRequestAsync<REQUEST_TYPE, RESPONSE_TYPE>(string requestUti, REQUEST_TYPE request_object, int sucess_code, params int[] failure_codes)
+        public async Task<CommonJsonResponse?> PostBatchListAsync(BatchList batch_list)
         {
-
-            MemoryStream ms = new MemoryStream();
-            await JsonSerializer.SerializeAsync<REQUEST_TYPE>(ms, request_object);
-            ms.Seek(0, SeekOrigin.Begin);
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUti);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            using (StreamContent requestContent = new StreamContent(ms))
+            byte[] data = batch_list.ToProtobufByteArray();
+            var content = new ByteArrayContent(data);
+            content.Headers.Add("Content-Type", "application/octet-stream");
+            using (var response = await _httpClient.PostAsync("http://localhost:8008/batches", content))
             {
-                request.Content = requestContent;
-                requestContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                using (var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead))
-                {
-                    return await ConvertToReponseObjectAsync<RESPONSE_TYPE>(response, sucess_code, failure_codes);
-                }
+                return await ConvertToReponseObjectAsync<CommonJsonResponse>(response, 202, new[] { 400, 429, 500, 503 });
             }
         }
         private async Task<RESPONSE_TYPE?> GetRequestAsync<RESPONSE_TYPE>(string requestUti, string query_string, int sucess_code, params int[] failure_codes)
@@ -145,6 +140,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
         public async Task<List<BatchStatus>?> GetBatchStatusesAsync(params string?[] batch_id)
         {
             return await GetAsync<List<BatchStatus>>("batch_statuses", "?id=" + string.Join(",", batch_id));
+        }
+
+        public async Task<List<BatchStatus>?> GetBatchStatusUsingLinkAsync(string url)
+        {
+            return await GetAsync<List<BatchStatus>>(url);
         }
 
         public async Task<PageOf<StateItem>> GetStatesAsync(string? start)

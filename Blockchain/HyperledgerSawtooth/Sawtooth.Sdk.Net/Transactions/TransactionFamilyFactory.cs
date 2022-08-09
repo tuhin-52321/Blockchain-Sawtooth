@@ -4,29 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sawtooth.Sdk.Net.DataHandlers
+namespace Sawtooth.Sdk.Net.Transactions
 {
-    public static class DataHandlerFactory
+    public static class TransactionFamilyFactory
     {
-        public static IDataHandler GetDataHandler(string? family, string? version)
+        public static TransactionFamily GetTransactionFamily(string? family, string? version)
         {
             if (family != null)
             {
                 if (family.Equals("intkey"))
                 {
-                    return new IntKeyDataHandler(version);
+                    return new IntKeyTransactionFamily(version);
                 }
                 if (family.Equals("sawtooth_settings"))
                 {
-                    return new SawtoothSettingsDataHandler(version);
+                    return new SawtoothSettingsTransactionFamily(version);
                 }
                 if (family.Equals("xo"))
                 {
-                    return new XODataHandler(version);
+                    return new XOTransactionFamily(version);
                 }
 
             }
-            return new DefaultDataHandler();
+            return new DefaultTransactionFamily();
         }
     }
 }
