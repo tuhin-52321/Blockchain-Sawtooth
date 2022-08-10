@@ -8,9 +8,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 {
     public interface ITransaction
     {
-        public string? UnwrapPayload(string? state_payload);
+        public string UnwrapPayload(byte[] state_payload);
 
-        public string? WrapPayload();
+        public byte[] WrapPayload();
 
         public string DisplayString { get; }
     }

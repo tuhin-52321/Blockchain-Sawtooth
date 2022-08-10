@@ -154,11 +154,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
 
         public async Task<PageOf<StateItem>> GetStatesWithFilterAsync(string? start, string? address_filter)
         {
-            return await GetPagedListAsync<StateItem>("state", start, ("address_filter", address_filter));
+            return await GetPagedListAsync<StateItem>("state", start, ("address", address_filter));
         }
         public async Task<FullList<StateItem>> GetStatesWithFilterAsync(string? address_filter)
         {
-            return await GetAllListAsync<StateItem>("state", ("address_filter", address_filter));
+            return await GetAllListAsync<StateItem>("state", ("address", address_filter));
         }
         public async Task<FullList<StateItem>> GetStatesAsync()
         {

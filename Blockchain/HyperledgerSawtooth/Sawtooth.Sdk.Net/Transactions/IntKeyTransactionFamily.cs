@@ -7,7 +7,7 @@ namespace Sawtooth.Sdk.Net.Transactions
     public class IntKeyTransactionFamily : TransactionFamily
     {
 
-        public IntKeyTransactionFamily(string? version): base("intkey")
+        public IntKeyTransactionFamily(string version): base("intkey", version)
         {
             if(version == "1.0")
             {
@@ -19,11 +19,11 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class IntKeyAddress : IAddress
     {
-        public string Prefix => Encoding.UTF8.GetBytes("intkey").ToSha256().ToHexString().First(6);
+        public string Prefix => Encoding.UTF8.GetBytes("intkey").ToSha512().ToHexString().First(6);
 
         public string ComposeAddress(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha256().ToHexString().Last(64);
+            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
 
         }
 
@@ -35,8 +35,8 @@ namespace Sawtooth.Sdk.Net.Transactions
         {
         }
 
-        public string? Name {get; private set;}
-        public int? Value { get; private set; }
+        public string Name { get; private set; } = "";
+        public int Value { get; private set; } = 0;
 
         public override string DisplayString => "[CBOR Object: Map]\n"
                  + $"    Name : {Name} \n"
@@ -61,25 +61,16 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         public override void WrapState(out string? address, out string? state_payload)
         {
-            address = null;
-            state_payload = null;
-            if (Name != null)
-            {
-                address = Address.ComposeAddress(Name);
-                if (Value != null)
-                {
-                    state_payload = Convert.ToBase64String(CBORObject.NewMap().Add(Name, Value).EncodeToBytes());
-                }
-
-            }
+            address = Address.ComposeAddress(Name);
+            state_payload = Convert.ToBase64String(CBORObject.NewMap().Add(Name, Value).EncodeToBytes());
         }
     }
 
     public class IntKeyTransaction : ITransaction
     {
-        public string? Name { get; private set; }
-        public string? Verb { get; private set; }
-        public int? Value { get; private set; }
+        public string? Name { get; set; }
+        public string? Verb { get; set; }
+        public int? Value { get; set; }
 
         public string DisplayString =>
              "[CBOR Object: Map]\n"
@@ -87,30 +78,32 @@ namespace Sawtooth.Sdk.Net.Transactions
                  + $"    Verb : {Verb} \n"
                  + $"    Value: {Value} \n";
 
-        public string? UnwrapPayload(string? state_payload)
+        public string UnwrapPayload(byte[] payload)
         {
-            if (state_payload == null) return null;
+            if (payload == null) return "<Null Payload>";
 
-            byte[] paylod_raw = Convert.FromBase64String(state_payload);
-
-            CBORObject cbor = CBORObject.DecodeFromBytes(paylod_raw);
+            CBORObject cbor = CBORObject.DecodeFromBytes(payload);
 
             Name = cbor["Name"].ToObject<string>();
             Verb = cbor["Verb"].ToObject<string>();
-            Value = cbor["Value"].ToObject<int>();
+
+            if("set".Equals(Verb))
+                Value = cbor["Value"].ToObject<int>();
 
             return DisplayString;
 
 
         }
 
-        public string? WrapPayload()
+        public byte[] WrapPayload()
         {
-            if (Name == null || Verb == null || Value == null) return null;
+            if (Name == null) throw new IOException("Please set 'Name' before wraping the object.");
+            if (Verb == null) throw new IOException("Please set 'Verb' before wraping the object.");
+            if (Value == null) throw new IOException("Please set 'Value' before wraping the object.");
 
             CBORObject cbor = CBORObject.NewMap().Add("Name", Name).Add("Verb", Verb).Add("Value", Value);
 
-            return Convert.ToBase64String(cbor.EncodeToBytes());
+            return cbor.EncodeToBytes();
         }
     }
 }

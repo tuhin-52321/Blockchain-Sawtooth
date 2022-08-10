@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
-
+using Sawtooth.Sdk.Net.Utils;
 
 namespace SawtoothBrowser
 {
@@ -184,10 +184,13 @@ namespace SawtoothBrowser
             {
                 TxnId = txnId;
                 var txnDetail = await client.GetTransactionAsync(txnId);
-                TxnFamily = txnDetail?.Header?.FamilyName;
-                TxnVersion = txnDetail?.Header?.FamilyVersion;
-                TxnPayload = TransactionFamilyFactory.GetTransactionFamily(TxnFamily,TxnVersion).Transaction.UnwrapPayload(txnDetail?.Payload);
-
+                if (txnDetail != null)
+                {
+                    TxnFamily = txnDetail.Header?.FamilyName;
+                    TxnVersion = txnDetail.Header?.FamilyVersion;
+                    if (txnDetail.Payload != null)
+                        TxnPayload = TransactionFamilyFactory.GetTransactionFamily(TxnFamily, TxnVersion).UnwrapPayload(txnDetail.Payload);
+                }
                 TxnDetailHeader = $"Txn Detail: {TxnId.Shorten(16)}";
             }
 

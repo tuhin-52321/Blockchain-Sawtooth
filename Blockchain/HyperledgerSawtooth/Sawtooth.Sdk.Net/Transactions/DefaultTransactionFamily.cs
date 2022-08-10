@@ -2,7 +2,7 @@
 {
     public class DefaultTransactionFamily : TransactionFamily
     {
-        public DefaultTransactionFamily() : base("default")
+        public DefaultTransactionFamily() : base("default", "1.0")
         {
         }
 
@@ -48,16 +48,18 @@
     {
         private string? raw_data;
 
-        public string UnwrapPayload(string? state_payload)
+        public string UnwrapPayload(byte[] payload)
         {
-            if (state_payload == null) raw_data = null;
-            raw_data = state_payload;
+            if (payload == null) raw_data = null;
+            else
+                raw_data = Convert.ToBase64String(payload);
 
             return DisplayString;
         }
-        public string? WrapPayload()
+        public byte[] WrapPayload()
         {
-            return raw_data;
+            if (raw_data == null) throw new IOException("Please set raw data first.");
+            return Convert.FromBase64String(raw_data);
         }
 
         public string DisplayString => "[Raw data: ]\n" + (raw_data != null ? raw_data : "<Null Value>");

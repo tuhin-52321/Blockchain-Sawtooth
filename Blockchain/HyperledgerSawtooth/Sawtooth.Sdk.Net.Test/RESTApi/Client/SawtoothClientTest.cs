@@ -1,6 +1,7 @@
 ﻿using PeterO.Cbor;
 using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.Transactions;
 using Sawtooth.Sdk.Net.Utils;
 using System.Text.Json;
 
@@ -252,13 +253,11 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
 
             var encoder = new Encoder(settings, signer.GetPrivateKey());
 
-            var obj = CBORObject.NewMap()
-                                .Add("Name", "Hello1")
-                                .Add("Verb", "set")
-                                .Add("Value", 99);
-            
 
-            var payload = encoder.EncodeSingleTransaction(obj.EncodeToBytes());
+            IntKeyTransaction txn = new IntKeyTransaction { Name="Foo2", Verb="inc", Value=42 };
+
+
+            var payload = encoder.EncodeSingleTransaction(txn.WrapPayload());
 
 
             var json =  await client.PostBatchListAsync(payload);

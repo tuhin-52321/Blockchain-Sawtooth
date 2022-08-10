@@ -21,7 +21,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="tbUrl" Text="http://localhost:8008" Grid.Column="0" Margin="5"/>
-            <Button Content="Fetch Data" Grid.Column="1" Margin="5" Click="SubmitAsync"/>
+            <Button Content="Fetch Data" Grid.Column="1" Margin="5" Click="FetchDataAsync"/>
         </Grid>
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2,1,1,2">
             <Grid Grid.Row="1" Grid.Column="0" Margin="5,5,5,5">
@@ -31,11 +31,10 @@
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Grid.Row="0" >
                     <Label Content="Name:" VerticalAlignment="Center"/>
-                    <TextBox x:Name="tbVariable" PreviewTextInput="tbVariable_PreviewTextInput" Width="80" Margin="0,0,0,0"/>
+                    <TextBox x:Name="tbVariable" Width="80" Margin="0,0,0,0"/>
                     <Label Content="Value:" VerticalAlignment="Center"/>
-                    <TextBox x:Name="tbValue" PreviewTextInput="tbValue_PreviewTextInput" Width="80" Margin="0,0,0,0"/>
-                    <Button Style="{StaticResource LinkButton}" Content="Set" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                    <Button Style="{StaticResource LinkButton}" Content="Refresh" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                    <TextBox x:Name="tbValue" PreviewTextInput="Value_PreviewTextInput" DataObject.Pasting="Value_Pasting" Width="80" Margin="0,0,0,0"/>
+                    <Button Style="{StaticResource LinkButton}" Content="Set" VerticalAlignment="Center" Click="SetValue" Margin="5,0,5,0"/>
                 </StackPanel>
                 <Grid Grid.Row="1" Margin="5,5,5,5">
                     <Grid.RowDefinitions>
@@ -47,12 +46,12 @@
                             <GridView>
                                 <GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding Name}" />
                                 <GridViewColumn Header="Value" Width="Auto" DisplayMemberBinding="{Binding Value}"/>
-                                <GridViewColumn Header="Action" Width="Auto" >
+                                <GridViewColumn Header="Action" Width="Auto">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <Button Style="{StaticResource LinkButton}" Content="Inc" Tag="{Binding Name}" Click="IncValue"/>
-                                                <Button Style="{StaticResource LinkButton}" Content="Dec" Tag="{Binding Name}" Click="DecValue"/>
+                                                <Button Style="{StaticResource LinkButton}" Content="Inc" Tag="{Binding IntKey}" Click="IncValueAsync" Margin="0,0,5,0"/>
+                                                <Button Style="{StaticResource LinkButton}" Content="Dec" Tag="{Binding IntKey}" Click="DecValueAsync" Margin="0,0,5,0"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
@@ -61,79 +60,37 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <StackPanel Orientation="Horizontal" Grid.Row="1">
-                        <TextBlock x:Name="tbStartBlock" Visibility="Hidden" Text=""/>
-                        <Button x:Name="bBlocksLoadMore" Style="{StaticResource LinkButton}" Content="Load More..." IsEnabled="false" Click="BlocksLoadMoreAsync" Margin="0,5,0,5"/>
-                    </StackPanel>
                 </Grid>
             </Grid>
         </Border>
-        <Grid Grid.Row="1" Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Margin="1,1,2,1">
-                <Grid Grid.Row="0" Margin="5,5,5,0">
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Margin="1,1,2,1">
+            <Grid Grid.Row="0" Margin="5,5,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0" >
+                    <Label Content="Pending Transactions:" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Grid Grid.Row="1" Margin="5,5,5,5">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" >
-                        <Label Content="Pending Transactions:" VerticalAlignment="Center"/>
-                        <Button Style="{StaticResource LinkButton}" Content="Refresh" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1" Margin="5,5,5,5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <ListView Name="lvPendingTxns" ItemsSource="{Binding Path=PendingKeys}" Grid.Row="0">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Header="Value" Width="Auto" DisplayMemberBinding="{Binding Value}"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <TextBlock x:Name="tbPendingStartBlock" Visibility="Hidden" Text=""/>
-                            <Button x:Name="bPendingBlocksLoadMore" Style="{StaticResource LinkButton}" Content="Load More..." IsEnabled="false" Click="BlocksLoadMoreAsync" Margin="0,5,0,5"/>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
-            </Border>
-            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="1,1,2,1">
-                <Grid Grid.Row="1" Margin="5,0,5,5">
-                    <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Orientation="Horizontal" Grid.Row="0" >
-                        <Label Content="Invalid Transactions:" VerticalAlignment="Center"/>
-                        <Button Style="{StaticResource LinkButton}" Content="Refresh" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <Grid Grid.Row="1" Margin="5,5,5,5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <ListView Name="lvInvalidTxns" ItemsSource="{Binding Path=InvalidKeys}" Grid.Row="0">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Name" Width="Auto" DisplayMemberBinding="{Binding Name}" />
-                                    <GridViewColumn Header="Value" Width="Auto" DisplayMemberBinding="{Binding Value}"/>
-                                    <GridViewColumn Header="Error" Width="Auto" DisplayMemberBinding="{Binding Error}"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                        <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <TextBlock x:Name="tbInvalidStartBlock" Visibility="Hidden" Text=""/>
-                            <Button x:Name="bInvalidBlocksLoadMore" Style="{StaticResource LinkButton}" Content="Load More..." IsEnabled="false" Click="BlocksLoadMoreAsync" Margin="0,5,0,5"/>
-                        </StackPanel>
-                    </Grid>
+                    <ListView Name="lvPendingTxns" ItemsSource="{Binding Path=PendingTxns}" Margin="0,0,0,5" >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Txn Id" Width="Auto" DisplayMemberBinding="{Binding ShortId}" />
+                                <GridViewColumn Header="Name"  Width="Auto" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Verb"  Width="Auto" DisplayMemberBinding="{Binding Verb}"/>
+                                <GridViewColumn Header="Value" Width="Auto" DisplayMemberBinding="{Binding Value}"/>
+                                <GridViewColumn Header="Staus" Width="Auto" DisplayMemberBinding="{Binding Status}"/>
+                                <GridViewColumn Header="Message" Width="Auto" DisplayMemberBinding="{Binding Message}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
                 </Grid>
-            </Border>
-        </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

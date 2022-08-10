@@ -16,7 +16,21 @@ namespace Sawtooth.Sdk.Net.Utils
         /// </summary>
         /// <returns>The hex string.</returns>
         /// <param name="data">Data.</param>
-        public static string ToHexString(this byte[] data) => string.Concat(data.Select(x => x.ToString("x2"))); // => Convert.ToBase64String(data);
+        public static string ToHexString(this byte[] data) => string.Concat(data.Select(x => x.ToString("x2"))); 
+
+        /// <summary>
+        /// Converts a byte arrat to base64 encoded string
+        /// </summary>
+        /// <returns>The hex string.</returns>
+        /// <param name="data">Data.</param>
+        public static string ToBase64String(this byte[] data) => Convert.ToBase64String(data);
+
+        /// <summary>
+        /// Converts a byte arrat to base64 encoded string
+        /// </summary>
+        /// <returns>The hex string.</returns>
+        /// <param name="data">Data.</param>
+        public static byte[] FromBase64String(this string data) => Convert.FromBase64String(data);
 
         /// <summary>
         /// Hashes the specified byte array using Sha256

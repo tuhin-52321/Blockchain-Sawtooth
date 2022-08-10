@@ -5,7 +5,7 @@ namespace Sawtooth.Sdk.Net.Transactions
 {
     public class XOTransactionFamily : TransactionFamily
     {
-        public XOTransactionFamily(string? version) : base("xo")
+        public XOTransactionFamily(string version) : base("xo", version)
         {
             if (version == "1.0")
             {
@@ -13,32 +13,15 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public string UnwrapPayload(string? payload)
-        {
-            //TODO: Version specific unwrapping
-
-            if (payload == null) return "<Null Value>";
-
-            byte[] paylod_raw = Convert.FromBase64String(payload);
-
-            string data = Encoding.UTF8.GetString(paylod_raw);
-
-            string[] values = data.Split(",");
-
-            return "[Comma separated list as string]\n"+
-                   $"    Game Name   : {values[0]} \n"
-                 + $"    Action      : {values[1]} \n"
-                 + $"    Space       : {values[2]} \n"; 
-        }
     }
 
     public class XOAddress : IAddress
     {
-        public string Prefix => Encoding.UTF8.GetBytes("xo").ToSha256().ToHexString().First(6);
+        public string Prefix => Encoding.UTF8.GetBytes("xo").ToSha512().ToHexString().First(6);
 
         public string ComposeAddress(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha256().ToHexString().Last(64);
+            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
 
         }
 
@@ -125,13 +108,12 @@ namespace Sawtooth.Sdk.Net.Transactions
                  + $"    Action      : {Action} \n"
                  + $"    Space       : {Space} \n";
 
-        public string? UnwrapPayload(string? state_payload)
+        public string UnwrapPayload(byte[] payload)
         {
-            if (state_payload == null) return null;
+            if (payload == null) return "<Null payload>";
 
-            byte[] paylod_raw = Convert.FromBase64String(state_payload);
 
-            string data = Encoding.UTF8.GetString(paylod_raw);
+            string data = Encoding.UTF8.GetString(payload);
 
             string[] values = data.Split(",");
 
@@ -154,14 +136,16 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         }
 
-        public string? WrapPayload()
+        public byte[] WrapPayload()
         {
-            if (Name == null || Action == null) return null;
+            if (Name == null) throw new IOException("Please set 'Name' before wraping the object.");
+            if (Action == null) throw new IOException("Please set 'Action' before wraping the object.");
+            if ("take".Equals(Action) && Space == null) throw new IOException("Please set 'Space' for 'take' Action before wraping the object.");
 
-            if (Space == null)
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(Name + "," + Action + ","));
+            if ("take".Equals(Action))
+                return Encoding.UTF8.GetBytes(Name + "," + Action + "," + Space);
             else
-                return Convert.ToBase64String(Encoding.UTF8.GetBytes(Name + "," + Action + "," + Space));
+                return Encoding.UTF8.GetBytes(Name + "," + Action + ",");
         }
     }
 }

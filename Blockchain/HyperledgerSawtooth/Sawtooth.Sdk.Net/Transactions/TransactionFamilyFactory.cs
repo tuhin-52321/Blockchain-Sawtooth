@@ -10,7 +10,7 @@ namespace Sawtooth.Sdk.Net.Transactions
     {
         public static TransactionFamily GetTransactionFamily(string? family, string? version)
         {
-            if (family != null)
+            if (family != null && version != null)
             {
                 if (family.Equals("intkey"))
                 {

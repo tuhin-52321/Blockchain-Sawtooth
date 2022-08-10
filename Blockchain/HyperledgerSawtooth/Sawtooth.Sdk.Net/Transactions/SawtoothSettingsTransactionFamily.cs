@@ -8,7 +8,7 @@ namespace Sawtooth.Sdk.Net.Transactions
     public class SawtoothSettingsTransactionFamily : TransactionFamily
     {
 
-        public SawtoothSettingsTransactionFamily(string? version) : base("sawtooth_settings")
+        public SawtoothSettingsTransactionFamily(string version) : base("sawtooth_settings", version)
         {
             if (version == "1.0")
             {
@@ -170,13 +170,11 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public string? UnwrapPayload(string? state_payload)
+        public string UnwrapPayload(byte[] payload)
         {
-            if (state_payload == null) return null;
+            if (payload == null) return "<Null Payload>";
 
-            byte[] paylod_raw = Convert.FromBase64String(state_payload);
-
-            using (MemoryStream stream = new MemoryStream(paylod_raw))
+            using (MemoryStream stream = new MemoryStream(payload))
             {
                 SettingPayload = Serializer.Deserialize<SettingPayload>(stream);
             }
@@ -185,11 +183,11 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         }
 
-        public string? WrapPayload()
+        public byte[] WrapPayload()
         {
-            if (SettingPayload == null) return null;
+            if (SettingPayload == null) throw new IOException("Please set 'SettingPayload' before wraping the object.");
 
-            return Convert.ToBase64String(SettingPayload.ToProtobufByteArray());
+            return SettingPayload.ToProtobufByteArray();
         }
     }
 

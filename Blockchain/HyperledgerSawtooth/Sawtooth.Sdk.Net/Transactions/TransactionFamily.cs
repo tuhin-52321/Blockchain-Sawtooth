@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sawtooth.Sdk.Net.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +9,20 @@ namespace Sawtooth.Sdk.Net.Transactions
 {
     public abstract class TransactionFamily
     {
-        public State State { get; private set; }
-        public ITransaction Transaction { get; private set; }
+        private State State { get; set; }
+        private ITransaction Transaction { get; set; }
 
         public string Name { get; private set; }
-       
+        public string Version { get; private set; }
 
-        public TransactionFamily(string name)
+        public string AddressPrefix => State.Address.Prefix;
+
+        public string UnwrapPayload(string payload) => Transaction.UnwrapPayload(payload.FromBase64String());
+
+        public TransactionFamily(string name, string version)
         {
             this.Name = name;
+            this.Version = version;
             this.State = new DefaultState();
             this.Transaction = new DefaultTransaction();
         }
