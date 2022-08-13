@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TicTacToe": {
+      "commandName": "Project",
+      "commandLineArgs": "tuhin"
+    }
+  }
+}

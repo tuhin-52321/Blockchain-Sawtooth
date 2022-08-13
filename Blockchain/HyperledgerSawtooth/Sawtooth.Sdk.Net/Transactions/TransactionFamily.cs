@@ -17,6 +17,11 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         public string AddressPrefix => State.Address.Prefix;
 
+        public string? Address(string? context)
+        {
+           return (context != null) ? State.Address.ComposeAddress(context) : null;
+        }
+
         public string UnwrapPayload(string payload) => Transaction.UnwrapPayload(payload.FromBase64String());
 
         public TransactionFamily(string name, string version)

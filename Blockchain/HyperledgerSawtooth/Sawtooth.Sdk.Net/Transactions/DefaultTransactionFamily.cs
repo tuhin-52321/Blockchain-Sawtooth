@@ -63,5 +63,7 @@
         }
 
         public string DisplayString => "[Raw data: ]\n" + (raw_data != null ? raw_data : "<Null Value>");
+
+        public string? AddressContext => null;
     }
 }

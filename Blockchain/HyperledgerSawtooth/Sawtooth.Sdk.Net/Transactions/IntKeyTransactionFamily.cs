@@ -105,5 +105,8 @@ namespace Sawtooth.Sdk.Net.Transactions
 
             return cbor.EncodeToBytes();
         }
+
+        public string? AddressContext => Name;
+
     }
 }

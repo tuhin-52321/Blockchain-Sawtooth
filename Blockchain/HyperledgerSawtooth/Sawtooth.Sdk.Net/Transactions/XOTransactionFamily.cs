@@ -21,7 +21,7 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         public string ComposeAddress(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
+            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().First(64);
 
         }
 
@@ -29,35 +29,20 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class XOState : State
     {
-        public enum GameStatus { P1_NEXT, P2_NEXT, P1_WIN, P2_WIN, TIE };
-
-        private static string GameStatusToString(GameStatus status)
-        {
-            switch (status)
-            {
-                case GameStatus.P1_NEXT: return "Waiting for Player 1's turn.";
-                case GameStatus.P2_NEXT: return "Waiting for Player 2's turn.";
-                case GameStatus.P1_WIN: return "Player 1 won.";
-                case GameStatus.P2_WIN: return "Player 2 won.";
-                case GameStatus.TIE: return "Game tied.";
-            }
-
-            return "<Unknown>";
-        }
-
+    
         public XOState() : base(new XOAddress())
         {
         }
 
         public string? Name { get; private set; }
         public string? Board { get; private set; }
-        public GameStatus Status { get; private set; }
+        public string? Status { get; private set; }
         public string? Player1 { get; private set; }
         public string? Player2 { get; private set; }
 
         public override string DisplayString => "\n"
                  + $"    Game Name   : {Name} \n"
-                 + $"    Game Status : {GameStatusToString(Status)} \n"
+                 + $"    Game Status : {Status} \n"
                  + $"    Player 1    : {Player1} \n"
                  + $"    Player 2    : {Player2} \n"
                  + $"     {Board?[0]} | {Board?[1]} | {Board?[2]}\n"
@@ -76,11 +61,14 @@ namespace Sawtooth.Sdk.Net.Transactions
 
             string[] values = data.Split(",");
 
-            Name = values[0];
-            Board = values[1];
-            Status = Enum.Parse<GameStatus>(values[2]);
-            Player1 = values[3];
-            Player2 = values[4];
+            if (values.Length == 5)
+            {
+                Name = values[0];
+                Board = values[1];
+                Status = values[2];
+                Player1 = values[3];
+                Player2 = values[4];
+            }
         }
 
         public override void WrapState(out string? address, out string? state_payload)
@@ -98,9 +86,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class XOTransaction : ITransaction
     {
-        public string? Name { get; private set; }
-        public string? Action { get; private set; }
-        public int? Space { get; private set; }
+        public string? Name { get; set; }
+        public string? Action { get; set; }
+        public int? Space { get; set; }
 
         public string DisplayString =>
              "[Comma separated list as string]\n" +
@@ -147,5 +135,7 @@ namespace Sawtooth.Sdk.Net.Transactions
             else
                 return Encoding.UTF8.GetBytes(Name + "," + Action + ",");
         }
+
+        public string? AddressContext => Name;
     }
 }

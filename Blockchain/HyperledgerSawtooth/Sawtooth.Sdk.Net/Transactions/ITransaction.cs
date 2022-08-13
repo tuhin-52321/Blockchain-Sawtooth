@@ -13,5 +13,7 @@ namespace Sawtooth.Sdk.Net.Transactions
         public byte[] WrapPayload();
 
         public string DisplayString { get; }
+
+        public string? AddressContext { get; }
     }
 }

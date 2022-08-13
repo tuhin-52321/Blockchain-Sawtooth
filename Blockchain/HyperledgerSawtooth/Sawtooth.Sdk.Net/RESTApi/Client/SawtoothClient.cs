@@ -26,7 +26,7 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client
             byte[] data = batch_list.ToProtobufByteArray();
             var content = new ByteArrayContent(data);
             content.Headers.Add("Content-Type", "application/octet-stream");
-            using (var response = await _httpClient.PostAsync("http://localhost:8008/batches", content))
+            using (var response = await _httpClient.PostAsync("batches", content))
             {
                 return await ConvertToReponseObjectAsync<CommonJsonResponse>(response, 202, new[] { 400, 429, 500, 503 });
             }

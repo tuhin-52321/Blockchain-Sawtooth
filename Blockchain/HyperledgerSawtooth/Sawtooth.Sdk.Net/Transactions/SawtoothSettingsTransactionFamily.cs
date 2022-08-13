@@ -33,9 +33,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
             return Prefix
                     + Encoding.UTF8.GetBytes(part1).ToSha256().ToHexString().First(16)
-                    + Encoding.UTF8.GetBytes(part4).ToSha256().ToHexString().First(16)
                     + Encoding.UTF8.GetBytes(part2).ToSha256().ToHexString().First(16)
-                    + Encoding.UTF8.GetBytes(part3).ToSha256().ToHexString().First(16);
+                    + Encoding.UTF8.GetBytes(part3).ToSha256().ToHexString().First(16)
+                    + Encoding.UTF8.GetBytes(part4).ToSha256().ToHexString().First(16);
 
         }
 
@@ -124,6 +124,8 @@ namespace Sawtooth.Sdk.Net.Transactions
     {
         public SettingPayload? SettingPayload { get; private set; }
 
+        private string? proposal_key;
+
         public string DisplayString
         {
             get
@@ -147,6 +149,8 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += $"   Setting : {proposal.Setting}\n";
                             buf += $"   Value   : {proposal.Value}\n";
                             buf += $"   Nonce   : {proposal.Nonce}\n";
+
+                            proposal_key = proposal.Setting;
                         }
 
                         if (SettingPayload.Action == SettingPayload.ActionEnum.VOTE)
@@ -189,6 +193,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
             return SettingPayload.ToProtobufByteArray();
         }
+
+        public string? AddressContext => proposal_key;
+
     }
 
 }
