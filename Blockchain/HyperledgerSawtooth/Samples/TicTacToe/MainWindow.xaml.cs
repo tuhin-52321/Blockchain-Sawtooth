@@ -42,7 +42,9 @@ namespace TicTacToe
 
         Sawtooth.Sdk.Net.Client.Encoder encoder;
 
-        public MainWindow(string name)
+        private SawtoothWSClient websocket;
+
+        public MainWindow(string name, string url)
         {
             InitializeComponent();
 
@@ -62,16 +64,12 @@ namespace TicTacToe
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            client = new SawtoothClient("http://localhost:8008");
+            client = new SawtoothClient(url);
 
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    await RefreshAllGames();
-                    await Task.Delay(1000);
-                }
-            });
+            Title = $"TicTacToe Client - {name} {url}";
+
+            Uri uri = new Uri(url);
+            websocket = new SawtoothWSClient($"ws://{uri.Host}:{uri.Port}/subscriptions", e => Task.Run(RefreshAllGames), txnFamily.AddressPrefix);
 
         }
 
@@ -99,9 +97,7 @@ namespace TicTacToe
                             }
                             if (area != null && xo_state.Status != null && xo_state.Board != null)
                             {
-                                area.UpdateGame(xo_state.Status, xo_state.Board);
-                                area.Player1 = xo_state.Player1;
-                                area.Player2 = xo_state.Player2;
+                                area.UpdateGame(xo_state.Status, xo_state.Board, xo_state.Player1, xo_state.Player2);
                                 SetStatus($"Game {xo_state.Name} updated.");
 
                             }

@@ -78,7 +78,7 @@ namespace Sawtooth.Sdk.Net.Transactions
             if (Name != null)
             {
                 address = Address.ComposeAddress(Name);
-                state_payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Name+","+Board+","+Status.ToString()+","+Player1+","+Player2));
+                state_payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Name+","+Board+","+Status+","+Player1+","+Player2));
 
             }
         }

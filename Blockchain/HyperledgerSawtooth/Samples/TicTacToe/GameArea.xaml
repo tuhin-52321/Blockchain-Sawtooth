@@ -13,7 +13,13 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="5">
-        <Label Content="Game Status: "/>
+            <Label Content="Player1: "/>
+            <Label Content="{Binding Player1}"/>
+            <Separator/>
+            <Label Content="Player2: "/>
+            <Label Content="{Binding Player2}"/>
+            <Separator/>
+            <Label Content="Game Status: "/>
             <Label Content="{Binding Status}"/>
         </StackPanel>
         <Grid Grid.Row="1" Margin="5">

@@ -1,4 +1,4 @@
-﻿using Sawtooth.Sdk.Net.Transactions;
+﻿using Sawtooth.Sdk.Net.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +24,9 @@ namespace TicTacToe
         private Func<string, int,Task> OnTakeSpace;
         private Func<string, Task> OnDeleteGame;
         private GameContext context;
+        public string Player1 => context.Player1;
+        public string Player2 => context.Player2;
+
         public GameArea(string name, Func<string, int, Task> takeSpace, Func<string, Task> deleteGame)
         {
             InitializeComponent();
@@ -68,9 +71,9 @@ namespace TicTacToe
             }
         }
 
-        public void UpdateGame(string status, string board)
+        public void UpdateGame(string status, string board, string? player1, string? player2)
         {
-            context.AtomicUpdate(status,board);
+            context.AtomicUpdate(status,board, player1, player2);
 
             UpdateGame();
         }
@@ -157,16 +160,22 @@ namespace TicTacToe
         private StringBuilder _board = new StringBuilder("---------");
         public StringBuilder Position => _board;
 
-        public void AtomicUpdate(string status, string board)
+        public void AtomicUpdate(string status, string board, string? player1, string? player2)
         {
             lock(update_lock)
             {
                 _status = status;
                 _board = new StringBuilder(board);
+                if (!string.IsNullOrEmpty(player1)) Player1 = player1.First(6);
+                if (!string.IsNullOrEmpty(player2)) Player2 = player2.First(6);
             }
         }
 
         public string Status => GameStatusToString(StatusValue);
+
+        public string Player1 { get; internal set; } = "<Not Joined>";
+        public string Player2 { get; internal set; } = "<Not Joined>";
+
 
         public string Position0 => (Position[0] == '-')?" ":Position[0]+"";
         public string Position1 => (Position[1] == '-')?" ":Position[1]+"";

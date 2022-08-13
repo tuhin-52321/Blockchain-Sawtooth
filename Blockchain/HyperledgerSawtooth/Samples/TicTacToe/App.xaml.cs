@@ -15,12 +15,13 @@ namespace TicTacToe
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            if (e.Args.Length != 1)
+            if (e.Args.Length != 2)
             {
-                MessageBox.Show("Please enter your name as first argument.");
-                return;
+                MessageBox.Show("Usage: TicTacToe <name> <url>");
+                Console.WriteLine("Usage: TicTacToe <name> <url>");
+                Current.Shutdown();
             }
-            MainWindow wnd = new MainWindow(e.Args[0]);
+            MainWindow wnd = new MainWindow(e.Args[0], e.Args[1]);
             wnd.Show();
         }
     }

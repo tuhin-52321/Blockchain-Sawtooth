@@ -15,14 +15,6 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="tbUrl" Text="http://localhost:8008" Grid.Column="0" Margin="5"/>
-            <Button Content="Fetch Data" Grid.Column="1" Margin="5" Click="FetchDataAsync"/>
-        </Grid>
         <Border Grid.Row="1" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Margin="2,1,1,2">
             <Grid Grid.Row="1" Grid.Column="0" Margin="5,5,5,5">
                 <Grid.RowDefinitions>

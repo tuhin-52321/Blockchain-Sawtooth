@@ -2,7 +2,7 @@
   "profiles": {
     "TicTacToe": {
       "commandName": "Project",
-      "commandLineArgs": "tuhin"
+      "commandLineArgs": "tuhin http://20.235.2.18:8008"
     }
   }
 }

@@ -68,11 +68,13 @@ namespace Sawtooth.Sdk.Net.Utils
 
         public static string Last(this string data, int length)
         {
-            return data.Substring(data.Length - length);
+            if (data.Length > length)  return data.Substring(data.Length - length);
+            return data;
         }
         public static string First(this string data, int length)
         {
-            return data.Substring(0, length);
+            if(data.Length>length)  return data.Substring(0, length);
+            return data;
         }
 
     }

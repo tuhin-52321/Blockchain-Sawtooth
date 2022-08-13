@@ -38,13 +38,15 @@ namespace IntegerKey
 
         private TransactionFamily txnFamily;
 
-        Signer signer;
+        private Signer signer;
 
-        EncoderSettings settings;
+        private EncoderSettings settings;
 
-        Sawtooth.Sdk.Net.Client.Encoder encoder;
+        private string url;
 
-        public MainWindow()
+        private Sawtooth.Sdk.Net.Client.Encoder encoder;
+
+        public MainWindow(string url)
         {
             InitializeComponent();
 
@@ -64,6 +66,15 @@ namespace IntegerKey
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
+            this.url = url;
+
+            Title = $"IntegerKey Client - {url}";
+
+            Task.Run(async () =>
+            {
+                await FetchDataAsync();
+            });
+
         }
 
         private static readonly Regex _regex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
@@ -73,10 +84,10 @@ namespace IntegerKey
         }
 
 
-        private async void FetchDataAsync(object sender, RoutedEventArgs e)
+        private async Task FetchDataAsync()
         {
 
-            client = new SawtoothClient(tbUrl.Text);
+            client = new SawtoothClient(url);
 
             Keys.Clear();
 
@@ -87,7 +98,7 @@ namespace IntegerKey
 
             //Websocket client
             if (websocket != null) websocket.Dispose();//Dispose previous one
-            Uri uri = new Uri(tbUrl.Text);
+            Uri uri = new Uri(url);
             websocket = new SawtoothWSClient($"ws://{uri.Host}:{uri.Port}/subscriptions", e => AutoRefresh(e), txnFamily.AddressPrefix);
 
         }
