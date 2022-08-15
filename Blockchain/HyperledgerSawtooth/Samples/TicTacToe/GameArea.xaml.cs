@@ -1,18 +1,12 @@
 ﻿using Sawtooth.Sdk.Net.Utils;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 namespace TicTacToe
 {
@@ -55,12 +49,20 @@ namespace TicTacToe
             Button? button = sender as Button;
             if(button != null)
             {
+                
                 object tag = Dispatcher.Invoke(() => { return button.Tag; });
                 if(tag is string position_string)
                 {
                     try
                     {
                         int position = int.Parse(position_string);
+
+                        ProgressBar progressBar = new ProgressBar();
+                        progressBar.IsIndeterminate = true;
+                        progressBar.Width = 50;
+                        progressBar.Height = 10;
+                        SetButtonContent(button, progressBar);
+                        DisableAllButtons();
                         await OnTakeSpace(Name, position);
                     }
                     catch
@@ -69,13 +71,26 @@ namespace TicTacToe
                     }
                 }
             }
+            Refresh();
         }
 
-        public void UpdateGame(string status, string board, string? player1, string? player2)
+        public bool UpdateGame(string status, string board, string? player1, string? player2)
         {
+            if (
+                   status.Equals(context.StatusValue) 
+                && board.Equals(context.Position.ToString()) 
+                && context.Player1Full.Equals(player1)
+                && context.Player2Full.Equals(player2)
+                )
+            {
+                return false;
+            }
+
             context.AtomicUpdate(status,board, player1, player2);
 
             UpdateGame();
+
+            return true;
         }
 
         private void UpdateGame()
@@ -85,22 +100,13 @@ namespace TicTacToe
 
                 Button b = GetButtonAt(pos);
 
-                if (context.Position[pos] == '-')
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        b.IsEnabled = true;
-                    });
-                }
-                else
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        b.IsEnabled = false;
-                        b.Content = context.Position[pos];
-                    });
+                char space = context.Position[pos];
 
-                }
+                Dispatcher.Invoke(() =>
+                {
+                    b.IsEnabled = space == '-';
+                    b.Content = space == '-' ? "" : space;
+                });
             }
 
 
@@ -144,20 +150,31 @@ namespace TicTacToe
             });
         }
 
+        private void SetButtonContent(Button b, object content)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                b.Content = content;
+            });
+        }
+
         private async void DeleteGame(object sender, RoutedEventArgs e)
         {
             await OnDeleteGame(Name);
         }
+
+
+
     }
 
     public class GameContext
     {
         private object update_lock = new object();
 
-        private string _status = "P1-NEXT";
+        private string _status = "";
         public string StatusValue => _status; 
 
-        private StringBuilder _board = new StringBuilder("---------");
+        private StringBuilder _board = new StringBuilder("");
         public StringBuilder Position => _board;
 
         public void AtomicUpdate(string status, string board, string? player1, string? player2)
@@ -166,26 +183,20 @@ namespace TicTacToe
             {
                 _status = status;
                 _board = new StringBuilder(board);
-                if (!string.IsNullOrEmpty(player1)) Player1 = player1.First(6);
-                if (!string.IsNullOrEmpty(player2)) Player2 = player2.First(6);
+                if (!string.IsNullOrEmpty(player1)) this.player1 = player1;
+                if (!string.IsNullOrEmpty(player2)) this.player2 = player2;
             }
         }
 
         public string Status => GameStatusToString(StatusValue);
 
-        public string Player1 { get; internal set; } = "<Not Joined>";
-        public string Player2 { get; internal set; } = "<Not Joined>";
+        private string player1 = "";
+        private string player2 = "";
+        public string Player1  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player1.First(6);
+        public string Player2  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player2.First(6); 
 
-
-        public string Position0 => (Position[0] == '-')?" ":Position[0]+"";
-        public string Position1 => (Position[1] == '-')?" ":Position[1]+"";
-        public string Position2 => (Position[2] == '-')?" ":Position[2]+"";
-        public string Position3 => (Position[3] == '-')?" ":Position[3]+"";
-        public string Position4 => (Position[4] == '-')?" ":Position[4]+"";
-        public string Position5 => (Position[5] == '-')?" ":Position[5]+"";
-        public string Position6 => (Position[6] == '-')?" ":Position[6]+"";
-        public string Position7 => (Position[7] == '-')?" ":Position[7]+"";
-        public string Position8 => (Position[8] == '-')?" ":Position[8]+"";
+        public string Player1Full => player1;
+        public string Player2Full => player2;
 
         private static string GameStatusToString(string status)
         {

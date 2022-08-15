@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TicTacToe"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -33,16 +32,17 @@
                 <ColumnDefinition Width="80"/>
                 <ColumnDefinition Width="80"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="b0" Width="80" Height="80" Grid.Column="0" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="0" Content="{Binding Postion0}" IsEnabled="false"/>
-            <Button x:Name="b1" Width="80" Height="80" Grid.Column="1" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="1" Content="{Binding Postion1}" IsEnabled="false"/>
-            <Button x:Name="b2" Width="80" Height="80" Grid.Column="2" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="2" Content="{Binding Postion2}" IsEnabled="false"/>
-            <Button x:Name="b3" Width="80" Height="80" Grid.Column="0" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="3" Content="{Binding Postion3}" IsEnabled="false"/>
-            <Button x:Name="b4" Width="80" Height="80" Grid.Column="1" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="4" Content="{Binding Postion4}" IsEnabled="false"/>
-            <Button x:Name="b5" Width="80" Height="80" Grid.Column="2" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="5" Content="{Binding Postion5}" IsEnabled="false"/>
-            <Button x:Name="b6" Width="80" Height="80" Grid.Column="0" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="6" Content="{Binding Postion6}" IsEnabled="false"/>
-            <Button x:Name="b7" Width="80" Height="80" Grid.Column="1" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="7" Content="{Binding Postion7}" IsEnabled="false"/>
-            <Button x:Name="b8" Width="80" Height="80" Grid.Column="2" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="8" Content="{Binding Postion8}" IsEnabled="false"/>
+            <Button x:Name="b0" Width="80" Height="80" Grid.Column="0" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="0" IsEnabled="false"/>
+            <Button x:Name="b1" Width="80" Height="80" Grid.Column="1" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="1" IsEnabled="false"/>
+            <Button x:Name="b2" Width="80" Height="80" Grid.Column="2" Grid.Row="0" FontSize="50" Click="TakeSpace" Tag="2" IsEnabled="false"/>
+            <Button x:Name="b3" Width="80" Height="80" Grid.Column="0" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="3" IsEnabled="false"/>
+            <Button x:Name="b4" Width="80" Height="80" Grid.Column="1" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="4" IsEnabled="false"/>
+            <Button x:Name="b5" Width="80" Height="80" Grid.Column="2" Grid.Row="1" FontSize="50" Click="TakeSpace" Tag="5" IsEnabled="false"/>
+            <Button x:Name="b6" Width="80" Height="80" Grid.Column="0" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="6" IsEnabled="false"/>
+            <Button x:Name="b7" Width="80" Height="80" Grid.Column="1" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="7" IsEnabled="false"/>
+            <Button x:Name="b8" Width="80" Height="80" Grid.Column="2" Grid.Row="2" FontSize="50" Click="TakeSpace" Tag="8" IsEnabled="false"/>
         </Grid>
         <Button Content="Delete Game" Margin="10" Grid.Row="2" Width="80" HorizontalAlignment="Left" Click="DeleteGame"/>
-    </Grid>
+
+    </Grid> 
 </UserControl>
