@@ -233,11 +233,8 @@ namespace TicTacToe
         {
             if (client == null) return;
 
-            SetStatus("Taking space ...");
-
             if(await CallXOTxn(name, "take", pos+1))
             {
-                SetStatus("Wating on take to be committed...");
             };
 
         }
@@ -264,7 +261,7 @@ namespace TicTacToe
         {
             return Dispatcher.Invoke(() =>
             {
-                var area = new GameArea(name, TakeSpace, DeleteGame);
+                var area = new GameArea(name, signer.GetPublicKey().ToHexString(), TakeSpace, DeleteGame);
                 if (games.TryAdd(name, area))
                 {
                     var item = new TabItem

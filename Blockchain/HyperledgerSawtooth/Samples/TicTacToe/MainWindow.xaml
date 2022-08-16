@@ -10,19 +10,21 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="tbName" ToolTip="Enter Game Name" Width="80" Grid.Column="0" Margin="0,0,5,0"/>
             <Button  ToolTip="Create New Game" Content="New" Grid.Column="1" Margin="0,0,5,0" Click="CreateNewGame"/>
-            <Label x:Name="lStatus" Grid.Column="2" />
         </Grid>
         <Grid Grid.Row="1" Margin="5">
             <TabControl x:Name="tcGameArea"/>
+        </Grid>
+        <Grid Grid.Row="2" Margin="5">
+            <Label FontWeight="DemiBold" x:Name="lStatus" />
         </Grid>
     </Grid>
 </Window>

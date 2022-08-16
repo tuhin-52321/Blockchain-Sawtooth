@@ -15,13 +15,13 @@ namespace TicTacToe
     /// </summary>
     public partial class GameArea : UserControl
     {
-        private Func<string, int,Task> OnTakeSpace;
+        private Func<string, int, Task> OnTakeSpace;
         private Func<string, Task> OnDeleteGame;
         private GameContext context;
         public string Player1 => context.Player1;
         public string Player2 => context.Player2;
 
-        public GameArea(string name, Func<string, int, Task> takeSpace, Func<string, Task> deleteGame)
+        public GameArea(string name, string myPlayer, Func<string, int, Task> takeSpace, Func<string, Task> deleteGame)
         {
             InitializeComponent();
 
@@ -29,10 +29,11 @@ namespace TicTacToe
 
             OnDeleteGame = deleteGame;
 
-            context = new GameContext();
+            context = new GameContext(myPlayer);
 
             DataContext = context;
             Name = name;
+
         }
 
         private void Refresh()
@@ -77,10 +78,10 @@ namespace TicTacToe
         public bool UpdateGame(string status, string board, string? player1, string? player2)
         {
             if (
-                   status.Equals(context.StatusValue) 
+                   status.Equals(context.Status) 
                 && board.Equals(context.Position.ToString()) 
-                && context.Player1Full.Equals(player1)
-                && context.Player2Full.Equals(player2)
+                && context.Player1.Equals(player1)
+                && context.Player2.Equals(player2)
                 )
             {
                 return false;
@@ -95,6 +96,8 @@ namespace TicTacToe
 
         private void UpdateGame()
         {
+            bool isMyTurn = context.IsMyTurn;
+
             for (int pos = 0; pos < 9; pos++)
             {
 
@@ -104,13 +107,13 @@ namespace TicTacToe
 
                 Dispatcher.Invoke(() =>
                 {
-                    b.IsEnabled = space == '-';
+                    b.IsEnabled = isMyTurn && space == '-';
                     b.Content = space == '-' ? "" : space;
                 });
             }
 
 
-            switch (context.StatusValue)
+            switch (context.Status)
             {
                 case "P1-WIN":
                 case "P2-WIN":
@@ -172,7 +175,7 @@ namespace TicTacToe
         private object update_lock = new object();
 
         private string _status = "";
-        public string StatusValue => _status; 
+        public string Status => _status; 
 
         private StringBuilder _board = new StringBuilder("");
         public StringBuilder Position => _board;
@@ -188,29 +191,84 @@ namespace TicTacToe
             }
         }
 
-        public string Status => GameStatusToString(StatusValue);
+        public string GameStatus => GameStatusToString(Status);
 
         private string player1 = "";
         private string player2 = "";
-        public string Player1  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player1.First(6);
-        public string Player2  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player2.First(6); 
+        private string myPlayer;
 
-        public string Player1Full => player1;
-        public string Player2Full => player2;
+        public GameContext(string myPlayer)
+        {
+            this.myPlayer = myPlayer;
+        }
 
-        private static string GameStatusToString(string status)
+        public string Player1Short  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player1.First(6);
+        public string Player2Short  => string.IsNullOrEmpty(player1) ? "<Not Joined>" : player2.First(6); 
+
+        public string Player1 => player1;
+        public string Player2 => player2;
+
+        private string GameStatusToString(string status)
         {
             switch (status)
             {
-                case "P1-NEXT": return "Waiting for Player 1's turn.";
-                case "P2-NEXT": return "Waiting for Player 2's turn.";
-                case "P1-WIN": return "Player 1 won.";
-                case "P2-WIN": return "Player 2 won.";
+                case "P1-NEXT": return IamPlayer1 ? "Please enter your move (X) ..." : "Waiting for X's turn ...";
+                case "P2-NEXT": return IamPlayer2 ? "Please enter your move (O) ..." : "Waiting for O's turn ...";
+                case "P1-WIN": return "Player X won.";
+                case "P2-WIN": return "Player O won.";
                 case "TIE": return "Game tied.";
             }
 
             return "<Unknown>";
         }
+
+        public bool IsMyTurn
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case "P1-NEXT":
+                        {
+                            if (string.IsNullOrEmpty(Player1)) return true;
+                            if (Player1.Equals(myPlayer)) return true;
+                            return false;
+                        }
+                    case "P2-NEXT":
+                        {
+                            if (string.IsNullOrEmpty(Player2)) return true;
+                            if (Player2.Equals(myPlayer)) return true;
+                            return false;
+                        }
+
+                }
+
+                return false;
+            }
+        }
+
+        public bool IamPlayer1
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Player1)) return true;
+                if (Player1.Equals(myPlayer)) return true;
+
+                return false;
+            }
+        }
+
+        public bool IamPlayer2
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Player2)) return true;
+                if (Player2.Equals(myPlayer)) return true;
+
+                return false;
+            }
+        }
+
 
     }
 }
