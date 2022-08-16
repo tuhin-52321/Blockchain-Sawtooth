@@ -193,6 +193,16 @@ namespace TicTacToe
 
         public string GameStatus => GameStatusToString(Status);
 
+        public string PlayerStatus
+        {
+            get
+            {
+                if (AmIPlayer1) return "Participant - Playing with X";
+                if (AmIPlayer2) return "Participant - Playing with O";
+                return "";
+            }
+        }
+
         private string player1 = "";
         private string player2 = "";
         private string myPlayer;
@@ -210,10 +220,11 @@ namespace TicTacToe
 
         private string GameStatusToString(string status)
         {
+            bool isMyTurn = IsMyTurn;
             switch (status)
             {
-                case "P1-NEXT": return IamPlayer1 ? "Please enter your move (X) ..." : "Waiting for X's turn ...";
-                case "P2-NEXT": return IamPlayer2 ? "Please enter your move (O) ..." : "Waiting for O's turn ...";
+                case "P1-NEXT": return isMyTurn ? "Please enter your move (X) ..." : "Waiting for X's turn ...";
+                case "P2-NEXT": return isMyTurn ? "Please enter your move (O) ..." : "Waiting for O's turn ...";
                 case "P1-WIN": return "Player X won.";
                 case "P2-WIN": return "Player O won.";
                 case "TIE": return "Game tied.";
@@ -226,48 +237,22 @@ namespace TicTacToe
         {
             get
             {
-                switch (Status)
-                {
-                    case "P1-NEXT":
-                        {
-                            if (string.IsNullOrEmpty(Player1)) return true;
-                            if (Player1.Equals(myPlayer)) return true;
-                            return false;
-                        }
-                    case "P2-NEXT":
-                        {
-                            if (string.IsNullOrEmpty(Player2)) return true;
-                            if (Player2.Equals(myPlayer)) return true;
-                            return false;
-                        }
 
-                }
+                bool firstMove = Position.Equals("---------"); //Blank board, anybody can start game
 
-                return false;
+                bool secondMove = Position.ToString().Count(f => f == '-') == 8; //8 box unfilled
+
+                bool myTurn = (Status == "P1-NEXT" && AmIPlayer1) || (Status == "P2-NEXT" && AmIPlayer2);
+
+                return firstMove //Anybody can start game
+                    || (Status == "P2-NEXT" && !AmIPlayer1 && secondMove) //Anybody except player1 can place 2nd move
+                    || myTurn ; //Can play if only my turn
             }
         }
 
-        public bool IamPlayer1
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Player1)) return true;
-                if (Player1.Equals(myPlayer)) return true;
+        public bool AmIPlayer1 => Player1.Equals(myPlayer); 
 
-                return false;
-            }
-        }
-
-        public bool IamPlayer2
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(Player2)) return true;
-                if (Player2.Equals(myPlayer)) return true;
-
-                return false;
-            }
-        }
+        public bool AmIPlayer2 => Player2.Equals(myPlayer); 
 
 
     }
