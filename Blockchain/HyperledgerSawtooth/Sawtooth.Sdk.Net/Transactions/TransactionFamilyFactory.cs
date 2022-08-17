@@ -24,6 +24,10 @@ namespace Sawtooth.Sdk.Net.Transactions
                 {
                     return new XOTransactionFamily(version);
                 }
+                if (family.Equals("smallbank"))
+                {
+                    return new SmallbankTransactionFamily(version);
+                }
 
             }
             return new DefaultTransactionFamily();

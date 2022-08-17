@@ -104,8 +104,10 @@ namespace Sawtooth.Sdk.Net.Transactions
                         if (SmallbankTransactionPayload.CreateAccount != null)
                         {
                             buf += "{\n";
-                            buf += $"    Customer Id      = {SmallbankTransactionPayload.CreateAccount.CustomerId}\n";
-                            buf += $"    Customer Name    = {SmallbankTransactionPayload.CreateAccount.CustomerName}\n";
+                            buf += $"    Customer Id              = {SmallbankTransactionPayload.CreateAccount.CustomerId}\n";
+                            buf += $"    Customer Name            = {SmallbankTransactionPayload.CreateAccount.CustomerName}\n";
+                            buf += $"    Initial Savings Balance  = {SmallbankTransactionPayload.CreateAccount.InitialSavingsBalance}\n";
+                            buf += $"    Initial Checking Balance = {SmallbankTransactionPayload.CreateAccount.InitialCheckingBalance}\n";
                             buf += "}\n";
                         }
                     }
