@@ -34,6 +34,14 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             Assert.AreEqual("000000", address.Prefix );
         }
 
+        [TestMethod("Test Address Prefix for Smallbank")]
+        public void SmallbankAddressPrefixTest()
+        {
+            SmallbankAddress address = new SmallbankAddress();
+
+            Assert.AreEqual("332514", address.Prefix);
+        }
+
         [TestMethod("Test Address for IntKey")]
         public void IntKeyAddressTest()
         {
@@ -56,6 +64,14 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             SawtoothSettingsAddress address = new SawtoothSettingsAddress();
 
             Assert.AreEqual("000000a87cb5eafdcca6a8b79606fb3afea5bdab274474a6aa82c1c0cbf0fbcaf64c0b", address.ComposeAddress("sawtooth.config.vote.proposals"));
+        }
+
+        [TestMethod("Test Address for Smallbank")]
+        public void SmallbankAddressTest()
+        {
+            SmallbankAddress address = new SmallbankAddress();
+
+            Assert.AreEqual("3325143ff98ae73225156b2c6c9ceddbfc16f5453e8fa49fc10e5d96a3885546a46ef4", address.ComposeAddress("42"));
         }
 
 
