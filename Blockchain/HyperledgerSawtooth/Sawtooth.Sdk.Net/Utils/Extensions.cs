@@ -55,15 +55,11 @@ namespace Sawtooth.Sdk.Net.Utils
 
         public static byte[] ToProtobufByteArray<T>(this T protobuf_obj)
         {
-            byte[] msgOut;
-
             using (var stream = new MemoryStream())
             {
                 Serializer.Serialize(stream, protobuf_obj);
-                msgOut = stream.GetBuffer();
+                return stream.ToArray();
             }
-
-            return msgOut;
         }
 
         public static string Last(this string data, int length)

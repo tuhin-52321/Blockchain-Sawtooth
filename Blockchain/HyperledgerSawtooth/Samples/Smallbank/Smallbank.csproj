@@ -23,4 +23,8 @@
     <ProjectReference Include="..\..\Sawtooth.Sdk.Net\Sawtooth.Sdk.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="proto\gen\" />
+  </ItemGroup>
+
 </Project>

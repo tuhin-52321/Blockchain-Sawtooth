@@ -21,6 +21,7 @@ namespace Smallbank.Pages.Accounts
 
         public IActionResult OnGet()
         {
+            ViewData["StatusMessage"] = string.Empty;
             return Page();
         }
 
@@ -31,15 +32,23 @@ namespace Smallbank.Pages.Accounts
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Account == null || Account == null)
+            ViewData["StatusMessage"] = string.Empty;
+
+
+            if (!ModelState.IsValid || _context.Account == null || Account == null)
             {
                 return Page();
             }
 
-            _context.Account.Add(Account);
-            await _context.Account.SaveChangesAsync();
+            string? m = await _context.Account.Add(Account);
 
-            return RedirectToPage("./Index");
+            if(m != null)
+            {
+                ViewData["StatusMessage"] = m;
+
+            }
+
+            return Page();
         }
     }
 }

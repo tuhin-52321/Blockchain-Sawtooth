@@ -29,7 +29,7 @@ namespace Smallbank.Pages.Accounts
                 return NotFound();
             }
 
-            var account = await _context.Account.FirstOrDefaultAsync(m => m.ID == id);
+            var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
 
             if (account == null)
             {
@@ -47,13 +47,6 @@ namespace Smallbank.Pages.Accounts
             if (id == null || _context.Account == null)
             {
                 return NotFound();
-            }
-            var account = await _context.Account.FindAsync(id);
-
-            if (account != null)
-            {
-                Account = account;
-                //Not implemented
             }
 
             return RedirectToPage("./Index");

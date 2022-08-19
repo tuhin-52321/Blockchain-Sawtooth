@@ -2,7 +2,8 @@
 @model Smallbank.Pages.Accounts.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Account";
+    string StatusMessage = ViewData["StatusMessage"] as string;  
 }
 
 <h1>Create</h1>
@@ -14,9 +15,9 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Account.Name" class="control-label"></label>
-                <input asp-for="Account.Name" class="form-control" />
-                <span asp-validation-for="Account.Name" class="text-danger"></span>
+                <label asp-for="Account.CustomerName" class="control-label"></label>
+                <input asp-for="Account.CustomerName" class="form-control" />
+                <span asp-validation-for="Account.CustomerName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Account.SavingsBalance" class="control-label"></label>
@@ -28,6 +29,7 @@
                 <input asp-for="Account.CheckingBalance" class="form-control" />
                 <span asp-validation-for="Account.CheckingBalance" class="text-danger"></span>
             </div>
+            <p/>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -35,10 +37,16 @@
     </div>
 </div>
 
+  <p/>
+
+  <p style="background-color:LightGrey;">@StatusMessage</p>
+  
+  <p/>
 <div>
     <a asp-page="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
 }

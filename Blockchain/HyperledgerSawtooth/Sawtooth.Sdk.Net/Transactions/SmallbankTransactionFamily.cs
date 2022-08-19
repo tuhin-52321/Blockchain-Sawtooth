@@ -16,6 +16,7 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
+  
     }
 
     public class SmallbankAddress : IAddress
@@ -85,9 +86,7 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SmallbankTransaction : ITransaction
     {
-        public SmallbankTransactionPayload? SmallbankTransactionPayload { get; private set; }
-
-        private string? proposal_key;
+        public SmallbankTransactionPayload? SmallbankTransactionPayload { get; set; }
 
         public string DisplayString
         {
@@ -97,9 +96,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
                 if (SmallbankTransactionPayload != null)
                 {
-                    buf += "Payload Type : " + SmallbankTransactionPayload.Type + "\n";
+                    buf += "Payload Type : " + SmallbankTransactionPayload.TxnType + "\n";
 
-                    if(SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.CREATE_ACCOUNT)
+                    if(SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.CreateAccount)
                     {
                         if (SmallbankTransactionPayload.CreateAccount != null)
                         {
@@ -111,7 +110,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += "}\n";
                         }
                     }
-                    if (SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.DEPOSIT_CHECKING)
+                    if (SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.DepositChecking)
                     {
                         if (SmallbankTransactionPayload.DepositChecking != null)
                         {
@@ -121,7 +120,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += "}\n";
                         }
                     }
-                    if (SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.WRITE_CHECK)
+                    if (SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.WriteCheck)
                     {
                         if (SmallbankTransactionPayload.WriteCheck != null)
                         {
@@ -131,7 +130,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += "}\n";
                         }
                     }
-                    if (SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.TRANSACT_SAVINGS)
+                    if (SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.TransactSavings)
                     {
                         if (SmallbankTransactionPayload.TransactSavings != null)
                         {
@@ -141,7 +140,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += "}\n";
                         }
                     }
-                    if (SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.SEND_PAYMENT)
+                    if (SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.SendPayment)
                     {
                         if (SmallbankTransactionPayload.SendPayment != null)
                         {
@@ -152,7 +151,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += "}\n";
                         }
                     }
-                    if (SmallbankTransactionPayload.Type == SmallbankTransactionPayload.PayloadType.AMALGAMATE)
+                    if (SmallbankTransactionPayload.TxnType == SmallbankTransactionPayload.PayloadType.Amalgamate)
                     {
                         if (SmallbankTransactionPayload.Amalgamate != null)
                         {
@@ -170,6 +169,11 @@ namespace Sawtooth.Sdk.Net.Transactions
                 }
                 return buf;
             }
+        }
+
+        public static SmallbankTransaction CreateAccountTransaction(uint cutomerId, string customerName, uint initialiSavingsBalance, uint initialCheckingBalance)
+        {
+            return new SmallbankTransaction { SmallbankTransactionPayload = SmallbankTransactionPayload.CreateAccountTransactionPayload(cutomerId, customerName, initialiSavingsBalance, initialCheckingBalance) };    
         }
 
         public string UnwrapPayload(byte[] payload)
@@ -192,7 +196,23 @@ namespace Sawtooth.Sdk.Net.Transactions
             return SmallbankTransactionPayload.ToProtobufByteArray();
         }
 
-        public string? AddressContext => proposal_key;
+        public string? AddressContext
+        {
+            get
+            {
+                switch (SmallbankTransactionPayload?.TxnType)
+                {
+                    case SmallbankTransactionPayload.PayloadType.CreateAccount: return SmallbankTransactionPayload?.CreateAccount?.CustomerId + "";
+                    case SmallbankTransactionPayload.PayloadType.DepositChecking: return SmallbankTransactionPayload?.DepositChecking?.CustomerId + "";
+                    case SmallbankTransactionPayload.PayloadType.TransactSavings: return SmallbankTransactionPayload?.TransactSavings?.CustomerId + "";
+                    case SmallbankTransactionPayload.PayloadType.WriteCheck: return SmallbankTransactionPayload?.WriteCheck?.CustomerId + "";
+                    case SmallbankTransactionPayload.PayloadType.SendPayment: return SmallbankTransactionPayload?.SendPayment?.SourceCustomerId + "";
+                    case SmallbankTransactionPayload.PayloadType.Amalgamate: return SmallbankTransactionPayload?.Amalgamate?.SourceCustomerId + "";
+                }
+
+                return null;
+            }
+        }
 
     }
 

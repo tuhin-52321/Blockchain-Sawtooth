@@ -233,8 +233,8 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             await GetSingleTestWithParamAsync(client.GetTransactionAsync, transaction_id);
         }
 
-        [TestMethod("Post BatchList")]
-        public async Task PostBatchListTestAsync()
+        [TestMethod("Post BatchList for IntKey")]
+        public async Task PostBatchListIntkeyTestAsync()
         {
             Assert.IsNotNull(client);
 

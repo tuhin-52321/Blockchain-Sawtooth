@@ -1,7 +1,5 @@
 using Blockchain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Smallbank.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

@@ -58,7 +58,8 @@ namespace Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf
     [ProtoContract]
     public class SettingPayload
     {
-        public enum ActionEnum { PROPOSE = 1, VOTE = 0 }
+        [ProtoContract]
+        public enum ActionEnum { ACTION_UNSET = 0, PROPOSE = 1, VOTE = 2 }
 
         [ProtoMember(1, Name = "action")]
         public ActionEnum Action { get; set; }

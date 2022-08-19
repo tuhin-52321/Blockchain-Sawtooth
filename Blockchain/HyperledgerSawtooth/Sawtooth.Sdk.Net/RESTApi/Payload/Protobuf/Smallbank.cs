@@ -1,170 +1,206 @@
-﻿using ProtoBuf;
-using System.ComponentModel;
-
-
-namespace Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf
+﻿namespace Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf
 {
-    //State
-
-    [ProtoContract]
-    public class Account
+    [ProtoBuf.ProtoContract()]
+    public partial class Account : ProtoBuf.IExtensible
     {
-        [ProtoMember(1, Name = "customer_id")]
+        private ProtoBuf.IExtension? __pbn__extensionData;
+        ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
         public uint CustomerId { get; set; }
 
-        [ProtoMember(2, Name = "customer_name")]
-        public string? CustomerName { get; set; }
+        [ProtoBuf.ProtoMember(2, Name = @"customer_name")]
+        [System.ComponentModel.DefaultValue("")]
+        public string CustomerName { get; set; } = "";
 
-        [ProtoMember(3, Name = "savings_balance")]
+        [ProtoBuf.ProtoMember(3, Name = @"savings_balance")]
         public uint SavingsBalance { get; set; }
 
-        [ProtoMember(4, Name = "checking_balance")]
+        [ProtoBuf.ProtoMember(4, Name = @"checking_balance")]
         public uint CheckingBalance { get; set; }
 
     }
 
-    //Trasnaction Payload
-
-    [ProtoContract]
-    public class SmallbankTransactionPayload
+    [ProtoBuf.ProtoContract()]
+    public partial class SmallbankTransactionPayload : ProtoBuf.IExtensible
     {
-        public enum PayloadType
+        internal static SmallbankTransactionPayload CreateAccountTransactionPayload(uint customerId, string customerName, uint initialSavingsBalance, uint initialCheckingBalance)
         {
-            CREATE_ACCOUNT = 1,
-            DEPOSIT_CHECKING = 2,
-            WRITE_CHECK = 3,
-            TRANSACT_SAVINGS = 4,
-            SEND_PAYMENT = 5,
-            AMALGAMATE = 6
+            SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
+
+            payload.TxnType = PayloadType.CreateAccount;
+
+            payload.CreateAccount = new CreateAccountTransactionData(customerId, customerName, initialSavingsBalance, initialCheckingBalance);
+
+            return payload;
         }
 
-        [ProtoMember(1, Name = "payload_type")]
-        public PayloadType Type { get; set; }
+        private ProtoBuf.IExtension? __pbn__extensionData;
+        ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-        [ProtoMember(2, Name = "create_account")]
-        public CreateAccountTransactionData? CreateAccount { get; set; }
+        private SmallbankTransactionPayload() 
+        { 
+        }
 
-        [ProtoMember(3, Name = "deposit_checking")]
-        public DepositCheckingTransactionData? DepositChecking { get; set; }
+        [ProtoBuf.ProtoMember(1, Name = @"payload_type")]
+        public PayloadType TxnType { get; private set; }
 
-        [ProtoMember(4, Name = "write_check")]
-        public WriteCheckTransactionData? WriteCheck { get; set; }
+        [ProtoBuf.ProtoMember(2, Name = @"create_account")]
+        public CreateAccountTransactionData? CreateAccount { get; private set; }
 
-        [ProtoMember(5, Name = "transact_savings ")]
-        public TransactSavingsTransactionData? TransactSavings { get; set; }
+        [ProtoBuf.ProtoMember(3, Name = @"deposit_checking")]
+        public DepositCheckingTransactionData? DepositChecking { get; private set; }
 
-        [ProtoMember(6, Name = "send_payment")] 
-        public SendPaymentTransactionData? SendPayment { get; set; }
+        [ProtoBuf.ProtoMember(4, Name = @"write_check")]
+        public WriteCheckTransactionData? WriteCheck { get; private set; } 
 
-        [ProtoMember(7, Name = "amalgamate")] 
-        public AmalgamateTransactionData? Amalgamate { get; set; }
+        [ProtoBuf.ProtoMember(5, Name = @"transact_savings")]
+        public TransactSavingsTransactionData? TransactSavings { get; private set; }
+
+        [ProtoBuf.ProtoMember(6, Name = @"send_payment")]
+        public SendPaymentTransactionData? SendPayment { get; private set; }
+
+        [ProtoBuf.ProtoMember(7, Name = @"amalgamate")]
+        public AmalgamateTransactionData? Amalgamate { get; private set; }
+
+
+        [ProtoBuf.ProtoContract()]
+        public partial class CreateAccountTransactionData : ProtoBuf.IExtensible
+        {
+
+            private ProtoBuf.IExtension? __pbn__extensionData;
+
+            public CreateAccountTransactionData()
+            {
+                CustomerId = 0;
+                CustomerName = string.Empty;
+                InitialSavingsBalance = 0;
+                InitialCheckingBalance = 0;
+            }
+
+            public CreateAccountTransactionData(uint customerId, string customerName, uint initialSavingsBalance, uint initialCheckingBalance)
+            {
+                CustomerId = customerId;
+                CustomerName = customerName;
+                InitialSavingsBalance = initialSavingsBalance;
+                InitialCheckingBalance = initialCheckingBalance;
+            }
+
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
+            public uint CustomerId { get; private set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"customer_name")]
+            public string CustomerName { get; private set; }
+
+            [ProtoBuf.ProtoMember(3, Name = @"initial_savings_balance")]
+            public uint InitialSavingsBalance { get; private set; }
+
+            [ProtoBuf.ProtoMember(4, Name = @"initial_checking_balance")]
+            public uint InitialCheckingBalance { get; private set; }
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public partial class DepositCheckingTransactionData : ProtoBuf.IExtensible
+        {
+            private ProtoBuf.IExtension? __pbn__extensionData;
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
+            public uint CustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"amount")]
+            public uint Amount { get; set; }
+
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public partial class WriteCheckTransactionData : ProtoBuf.IExtensible
+        {
+            private ProtoBuf.IExtension? __pbn__extensionData;
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
+            public uint CustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"amount")]
+            public uint Amount { get; set; }
+
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public partial class TransactSavingsTransactionData : ProtoBuf.IExtensible
+        {
+            private ProtoBuf.IExtension? __pbn__extensionData;
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
+            public uint CustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"amount")]
+            public int Amount { get; set; }
+
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public partial class SendPaymentTransactionData : ProtoBuf.IExtensible
+        {
+            private ProtoBuf.IExtension? __pbn__extensionData;
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"source_customer_id")]
+            public uint SourceCustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"dest_customer_id")]
+            public uint DestCustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(3, Name = @"amount")]
+            public uint Amount { get; set; }
+
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public partial class AmalgamateTransactionData : ProtoBuf.IExtensible
+        {
+            private ProtoBuf.IExtension? __pbn__extensionData;
+            ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [ProtoBuf.ProtoMember(1, Name = @"source_customer_id")]
+            public uint SourceCustomerId { get; set; }
+
+            [ProtoBuf.ProtoMember(2, Name = @"dest_customer_id")]
+            public uint DestCustomerId { get; set; }
+
+        }
+
+        [ProtoBuf.ProtoContract()]
+        public enum PayloadType
+        {
+            [ProtoBuf.ProtoEnum(Name = @"PAYLOAD_TYPE_UNSET")]
+            PayloadTypeUnset = 0,
+            [ProtoBuf.ProtoEnum(Name = @"CREATE_ACCOUNT")]
+            CreateAccount = 1,
+            [ProtoBuf.ProtoEnum(Name = @"DEPOSIT_CHECKING")]
+            DepositChecking = 2,
+            [ProtoBuf.ProtoEnum(Name = @"WRITE_CHECK")]
+            WriteCheck = 3,
+            [ProtoBuf.ProtoEnum(Name = @"TRANSACT_SAVINGS")]
+            TransactSavings = 4,
+            [ProtoBuf.ProtoEnum(Name = @"SEND_PAYMENT")]
+            SendPayment = 5,
+            [ProtoBuf.ProtoEnum(Name = @"AMALGAMATE")]
+            Amalgamate = 6,
+        }
+
     }
 
-
-    [ProtoContract]
-    public class CreateAccountTransactionData
-    {
-        // The CreateAccountTransaction creates an account
-
-        // Customer ID
-        [ProtoMember(1, Name = "customer_id")]
-        public uint CustomerId { get; set; }
-
-        // Customer Name
-        [ProtoMember(2, Name = "customer_name")]
-        public string? CustomerName { get; set; }
-
-        // Initial Savings Balance (in cents to avoid float)
-        [ProtoMember(3, Name = "initial_savings_balance")]
-        public uint InitialSavingsBalance { get; set; }
-
-        // Initial Checking Balance (in cents to avoid float)
-        [ProtoMember(4, Name = "initial_checking_balance")] 
-        public uint InitialCheckingBalance { get; set; }
-    }
-
-
-    [ProtoContract]
-    public class DepositCheckingTransactionData
-    {
-        // The DepositCheckingTransction adds an amount to the customer's
-        // checking account.
-
-        // Customer ID
-        [ProtoMember(1, Name = "customer_id")] 
-        public uint CustomerId { get; set; }
-
-        // Amount
-        [ProtoMember(2, Name = "amount")] 
-        public uint Amount { get; set; }
-    }
-
-
-    [ProtoContract]
-    public class WriteCheckTransactionData
-    {
-        // The WriteCheckTransaction removes an amount from the customer's
-        // checking account.
-
-        // Customer ID
-        [ProtoMember(1, Name = "customer_id")] 
-        public uint CustomerId { get; set; }
-
-        // Amount
-        [ProtoMember(2, Name = "amount")] 
-        public uint Amount { get; set; }
-    }
-
-
-    [ProtoContract]
-    public class TransactSavingsTransactionData
-    {
-        // The TransactSavingsTransaction adds an amount to the customer's
-        // savings account. Amount may be a negative number.
-
-        // Customer ID
-        [ProtoMember(1, Name = "customer_id")] 
-        public uint CustomerId { get; set; }
-
-        // Amount
-        [ProtoMember(2, Name = "amount")] 
-        public int Amount { get; set; }
-    }
-
-
-    [ProtoContract]
-    public class SendPaymentTransactionData
-    {
-        // The SendPaymentTransaction transfers an amount from one customer's
-        // checking account to another customer's checking account.
-
-        // Source Customer ID
-        [ProtoMember(1, Name = "source_customer_id")] 
-        public uint SourceCustomerId { get; set; }
-
-        // Destination Customer ID
-        [ProtoMember(2, Name = "dest_customer_id")] 
-        public uint DestCustomerId { get; set; }
-
-        // Amount
-        [ProtoMember(3, Name = "amount")] 
-        public uint Amount { get; set; }
-    }
-
-
-    [ProtoContract]
-    public class AmalgamateTransactionData
-    {
-        // The AmalgamateTransaction transfers the entire contents of one
-        // customer's savings account into another customer's checking
-        // account.
-
-        // Source Customer ID
-        [ProtoMember(1, Name = "source_customer_id")] 
-        public uint SourceCustomerId { get; set; }
-
-        // Destination Customer ID
-        [ProtoMember(2, Name = "dest_customer_id")] 
-        public uint DestCustomerId { get; set; }
-    }
 }

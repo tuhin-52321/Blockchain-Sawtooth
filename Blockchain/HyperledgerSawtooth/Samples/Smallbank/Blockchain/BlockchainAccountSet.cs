@@ -19,8 +19,6 @@ namespace Smallbank.Blockchain
 
         private Encoder encoder;
 
-        private List<Account> uncommitted_states = new List<Account>();
-
         public BlockchainAccountSet(string url)
         {
             txnFamily = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
@@ -47,42 +45,101 @@ namespace Smallbank.Blockchain
             return await FetchAllAsync();
         }
 
-        public void Add(Account state)
-        {
-            uncommitted_states.Add(state);
-        }
 
-        internal async Task<Account?> FindAsync(uint? id)
+
+        public async Task<uint> GetLastIdAsync()
         {
             List<Account> accounts = await FetchAllAsync();
-            return accounts.Find(i => i.ID == id);
+            if(accounts.Count > 0)
+            {
+                return accounts.Last().CustomerId;
+            }
+            return 0;
         }
 
-        public async Task SaveChangesAsync()
+        private async Task<string?> CallSmallBankTxn(SmallbankTransaction txn)
         {
-            //1. Create Batch of transactions using uncommitted_states
-            List<Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf.Transaction> txns = new List<Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf.Transaction>();
-            foreach (Account acc in uncommitted_states)
+
+            try
             {
-                Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf.Account account = new Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf.Account();
-                account.CustomerId = acc.ID;
-                account.CustomerName = acc.Name;
-                account.SavingsBalance = acc.SavingsBalance;
-                account.CheckingBalance = acc.CheckingBalance;
-                txns.Add(encoder.CreateTransaction(account.ToProtobufByteArray()));
+                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapPayload(txn)));
+
+                if (response != null && response.Link != null)
+                {
+                    return await CheckStatus( response.Link);
+
+                }
             }
-            if (txns.Count > 0)
+            catch (Exception e)
             {
-                var batch = encoder.CreateBatch(txns);
+                return e.Message;
+            }
+
+            return null;
+        }
+        public async Task<string?> Add(Account acc)
+        {
+            try
+            {
+                //1. Create transaction payload
+
+                var payload = SmallbankTransaction.CreateAccountTransaction(await GetLastIdAsync() + 1, acc.CustomerName, acc.SavingsBalance, acc.CheckingBalance);
 
                 //2. Post the Batch
-                await client.PostBatchListAsync(encoder.Encode(batch));
+
+                string? message = await CallSmallBankTxn(payload);
+
+
+                //3. return message
+                return message;
+
+            }catch(Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        private async Task<string?> CheckStatus(string link)
+        {
+            int tries = 30; //Wil try 30 times => 30x1 = 30 seconds max
+            while (tries > 0)
+            {
+                var statuses = await client.GetBatchStatusUsingLinkAsync(link);
+
+                if (statuses != null)
+                {
+                    foreach (var status in statuses)
+                    {
+                        if (status.Id != null && status.Status != null)
+                        {
+                            if (status.InvalidTransaction.Count > 0)
+                            {
+                                return status.InvalidTransaction[0]?.Message;
+                            }
+                            if (status.Status == "PENDING")
+                            {
+                                Thread.Sleep(1000);
+                                tries--;
+                                continue;
+                            }
+                            if (status.Status == "COMMITTED")
+                            {
+                                return "Account Created.";
+                            }
+                            else
+                            {
+                                return "Account creation failes: status returned : " + status.Status;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return "Account creation failed: no status found!";
+                }
             }
 
-
-            //3. Clear the uncommitted_states
-            uncommitted_states.Clear();
-
+            return "Account creation status check timed out.";
         }
 
         public async Task<bool> Any(Func<Account, bool> value)
@@ -109,8 +166,8 @@ namespace Smallbank.Blockchain
                 {
                     Account account = new Account
                     {
-                        ID = smallbank.Account.CustomerId,
-                        Name = smallbank.Account.CustomerName==null?"<No Name>": smallbank.Account.CustomerName,
+                        CustomerId = smallbank.Account.CustomerId,
+                        CustomerName = smallbank.Account.CustomerName==null?"<No Name>": smallbank.Account.CustomerName,
                         SavingsBalance = smallbank.Account.SavingsBalance,
                         CheckingBalance = smallbank.Account.CheckingBalance
                     };

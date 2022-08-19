@@ -10,7 +10,7 @@ namespace Sawtooth.Sdk.Net.Transactions
     public abstract class TransactionFamily
     {
         private State State { get; set; }
-        private ITransaction Transaction { get; set; }
+        public ITransaction Transaction { get; private set; }
 
         public string Name { get; private set; }
         public string Version { get; private set; }
@@ -19,10 +19,17 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         public string? Address(string? context)
         {
-           return (context != null) ? State.Address.ComposeAddress(context) : null;
+            return (context != null) ? State.Address.ComposeAddress(context) : null;
         }
 
         public string UnwrapPayload(string payload) => Transaction.UnwrapPayload(payload.FromBase64String());
+
+        public string UnwrapPayload(byte[] payload) => Transaction.UnwrapPayload(payload);
+
+        public byte[] WrapPayload<T>(T payload) where T:ITransaction => payload.WrapPayload();
+
+        public string WrapPayloadToString<T>(T payload) where T : ITransaction => payload.WrapPayload().ToBase64String();
+
 
         public TransactionFamily(string name, string version)
         {

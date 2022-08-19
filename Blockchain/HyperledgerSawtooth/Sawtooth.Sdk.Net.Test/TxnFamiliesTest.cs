@@ -1,6 +1,7 @@
 ﻿using PeterO.Cbor;
 using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
+using Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf;
 using Sawtooth.Sdk.Net.Transactions;
 using Sawtooth.Sdk.Net.Utils;
 using System.Text.Json;
@@ -72,6 +73,24 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             SmallbankAddress address = new SmallbankAddress();
 
             Assert.AreEqual("3325143ff98ae73225156b2c6c9ceddbfc16f5453e8fa49fc10e5d96a3885546a46ef4", address.ComposeAddress("42"));
+        }
+
+        [TestMethod("Test serializtion/deserialization")]
+        public void SmallbankTxnSerialization()
+        {
+            var txn1 = SmallbankTransaction.CreateAccountTransaction(3, "Tuhin", 5, 10);
+
+            var family1 = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
+
+            byte[] marshaled = family1.WrapPayload(txn1);
+
+            var family2 = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
+
+            var txn2 = family2.Transaction as SmallbankTransaction;
+
+            Console.WriteLine(family2.UnwrapPayload(marshaled));
+
+            Assert.AreEqual(txn1.DisplayString, txn2?.DisplayString);
         }
 
 
