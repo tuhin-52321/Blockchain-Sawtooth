@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
-    public interface ITransaction
+    public interface ITransaction : IDisplayable
     {
-        public string UnwrapPayload(byte[] state_payload);
-
-        public byte[] WrapPayload();
-
-        public string DisplayString { get; }
-
         public string? AddressContext { get; }
     }
 }

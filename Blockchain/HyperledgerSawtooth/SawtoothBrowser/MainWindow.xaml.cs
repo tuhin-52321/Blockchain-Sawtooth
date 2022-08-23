@@ -189,7 +189,32 @@ namespace SawtoothBrowser
                     TxnFamily = txnDetail.Header?.FamilyName;
                     TxnVersion = txnDetail.Header?.FamilyVersion;
                     if (txnDetail.Payload != null)
-                        TxnPayload = TransactionFamilyFactory.GetTransactionFamily(TxnFamily, TxnVersion).UnwrapPayload(txnDetail.Payload);
+                    {
+                        if ("intkey".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                        {
+                            TxnPayload = new IntKeyTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
+                        }
+                        else if ("sawtooth_settings".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                        {
+                            TxnPayload = new SawtoothSettingsTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
+                        }
+                        else if ("xo".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                        {
+                            TxnPayload = new XOTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
+                        }
+                        else if ("smallbank".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                        {
+                            TxnPayload = new SmallbankTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
+                        }
+                        else
+                        {
+                            TxnPayload = "[Raw data: ]\n" + txnDetail.Payload;
+                        }
+                    }
+                    else
+                    {
+                        TxnPayload = "<Null Value>";
+                    }
                 }
                 TxnDetailHeader = $"Txn Detail: {TxnId.Shorten(16)}";
             }

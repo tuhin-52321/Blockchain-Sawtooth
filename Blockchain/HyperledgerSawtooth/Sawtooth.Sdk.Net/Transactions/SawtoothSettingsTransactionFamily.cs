@@ -5,15 +5,11 @@ using System.Text;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
-    public class SawtoothSettingsTransactionFamily : TransactionFamily
+    public class SawtoothSettingsTransactionFamily : TransactionFamily<SawtoothSettingsState, SawtoothSettingsTransaction>
     {
 
-        public SawtoothSettingsTransactionFamily(string version) : base("sawtooth_settings", version)
+        public SawtoothSettingsTransactionFamily() : base("sawtooth_settings", "1.0")
         {
-            if (version == "1.0")
-            {
-                SetHandlers(new SawtoothSettingsState(), new SawtoothSettingsTransaction());
-            }
         }
 
     }
@@ -41,27 +37,23 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     }
 
-    public class SawtoothSettingsState : State
+    public class SawtoothSettingsState : ProtobufPayload<Entry>, IState
     {
-        public SawtoothSettingsState() : base(new SawtoothSettingsAddress())
-        {
-        }
+        public IAddress Address { get; } = new SawtoothSettingsAddress();
 
-        public Entry? Entry { get; private set; }
-
-        public override string DisplayString {
+        public string DisplayString {
             get
             {
                 string buffer = "[Protobuf Object: Setting]\n";
-                if (Entry != null)
+                if (Payload != null)
                 {
                     buffer += "{\n";
-                    if ("sawtooth.settings.vote.proposals".Equals(Entry.Key))
+                    if ("sawtooth.settings.vote.proposals".Equals(Payload.Key))
                     {
-                        buffer += $"   {Entry.Key} = {{ \n";
-                        if (Entry.Value != null)
+                        buffer += $"   {Payload.Key} = {{ \n";
+                        if (Payload.Value != null)
                         {
-                            byte[] setting_candidate_encoded = Convert.FromBase64String(Entry.Value);
+                            byte[] setting_candidate_encoded = Convert.FromBase64String(Payload.Value);
                             using (MemoryStream stream = new MemoryStream(setting_candidate_encoded))
                             {
                                 SettingCandidate setting_candidate = Serializer.Deserialize<SettingCandidate>(stream);
@@ -84,7 +76,7 @@ namespace Sawtooth.Sdk.Net.Transactions
                     }
                     else
                     {
-                        buffer += $"   {Entry.Key} = {Entry.Value} \n";
+                        buffer += $"   {Payload.Key} = {Payload.Value} \n";
                     }
                     buffer += "}\n";
                 }
@@ -97,32 +89,14 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public override void UnwrapState(string? state_payload)
-        {
-            if (state_payload == null) return;
 
-            byte[] paylod_raw = Convert.FromBase64String(state_payload);
-            using (MemoryStream stream = new MemoryStream(paylod_raw))
-            {
-                Entry = Serializer.Deserialize<Entry>(stream);
-            }
-        }
 
-        public override void WrapState(out string? address, out string? state_payload)
-        {
-            address = null;
-            state_payload = null;
-            if (Entry != null)
-            {
-                if(Entry.Key != null) address = Address.ComposeAddress(Entry.Key);
-                state_payload = Convert.ToBase64String(Entry.ToProtobufByteArray());
-            }
-        }
+        public string? ComposedAddress => Payload?.Key != null ? Address.ComposeAddress(Payload.Key): null;
+
     }
 
-    public class SawtoothSettingsTransaction : ITransaction
+    public class SawtoothSettingsTransaction : ProtobufPayload<SettingPayload>, ITransaction
     {
-        public SettingPayload? SettingPayload { get; private set; }
 
         private string? proposal_key;
 
@@ -132,16 +106,16 @@ namespace Sawtooth.Sdk.Net.Transactions
             {
                 string buf = "[Protobuf Object : SettingPayload]\n";
 
-                if (SettingPayload != null)
+                if (Payload != null)
                 {
-                    buf += "Action : " + SettingPayload.Action + "\n";
+                    buf += "Action : " + Payload.Action + "\n";
 
-                    if (SettingPayload.Data != null)
+                    if (Payload.Data != null)
                     {
-                        if (SettingPayload.Action == SettingPayload.ActionEnum.PROPOSE)
+                        if (Payload.Action == SettingPayload.ActionEnum.PROPOSE)
                         {
                             SettingProposal proposal;
-                            using (MemoryStream stream = new MemoryStream(SettingPayload.Data))
+                            using (MemoryStream stream = new MemoryStream(Payload.Data))
                             {
                                 proposal = Serializer.Deserialize<SettingProposal>(stream);
                             }
@@ -153,10 +127,10 @@ namespace Sawtooth.Sdk.Net.Transactions
                             proposal_key = proposal.Setting;
                         }
 
-                        if (SettingPayload.Action == SettingPayload.ActionEnum.VOTE)
+                        if (Payload.Action == SettingPayload.ActionEnum.VOTE)
                         {
                             SettingVote vote;
-                            using (MemoryStream stream = new MemoryStream(SettingPayload.Data))
+                            using (MemoryStream stream = new MemoryStream(Payload.Data))
                             {
                                 vote = Serializer.Deserialize<SettingVote>(stream);
                             }
@@ -174,25 +148,6 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public string UnwrapPayload(byte[] payload)
-        {
-            if (payload == null) return "<Null Payload>";
-
-            using (MemoryStream stream = new MemoryStream(payload))
-            {
-                SettingPayload = Serializer.Deserialize<SettingPayload>(stream);
-            }
-
-            return DisplayString;
-
-        }
-
-        public byte[] WrapPayload()
-        {
-            if (SettingPayload == null) throw new IOException("Please set 'SettingPayload' before wraping the object.");
-
-            return SettingPayload.ToProtobufByteArray();
-        }
 
         public string? AddressContext => proposal_key;
 

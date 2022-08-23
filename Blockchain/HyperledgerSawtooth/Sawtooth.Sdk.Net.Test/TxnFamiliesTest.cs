@@ -80,15 +80,15 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
         {
             var txn1 = SmallbankTransaction.CreateAccountTransaction(3, "Tuhin", 5, 10);
 
-            var family1 = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
+            var family1 = new SmallbankTransactionFamily();
 
-            byte[] marshaled = family1.WrapPayload(txn1);
+            byte[] marshaled = family1.WrapTxnPayload(txn1);
 
-            var family2 = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
+            var family2 = new SmallbankTransactionFamily();
 
-            var txn2 = family2.Transaction as SmallbankTransaction;
+            var txn2 = family2.UnwrapTxnPayload(marshaled);
 
-            Console.WriteLine(family2.UnwrapPayload(marshaled));
+            Console.WriteLine(txn2.DisplayString);
 
             Assert.AreEqual(txn1.DisplayString, txn2?.DisplayString);
         }

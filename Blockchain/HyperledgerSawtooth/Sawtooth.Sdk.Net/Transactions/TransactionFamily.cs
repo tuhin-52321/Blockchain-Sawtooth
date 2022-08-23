@@ -7,42 +7,36 @@ using System.Threading.Tasks;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
-    public abstract class TransactionFamily
+    public abstract class TransactionFamily<STATE,TXN> where STATE:SerializablePayload,new() where TXN:SerializablePayload,new()
     {
-        private State State { get; set; }
-        public ITransaction Transaction { get; private set; }
-
         public string Name { get; private set; }
         public string Version { get; private set; }
 
-        public string AddressPrefix => State.Address.Prefix;
+        public string AddressPrefix(IState state) => state.Address.Prefix;
 
-        public string? Address(string? context)
+        public string? Address(IState state, string? context)
         {
-            return (context != null) ? State.Address.ComposeAddress(context) : null;
+            return (context != null) ? state.Address.ComposeAddress(context) : null;
         }
 
-        public string UnwrapPayload(string payload) => Transaction.UnwrapPayload(payload.FromBase64String());
+        public TXN UnwrapTxnPayload(byte[] payload) => SerializablePayload.CreateFromPayloadData<TXN>(payload);
+        public STATE UnwrapStatePayload(byte[] payload) => SerializablePayload.CreateFromPayloadData<STATE>(payload);
 
-        public string UnwrapPayload(byte[] payload) => Transaction.UnwrapPayload(payload);
+        public TXN UnwrapTxnPayload(string base64EncodedString) => SerializablePayload.CreateFromPayloadData<TXN>(base64EncodedString);
+        public STATE UnwrapStatePayload(string base64EncodedString) => SerializablePayload.CreateFromPayloadData<STATE>(base64EncodedString);
 
-        public byte[] WrapPayload<T>(T payload) where T:ITransaction => payload.WrapPayload();
+        public byte[] WrapTxnPayload(TXN payload) => payload.Wrap();
+        public byte[] WrapStatePayload(STATE payload) => payload.Wrap();
 
-        public string WrapPayloadToString<T>(T payload) where T : ITransaction => payload.WrapPayload().ToBase64String();
-
+        public string WrapTxnPayloadToBase64String(TXN payload) => WrapTxnPayload(payload).ToBase64String();
+        public string WrapStatePayloadToBase64String(STATE payload) => WrapStatePayload(payload).ToBase64String();
+        
 
         public TransactionFamily(string name, string version)
         {
-            this.Name = name;
-            this.Version = version;
-            this.State = new DefaultState();
-            this.Transaction = new DefaultTransaction();
+            Name = name;
+            Version = version;
         }
 
-        public void SetHandlers(State state, ITransaction transaction)
-        {
-            this.State = state;
-            this.Transaction = transaction;
-        }
     }
 }

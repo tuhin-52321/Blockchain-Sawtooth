@@ -1,16 +1,13 @@
-﻿using Sawtooth.Sdk.Net.Utils;
+﻿
+using Sawtooth.Sdk.Net.Utils;
 using System.Text;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
-    public class XOTransactionFamily : TransactionFamily
+    public class XOTransactionFamily : TransactionFamily<XOState, XOTransaction>
     {
-        public XOTransactionFamily(string version) : base("xo", version)
+        public XOTransactionFamily() : base("xo", "1.0")
         {
-            if (version == "1.0")
-            {
-                SetHandlers(new XOState(), new XOTransaction());
-            }
         }
 
     }
@@ -27,12 +24,12 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     }
 
-    public class XOState : State
+    public class XOState : CSVStringPayload, IState
     {
-    
-        public XOState() : base(new XOAddress())
-        {
-        }
+
+        public IAddress Address => new XOAddress();
+
+        public string? ComposedAddress => Name!=null?Address.ComposeAddress(Name):null;
 
         public string? Name { get; private set; }
         public string? Board { get; private set; }
@@ -40,7 +37,7 @@ namespace Sawtooth.Sdk.Net.Transactions
         public string? Player1 { get; private set; }
         public string? Player2 { get; private set; }
 
-        public override string DisplayString => "\n"
+        public string DisplayString => "\n"
                  + $"    Game Name   : {Name} \n"
                  + $"    Game Status : {Status} \n"
                  + $"    Player 1    : {Player1} \n"
@@ -52,15 +49,8 @@ namespace Sawtooth.Sdk.Net.Transactions
                  + $"     {Board?[6]} | {Board?[7]} | {Board?[8]}\n";
 
 
-        public override void UnwrapState(string? state_payload)
+        public override void Deserialize(string[] values)
         {
-            if (state_payload == null) return;
-
-            byte[] paylod_raw = Convert.FromBase64String(state_payload);
-            string data = Encoding.UTF8.GetString(paylod_raw);
-
-            string[] values = data.Split(",");
-
             if (values.Length == 5)
             {
                 Name = values[0];
@@ -71,20 +61,15 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public override void WrapState(out string? address, out string? state_payload)
+        public override string Serialize()
         {
-            address = null;
-            state_payload = null;
-            if (Name != null)
-            {
-                address = Address.ComposeAddress(Name);
-                state_payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(Name+","+Board+","+Status+","+Player1+","+Player2));
+            return Name+","+Board+","+Status+","+Player1+","+Player2;
 
             }
         }
-    }
+    
 
-    public class XOTransaction : ITransaction
+    public class XOTransaction : CSVStringPayload, ITransaction
     {
         public string? Name { get; set; }
         public string? Action { get; set; }
@@ -96,14 +81,8 @@ namespace Sawtooth.Sdk.Net.Transactions
                  + $"    Action      : {Action} \n"
                  + $"    Space       : {Space} \n";
 
-        public string UnwrapPayload(byte[] payload)
+        public override void Deserialize(string[] values)
         {
-            if (payload == null) return "<Null payload>";
-
-
-            string data = Encoding.UTF8.GetString(payload);
-
-            string[] values = data.Split(",");
 
             Name = values[0];
             Action = values[1];
@@ -120,20 +99,18 @@ namespace Sawtooth.Sdk.Net.Transactions
                 }
             }
 
-            return DisplayString;
-
         }
 
-        public byte[] WrapPayload()
+        public override string Serialize()
         {
             if (Name == null) throw new IOException("Please set 'Name' before wraping the object.");
             if (Action == null) throw new IOException("Please set 'Action' before wraping the object.");
             if ("take".Equals(Action) && Space == null) throw new IOException("Please set 'Space' for 'take' Action before wraping the object.");
 
             if ("take".Equals(Action))
-                return Encoding.UTF8.GetBytes(Name + "," + Action + "," + Space);
+                return Name + "," + Action + "," + Space;
             else
-                return Encoding.UTF8.GetBytes(Name + "," + Action + ",");
+                return Name + "," + Action + ",";
         }
 
         public string? AddressContext => Name;

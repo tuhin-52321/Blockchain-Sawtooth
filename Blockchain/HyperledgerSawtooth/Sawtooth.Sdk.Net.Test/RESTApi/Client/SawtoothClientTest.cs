@@ -257,7 +257,7 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
             IntKeyTransaction txn = new IntKeyTransaction { Name="Foo2", Verb="inc", Value=42 };
 
 
-            var payload = encoder.EncodeSingleTransaction(txn.WrapPayload());
+            var payload = encoder.EncodeSingleTransaction(txn.Wrap());
 
 
             var json =  await client.PostBatchListAsync(payload);
