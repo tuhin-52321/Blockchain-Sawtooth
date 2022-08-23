@@ -204,7 +204,7 @@ namespace IntegerKey
         {
             if (client == null) return false;
 
-            IntKeyTransaction txn = new IntKeyTransaction();
+            IntKeyTransaction txn = txnFamily.CreateEmptyTxn();
 
             txn.Name = name;
             txn.Verb = verb;

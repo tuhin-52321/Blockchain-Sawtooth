@@ -14,65 +14,65 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
         [TestMethod("Test Address Prefix for IntKey")]
         public void IntKeyAddressPrefixTest()
         {
-            IntKeyAddress address = new IntKeyAddress();
+            IntKeyTransactionFamily family = new IntKeyTransactionFamily();
 
-            Assert.AreEqual("1cf126", address.Prefix);
+            Assert.AreEqual("1cf126", family.AddressPrefix);
         }
 
         [TestMethod("Test Address Prefix for XO")]
         public void XOAddressPrefixTest()
         {
-            XOAddress address = new XOAddress();
+            XOTransactionFamily family = new XOTransactionFamily();
 
-            Assert.AreEqual("5b7349", address.Prefix );
+            Assert.AreEqual("5b7349", family.AddressPrefix);
         }
 
         [TestMethod("Test Address Prefix for Settings")]
         public void SettingsAddressPrefixTest()
         {
-            SawtoothSettingsAddress address = new SawtoothSettingsAddress();
+            SawtoothSettingsTransactionFamily family = new SawtoothSettingsTransactionFamily();
 
-            Assert.AreEqual("000000", address.Prefix );
+            Assert.AreEqual("000000", family.AddressPrefix);
         }
 
         [TestMethod("Test Address Prefix for Smallbank")]
         public void SmallbankAddressPrefixTest()
         {
-            SmallbankAddress address = new SmallbankAddress();
+            SmallbankTransactionFamily family = new SmallbankTransactionFamily();
 
-            Assert.AreEqual("332514", address.Prefix);
+            Assert.AreEqual("332514", family.AddressPrefix);
         }
 
         [TestMethod("Test Address for IntKey")]
         public void IntKeyAddressTest()
         {
-            IntKeyAddress address = new IntKeyAddress();
+            IntKeyTransactionFamily family = new IntKeyTransactionFamily();
 
-            Assert.AreEqual("1cf126cc488cca4cc3565a876f6040f8b73a7b92475be1d0b1bc453f6140fba7183b9a", address.ComposeAddress("name"));
+            Assert.AreEqual("1cf126cc488cca4cc3565a876f6040f8b73a7b92475be1d0b1bc453f6140fba7183b9a", family.AddressPrefix + family.AddressSuffix("name"));
         }
 
         [TestMethod("Test Address Prefix for XO")]
         public void XOAddressTest()
         {
-            XOAddress address = new XOAddress();
+            XOTransactionFamily family = new XOTransactionFamily();
 
-            Assert.AreEqual("5b7349700e158b598043efd6d7610345a75a00b22ac14c9278db53f586179a92b72fbd", address.ComposeAddress("mygame"));
+            Assert.AreEqual("5b7349700e158b598043efd6d7610345a75a00b22ac14c9278db53f586179a92b72fbd", family.AddressPrefix + family.AddressSuffix("mygame"));
         }
 
         [TestMethod("Test Address for Settings")]
         public void SettingsAddressTest()
         {
-            SawtoothSettingsAddress address = new SawtoothSettingsAddress();
+            SawtoothSettingsTransactionFamily family = new SawtoothSettingsTransactionFamily();
 
-            Assert.AreEqual("000000a87cb5eafdcca6a8b79606fb3afea5bdab274474a6aa82c1c0cbf0fbcaf64c0b", address.ComposeAddress("sawtooth.config.vote.proposals"));
+            Assert.AreEqual("000000a87cb5eafdcca6a8b79606fb3afea5bdab274474a6aa82c1c0cbf0fbcaf64c0b", family.AddressPrefix + family.AddressSuffix("sawtooth.config.vote.proposals"));
         }
 
         [TestMethod("Test Address for Smallbank")]
         public void SmallbankAddressTest()
         {
-            SmallbankAddress address = new SmallbankAddress();
+            SmallbankTransactionFamily family = new SmallbankTransactionFamily();
 
-            Assert.AreEqual("3325143ff98ae73225156b2c6c9ceddbfc16f5453e8fa49fc10e5d96a3885546a46ef4", address.ComposeAddress("42"));
+            Assert.AreEqual("3325143ff98ae73225156b2c6c9ceddbfc16f5453e8fa49fc10e5d96a3885546a46ef4", family.AddressPrefix + family.AddressSuffix("42"));
         }
 
         [TestMethod("Test serializtion/deserialization")]

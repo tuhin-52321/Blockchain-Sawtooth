@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
     public abstract class CSVStringPayload : SerializablePayload
     {
+
 
         public abstract void Deserialize(string[] values);
         public abstract string Serialize();

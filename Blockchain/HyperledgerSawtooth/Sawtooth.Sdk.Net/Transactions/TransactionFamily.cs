@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sawtooth.Sdk.Net.Transactions
 {
-    public abstract class TransactionFamily<STATE,TXN> where STATE:SerializablePayload,new() where TXN:SerializablePayload,new()
+    public abstract class TransactionFamily<STATE,TXN> where STATE:SerializablePayload where TXN:SerializablePayload
     {
         public string Name { get; private set; }
         public string Version { get; private set; }
@@ -19,6 +19,9 @@ namespace Sawtooth.Sdk.Net.Transactions
         {
             return AddressPrefix + AddressSuffix(context);       
         }
+
+        public STATE CreateEmptyState() => SerializablePayload.CreateEmpty<STATE>();
+        public TXN CreateEmptyTxn() => SerializablePayload.CreateEmpty<TXN>();
 
         public TXN UnwrapTxnPayload(byte[] payload) => SerializablePayload.CreateFromPayloadData<TXN>(payload);
         public STATE UnwrapStatePayload(byte[] payload) => SerializablePayload.CreateFromPayloadData<STATE>(payload);

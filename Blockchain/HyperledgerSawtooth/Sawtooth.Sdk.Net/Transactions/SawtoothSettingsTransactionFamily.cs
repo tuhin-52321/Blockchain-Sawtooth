@@ -34,7 +34,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SawtoothSettingsState : ProtobufPayload<Entry>, IState
     {
-
+        protected SawtoothSettingsState(): base() 
+        { 
+        }
         public string DisplayString {
             get
             {
@@ -91,6 +93,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SawtoothSettingsTransaction : ProtobufPayload<SettingPayload>, ITransaction
     {
+        protected SawtoothSettingsTransaction() : base()
+        {
+        }
 
         private string? proposal_key;
 

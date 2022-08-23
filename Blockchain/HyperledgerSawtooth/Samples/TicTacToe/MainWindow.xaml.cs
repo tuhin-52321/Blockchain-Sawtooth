@@ -190,7 +190,7 @@ namespace TicTacToe
 
         private async Task<bool> CallXOTxn(string name, string action, int space = 1)
         {
-            XOTransaction txn = new XOTransaction();
+            XOTransaction txn = txnFamily.CreateEmptyTxn();
 
             txn.Name = name;
             txn.Action = action;

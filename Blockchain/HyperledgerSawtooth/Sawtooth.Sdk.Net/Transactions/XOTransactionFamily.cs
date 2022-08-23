@@ -22,7 +22,9 @@ namespace Sawtooth.Sdk.Net.Transactions
  
     public class XOState : CSVStringPayload, IState
     {
-
+        protected XOState() : base()
+        {
+        }
         public string AddressContext => Name!=null?Name:"<NotSet>";
 
         public string? Name { get; private set; }
@@ -65,6 +67,9 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class XOTransaction : CSVStringPayload, ITransaction
     {
+        protected XOTransaction() : base()
+        {
+        }
         public string? Name { get; set; }
         public string? Action { get; set; }
         public int? Space { get; set; }

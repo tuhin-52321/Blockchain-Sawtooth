@@ -11,6 +11,7 @@ namespace Sawtooth.Sdk.Net.Transactions
 {
     public abstract class ProtobufPayload<T> : SerializablePayload
     {
+
         public T? Payload { get; set; } = default;
 
         public override void Unwrap(byte[] payload)

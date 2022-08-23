@@ -238,23 +238,28 @@ namespace Sawtooth.Sdk.Net.RESTApi.Client.Tests
         {
             Assert.IsNotNull(client);
 
-            var prefix = "intkey".ToByteArray().ToSha512().ToHexString().Substring(0, 6);
+            IntKeyTransactionFamily txnFamily = new IntKeyTransactionFamily();
+
             var signer = new Signer();
 
             var settings = new EncoderSettings()
             {
                 BatcherPublicKey = signer.GetPublicKey().ToHexString(),
                 SignerPublickey = signer.GetPublicKey().ToHexString(),
-                FamilyName = "intkey",
-                FamilyVersion = "1.0"
+                FamilyName = txnFamily.Name,
+                FamilyVersion = txnFamily.Version
             };
-            settings.Inputs.Add(prefix);
-            settings.Outputs.Add(prefix);
+            settings.Inputs.Add(txnFamily.AddressPrefix);
+            settings.Outputs.Add(txnFamily.AddressPrefix);
 
             var encoder = new Encoder(settings, signer.GetPrivateKey());
 
 
-            IntKeyTransaction txn = new IntKeyTransaction { Name="Foo2", Verb="inc", Value=42 };
+            IntKeyTransaction txn = txnFamily.CreateEmptyTxn();
+            
+            txn.Name = "Foo2";
+            txn.Verb = "inc";
+            txn.Value = 42;
 
 
             var payload = encoder.EncodeSingleTransaction(txn.Wrap());
