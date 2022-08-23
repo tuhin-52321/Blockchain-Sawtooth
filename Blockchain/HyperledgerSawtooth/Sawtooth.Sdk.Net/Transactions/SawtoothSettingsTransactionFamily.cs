@@ -11,14 +11,9 @@ namespace Sawtooth.Sdk.Net.Transactions
         public SawtoothSettingsTransactionFamily() : base("sawtooth_settings", "1.0")
         {
         }
+        public override string AddressPrefix => "000000";
 
-    }
-
-    public class SawtoothSettingsAddress : IAddress
-    {
-        public string Prefix => "000000";
-
-        public string ComposeAddress(string context)
+        public override string AddressSuffix(string context)
         {
             string[] comps = context.Split(new char[] { '.' }, 4);
 
@@ -27,19 +22,18 @@ namespace Sawtooth.Sdk.Net.Transactions
             string part3 = comps.Length > 2 ? comps[2] : "";
             string part4 = comps.Length > 3 ? comps[3] : "";
 
-            return Prefix
-                    + Encoding.UTF8.GetBytes(part1).ToSha256().ToHexString().First(16)
+            return    Encoding.UTF8.GetBytes(part1).ToSha256().ToHexString().First(16)
                     + Encoding.UTF8.GetBytes(part2).ToSha256().ToHexString().First(16)
                     + Encoding.UTF8.GetBytes(part3).ToSha256().ToHexString().First(16)
                     + Encoding.UTF8.GetBytes(part4).ToSha256().ToHexString().First(16);
 
         }
-
     }
+
+
 
     public class SawtoothSettingsState : ProtobufPayload<Entry>, IState
     {
-        public IAddress Address { get; } = new SawtoothSettingsAddress();
 
         public string DisplayString {
             get
@@ -91,7 +85,7 @@ namespace Sawtooth.Sdk.Net.Transactions
 
 
 
-        public string? ComposedAddress => Payload?.Key != null ? Address.ComposeAddress(Payload.Key): null;
+        public string AddressContext => Payload?.Key != null ? Payload.Key: "no.key.set";
 
     }
 

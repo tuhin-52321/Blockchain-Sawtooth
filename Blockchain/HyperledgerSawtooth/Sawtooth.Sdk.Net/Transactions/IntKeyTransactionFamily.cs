@@ -10,26 +10,20 @@ namespace Sawtooth.Sdk.Net.Transactions
         public IntKeyTransactionFamily(): base("intkey", "1.0")
         {
         }
+        public override string AddressPrefix => Encoding.UTF8.GetBytes("intkey").ToSha512().ToHexString().First(6);
 
-    }
-
-    public class IntKeyAddress : IAddress
-    {
-        public string Prefix => Encoding.UTF8.GetBytes("intkey").ToSha512().ToHexString().First(6);
-
-        public string ComposeAddress(string context)
+        public override string AddressSuffix(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
+ 
+            return Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
 
         }
 
     }
 
+  
     public class IntKeyState : CBORPayload, IState
     {
-        public IAddress Address => new IntKeyAddress();
-
-        public string? ComposedAddress => Address.ComposeAddress(Name);
 
         public string Name { get; private set; } = "";
         public int Value { get; private set; } = 0;
@@ -38,9 +32,9 @@ namespace Sawtooth.Sdk.Net.Transactions
                  + $"    Name : {Name} \n"
                  + $"    Value : {Value} \n";
 
-        
 
-       
+        public string AddressContext => Name ;
+
 
         public override void Deserialize(CBORObject cbor)
         {
@@ -90,7 +84,7 @@ namespace Sawtooth.Sdk.Net.Transactions
             return cbor;
         }
 
-        public string? AddressContext => Name;
+        public string AddressContext => Name!=null?Name:"<NotSet>";
 
     }
 }

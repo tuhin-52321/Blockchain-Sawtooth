@@ -36,7 +36,7 @@ namespace IntegerKey
 
         private SawtoothWSClient? websocket;
 
-        private TransactionFamily txnFamily;
+        private IntKeyTransactionFamily txnFamily;
 
         private Signer signer;
 
@@ -50,7 +50,7 @@ namespace IntegerKey
         {
             InitializeComponent();
 
-            txnFamily = TransactionFamilyFactory.GetTransactionFamily("intkey", "1.0");
+            txnFamily = new IntKeyTransactionFamily();
 
             signer = new Signer();
 
@@ -109,18 +109,20 @@ namespace IntegerKey
             {
                 foreach(var state in e.StateChanges)
                 {
-                    if (state.Type == "SET")
+                    if (state.Value != null)
                     {
-                        IntKeyState ik_state = new IntKeyState();
-                        ik_state.UnwrapState(state.Value);
-                        CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
+                        if (state.Type == "SET")
+                        {
+                            IntKeyState ik_state = txnFamily.UnwrapStatePayload(state.Value);
+                            CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
 
-                        Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+                            Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+                        }
+                        else
+                        {
+                            //TODO: handle deletion via address
+                        }
                     }
-                    else
-                    {
-                        //TODO: handle deletion via address
-                    }               
                 }
             }
         }
@@ -187,11 +189,13 @@ namespace IntegerKey
             FullList<StateItem> states = await client.GetStatesWithFilterAsync(txnFamily.AddressPrefix);
             foreach (var state in states.List)
             {
-                IntKeyState ik_state = new IntKeyState();
-                ik_state.UnwrapState(state?.Data);
-                CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
+                if (state?.Data != null)
+                {
+                    IntKeyState ik_state = txnFamily.UnwrapStatePayload(state.Data);
+                    CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
 
-                Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+                    Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+                }
             }
 
         }
@@ -208,7 +212,7 @@ namespace IntegerKey
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txn.WrapPayload()));
+                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
                 if (response != null && response.Link != null)
                 {

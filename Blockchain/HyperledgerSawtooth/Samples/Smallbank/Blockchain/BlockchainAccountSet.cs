@@ -11,7 +11,7 @@ namespace Smallbank.Blockchain
     {
         private SawtoothClient client;
 
-        private TransactionFamily txnFamily;
+        private SmallbankTransactionFamily txnFamily;
 
         private Signer signer;
 
@@ -21,7 +21,7 @@ namespace Smallbank.Blockchain
 
         public BlockchainAccountSet(string url)
         {
-            txnFamily = TransactionFamilyFactory.GetTransactionFamily("smallbank", "1.0");
+            txnFamily = new SmallbankTransactionFamily();
 
             signer = new Signer();
 
@@ -62,7 +62,7 @@ namespace Smallbank.Blockchain
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapPayload(txn)));
+                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
                 if (response != null && response.Link != null)
                 {
@@ -160,18 +160,20 @@ namespace Smallbank.Blockchain
             var full = await client.GetStatesWithFilterAsync(txnFamily.AddressPrefix);
             foreach (var data in full.List)
             {
-                SmallbankState smallbank = new SmallbankState();
-                smallbank.UnwrapState(data?.Data);
-                if (smallbank.Account != null)
+                if (data?.Data != null)
                 {
-                    Account account = new Account
+                    SmallbankState smallbank = txnFamily.UnwrapStatePayload(data.Data);
+                    if (smallbank.Payload != null)
                     {
-                        CustomerId = smallbank.Account.CustomerId,
-                        CustomerName = smallbank.Account.CustomerName==null?"<No Name>": smallbank.Account.CustomerName,
-                        SavingsBalance = smallbank.Account.SavingsBalance,
-                        CheckingBalance = smallbank.Account.CheckingBalance
-                    };
-                    accounts.Add(account);
+                        Account account = new Account
+                        {
+                            CustomerId = smallbank.Payload.CustomerId,
+                            CustomerName = smallbank.Payload.CustomerName == null ? "<No Name>" : smallbank.Payload.CustomerName,
+                            SavingsBalance = smallbank.Payload.SavingsBalance,
+                            CheckingBalance = smallbank.Payload.CheckingBalance
+                        };
+                        accounts.Add(account);
+                    }
                 }
             }
             return accounts;

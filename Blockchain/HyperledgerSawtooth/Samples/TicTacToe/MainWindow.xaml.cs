@@ -32,7 +32,7 @@ namespace TicTacToe
         private SawtoothClient client;
 
 
-        private TransactionFamily txnFamily;
+        private XOTransactionFamily txnFamily;
 
         private Signer signer;
 
@@ -48,7 +48,7 @@ namespace TicTacToe
         {
             InitializeComponent();
 
-            txnFamily = TransactionFamilyFactory.GetTransactionFamily("xo", "1.0");
+            txnFamily = new XOTransactionFamily();
 
             signer = new Signer(Encoding.UTF8.GetBytes(name));
 
@@ -91,10 +91,9 @@ namespace TicTacToe
                 List<string> current_list = new List<string>();
                 foreach (var item in items.List)
                 {
-                    if (item != null)
+                    if (item?.Data != null)
                     {
-                        XOState xo_state = new XOState();
-                        xo_state.UnwrapState(item.Data);
+                        XOState xo_state = txnFamily.UnwrapStatePayload(item.Data);
 
                         if (xo_state.Name != null)
                         {
@@ -199,7 +198,7 @@ namespace TicTacToe
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txn.WrapPayload()));
+                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
                 if (response != null && response.Link != null)
                 {

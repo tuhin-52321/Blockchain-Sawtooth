@@ -10,26 +10,20 @@ namespace Sawtooth.Sdk.Net.Transactions
         {
         }
 
-    }
+        public override string AddressPrefix => Encoding.UTF8.GetBytes("xo").ToSha512().ToHexString().First(6);
 
-    public class XOAddress : IAddress
-    {
-        public string Prefix => Encoding.UTF8.GetBytes("xo").ToSha512().ToHexString().First(6);
-
-        public string ComposeAddress(string context)
+        public override string AddressSuffix(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().First(64);
+            return Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().First(64);
 
         }
-
     }
 
+ 
     public class XOState : CSVStringPayload, IState
     {
 
-        public IAddress Address => new XOAddress();
-
-        public string? ComposedAddress => Name!=null?Address.ComposeAddress(Name):null;
+        public string AddressContext => Name!=null?Name:"<NotSet>";
 
         public string? Name { get; private set; }
         public string? Board { get; private set; }

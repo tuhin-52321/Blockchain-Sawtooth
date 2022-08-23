@@ -13,16 +13,12 @@ namespace Sawtooth.Sdk.Net.Transactions
 
         }
 
-  
-    }
+        public override string AddressPrefix => Encoding.UTF8.GetBytes("smallbank").ToSha512().ToHexString().First(6);
 
-    public class SmallbankAddress : IAddress
-    {
-        public string Prefix => Encoding.UTF8.GetBytes("smallbank").ToSha512().ToHexString().First(6);
-
-        public string ComposeAddress(string context)
+        public override string AddressSuffix(string context)
         {
-            return Prefix + Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
+            return Encoding.UTF8.GetBytes(context).ToSha512().ToHexString().Last(64);
+
         }
 
     }
@@ -53,9 +49,8 @@ namespace Sawtooth.Sdk.Net.Transactions
             }
         }
 
-        public IAddress Address => new SmallbankAddress();
 
-        public string? ComposedAddress => Payload?.CustomerId!=null? Address.ComposeAddress(Payload.CustomerId + "") : null;
+        public string AddressContext => Payload?.CustomerId!=null? Payload.CustomerId + "" : "0";
 
     }
 

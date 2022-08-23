@@ -12,11 +12,12 @@ namespace Sawtooth.Sdk.Net.Transactions
         public string Name { get; private set; }
         public string Version { get; private set; }
 
-        public string AddressPrefix(IState state) => state.Address.Prefix;
+        public abstract string AddressPrefix { get; }
+        public abstract string AddressSuffix(string context);
 
-        public string? Address(IState state, string? context)
+        public string Address(string context)
         {
-            return (context != null) ? state.Address.ComposeAddress(context) : null;
+            return AddressPrefix + AddressSuffix(context);       
         }
 
         public TXN UnwrapTxnPayload(byte[] payload) => SerializablePayload.CreateFromPayloadData<TXN>(payload);

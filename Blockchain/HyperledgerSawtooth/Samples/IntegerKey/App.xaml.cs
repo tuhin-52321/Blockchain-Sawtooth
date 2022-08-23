@@ -21,8 +21,11 @@ namespace IntegerKey
                 Console.WriteLine("Usage: IntegerKey <url>");
                 Current.Shutdown();
             }
-            MainWindow wnd = new MainWindow(e.Args[0]);
-            wnd.Show();
+            else
+            {
+                MainWindow wnd = new MainWindow(e.Args[0]);
+                wnd.Show();
+            }
         }
     }
 }

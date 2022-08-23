@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "IntegerKey": {
+      "commandName": "Project",
+      "commandLineArgs": "http://20.235.2.18:8008"
+    }
+  }
+}
