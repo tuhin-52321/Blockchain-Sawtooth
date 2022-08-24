@@ -2,7 +2,7 @@
 
 namespace Smallbank.Models
 {
-    public class DepositCheck
+    public class Check
     {
         public uint? CustomerId { get; set; }
 

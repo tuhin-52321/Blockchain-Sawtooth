@@ -11,31 +11,31 @@ using Smallbank.Models;
 
 namespace Smallbank.Pages.Accounts
 {
-    public class DepositCheckModel : PageModel
+    public class WriteCheckModel : PageModel
     {
         private readonly Smallbank.Data.SmallbankContext _context;
 
-        public DepositCheckModel(Smallbank.Data.SmallbankContext context)
+        public WriteCheckModel(Smallbank.Data.SmallbankContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public Check DepositCheck { get; set; } = default!;
+        public Check WriteCheck { get; set; } = default!;
 
         private async Task SetModel(uint? id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                DepositCheck = new Check
+                WriteCheck = new Check
                 {
                     CustomerId = null
                 }; 
                 return;
             }
 
-            DepositCheck = new Check
+            WriteCheck = new Check
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,
@@ -52,10 +52,11 @@ namespace Smallbank.Pages.Accounts
 
             await SetModel(id);
 
-            if(DepositCheck.CustomerId == null)
+            if (WriteCheck.CustomerId == null)
             {
                 return NotFound();
             }
+
 
             return Page();
         }
@@ -67,12 +68,12 @@ namespace Smallbank.Pages.Accounts
             ViewData["StatusMessage"] = string.Empty;
 
 
-            if (!ModelState.IsValid || _context.Account == null || DepositCheck == null)
+            if (!ModelState.IsValid || _context.Account == null || WriteCheck == null)
             {
                 return Page();
             }
 
-            string? m = await _context.Account.DepositCheck(DepositCheck);
+            string? m = await _context.Account.WriteCheck(WriteCheck);
 
             if (m != null)
             {
@@ -80,12 +81,13 @@ namespace Smallbank.Pages.Accounts
 
             }
 
-            await SetModel(DepositCheck.CustomerId);
-            
-            if (DepositCheck.CustomerId == null)
+            await SetModel(WriteCheck.CustomerId);
+
+            if (WriteCheck.CustomerId == null)
             {
                 return NotFound();
             }
+
 
             return Page();
         }

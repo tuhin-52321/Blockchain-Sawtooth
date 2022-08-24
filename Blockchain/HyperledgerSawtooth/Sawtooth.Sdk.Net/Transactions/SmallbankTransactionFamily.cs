@@ -152,6 +152,11 @@ namespace Sawtooth.Sdk.Net.Transactions
             return new SmallbankTransaction { Payload = SmallbankTransactionPayload.CreateDepositCheckTransactionPayload(cutomerId, amount) };
         }
 
+        public static SmallbankTransaction CreateWriteCheckTransaction(uint? cutomerId, uint amount)
+        {
+            return new SmallbankTransaction { Payload = SmallbankTransactionPayload.CreateWriteCheckTransactionPayload(cutomerId, amount) };
+        }
+
 
         public string? AddressContext
         {

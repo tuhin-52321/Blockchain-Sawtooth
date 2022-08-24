@@ -78,13 +78,36 @@ namespace Smallbank.Blockchain
             return null;
         }
 
-        public async Task<string?> DepositCheck(DepositCheck depositCheck)
+        public async Task<string?> DepositCheck(Check depositCheck)
         {
             try
             {
                 //1. Create transaction payload
 
                 var payload = SmallbankTransaction.CreateDepositCheckTransaction(depositCheck.CustomerId, depositCheck.Amount);
+
+                //2. Post the Batch
+
+                string? message = await CallSmallBankTxn(payload);
+
+
+                //3. return message
+                return message;
+
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        public async Task<string?> WriteCheck(Check writeCheck)
+        {
+            try
+            {
+                //1. Create transaction payload
+
+                var payload = SmallbankTransaction.CreateWriteCheckTransaction(writeCheck.CustomerId, writeCheck.Amount);
 
                 //2. Post the Batch
 

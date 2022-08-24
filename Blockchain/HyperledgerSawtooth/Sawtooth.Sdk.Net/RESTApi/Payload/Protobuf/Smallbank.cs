@@ -47,6 +47,17 @@
             return payload;
         }
 
+        public static SmallbankTransactionPayload CreateWriteCheckTransactionPayload(uint? customerId, uint amount)
+        {
+            SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
+
+            payload.TxnType = PayloadType.WriteCheck;
+
+            payload.WriteCheck = new WriteCheckTransactionData(customerId, amount);
+
+            return payload;
+        }
+
         private ProtoBuf.IExtension? __pbn__extensionData;
         ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
             => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
@@ -141,11 +152,18 @@
         public partial class WriteCheckTransactionData : ProtoBuf.IExtensible
         {
             private ProtoBuf.IExtension? __pbn__extensionData;
+
+            public WriteCheckTransactionData(uint? customerId, uint amount)
+            {
+                CustomerId = customerId;
+                Amount = amount;
+            }
+
             ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
                 => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
             [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
-            public uint CustomerId { get; set; }
+            public uint? CustomerId { get; set; }
 
             [ProtoBuf.ProtoMember(2, Name = @"amount")]
             public uint Amount { get; set; }
