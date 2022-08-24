@@ -24,11 +24,6 @@ namespace Sawtooth.Sdk.Net.Transactions
   
     public class IntKeyState : CBORPayload, IState
     {
-        protected IntKeyState() : base()
-        {
-
-        }
-
         public string Name { get; private set; } = "";
         public int Value { get; private set; } = 0;
 

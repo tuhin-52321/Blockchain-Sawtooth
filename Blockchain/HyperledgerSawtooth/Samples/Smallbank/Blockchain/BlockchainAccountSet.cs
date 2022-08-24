@@ -77,6 +77,12 @@ namespace Smallbank.Blockchain
 
             return null;
         }
+
+        public async Task<string?> DepositCheck(DepositCheck depositCheck)
+        {
+            return "To be implemented";
+        }
+
         public async Task<string?> Add(Account acc)
         {
             try

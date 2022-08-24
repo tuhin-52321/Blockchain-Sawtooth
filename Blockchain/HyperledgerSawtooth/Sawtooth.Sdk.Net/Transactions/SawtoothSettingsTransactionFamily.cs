@@ -93,10 +93,6 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SawtoothSettingsTransaction : ProtobufPayload<SettingPayload>, ITransaction
     {
-        protected SawtoothSettingsTransaction() : base()
-        {
-        }
-
         private string? proposal_key;
 
         public string DisplayString

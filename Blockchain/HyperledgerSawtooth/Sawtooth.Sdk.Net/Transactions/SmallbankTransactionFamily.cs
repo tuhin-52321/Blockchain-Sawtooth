@@ -25,11 +25,6 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SmallbankState : ProtobufPayload<Account>, IState
     {
-
-        protected SmallbankState() : base()
-        {
-        }
-
         public string DisplayString {
             get
             {

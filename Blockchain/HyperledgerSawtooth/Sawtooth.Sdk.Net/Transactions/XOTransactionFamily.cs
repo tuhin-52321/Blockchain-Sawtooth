@@ -67,9 +67,6 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class XOTransaction : CSVStringPayload, ITransaction
     {
-        protected XOTransaction() : base()
-        {
-        }
         public string? Name { get; set; }
         public string? Action { get; set; }
         public int? Space { get; set; }

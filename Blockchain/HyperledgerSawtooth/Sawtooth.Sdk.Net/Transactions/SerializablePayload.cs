@@ -11,10 +11,6 @@ namespace Sawtooth.Sdk.Net.Transactions
         public abstract void Unwrap(byte[] payload);
         public abstract byte[] Wrap();
 
-        protected SerializablePayload()
-        {
-        }
-
         public static T CreateEmpty<T>() where T : SerializablePayload
         {
             T? payloadClass = Activator.CreateInstance(typeof(T)) as T;
