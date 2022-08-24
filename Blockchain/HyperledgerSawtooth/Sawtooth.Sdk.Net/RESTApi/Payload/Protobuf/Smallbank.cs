@@ -47,6 +47,17 @@
             return payload;
         }
 
+        public static SmallbankTransactionPayload CreateDepositCashTransactionPayload(uint? customerId, int amount)
+        {
+            SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
+
+            payload.TxnType = PayloadType.TransactSavings;
+
+            payload.TransactSavings = new TransactSavingsTransactionData(customerId, amount);
+
+            return payload;
+        }
+
         public static SmallbankTransactionPayload CreateWriteCheckTransactionPayload(uint? customerId, uint amount)
         {
             SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
@@ -174,11 +185,18 @@
         public partial class TransactSavingsTransactionData : ProtoBuf.IExtensible
         {
             private ProtoBuf.IExtension? __pbn__extensionData;
+
+            public TransactSavingsTransactionData(uint? customerId, int amount)
+            {
+                CustomerId = customerId;
+                Amount = amount;
+            }
+
             ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
                 => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
             [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
-            public uint CustomerId { get; set; }
+            public uint? CustomerId { get; set; }
 
             [ProtoBuf.ProtoMember(2, Name = @"amount")]
             public int Amount { get; set; }

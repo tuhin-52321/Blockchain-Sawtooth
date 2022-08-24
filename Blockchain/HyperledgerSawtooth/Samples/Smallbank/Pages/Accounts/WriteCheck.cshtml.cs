@@ -21,21 +21,21 @@ namespace Smallbank.Pages.Accounts
         }
 
         [BindProperty]
-        public Check WriteCheck { get; set; } = default!;
+        public Transaction WriteCheck { get; set; } = default!;
 
         private async Task SetModel(uint? id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                WriteCheck = new Check
+                WriteCheck = new Transaction
                 {
                     CustomerId = null
                 }; 
                 return;
             }
 
-            WriteCheck = new Check
+            WriteCheck = new Transaction
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,

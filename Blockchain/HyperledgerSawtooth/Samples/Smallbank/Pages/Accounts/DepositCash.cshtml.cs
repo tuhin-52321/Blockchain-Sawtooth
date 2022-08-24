@@ -11,35 +11,35 @@ using Smallbank.Models;
 
 namespace Smallbank.Pages.Accounts
 {
-    public class DepositCheckModel : PageModel
+    public class DepositCashModel : PageModel
     {
         private readonly Smallbank.Data.SmallbankContext _context;
 
-        public DepositCheckModel(Smallbank.Data.SmallbankContext context)
+        public DepositCashModel(Smallbank.Data.SmallbankContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public Transaction DepositCheck { get; set; } = default!;
+        public Transaction DepositCash { get; set; } = default!;
 
         private async Task SetModel(uint? id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                DepositCheck = new Transaction
+                DepositCash = new Transaction
                 {
                     CustomerId = null
                 }; 
                 return;
             }
 
-            DepositCheck = new Transaction
+            DepositCash = new Transaction
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,
-                CheckingBalance = account.CheckingBalance
+                SavingsBalance = account.SavingsBalance
             };
 
         }
@@ -52,7 +52,7 @@ namespace Smallbank.Pages.Accounts
 
             await SetModel(id);
 
-            if(DepositCheck.CustomerId == null)
+            if(DepositCash.CustomerId == null)
             {
                 return NotFound();
             }
@@ -67,12 +67,12 @@ namespace Smallbank.Pages.Accounts
             ViewData["StatusMessage"] = string.Empty;
 
 
-            if (!ModelState.IsValid || _context.Account == null || DepositCheck == null)
+            if (!ModelState.IsValid || _context.Account == null || DepositCash == null)
             {
                 return Page();
             }
 
-            string? m = await _context.Account.DepositCheck(DepositCheck);
+            string? m = await _context.Account.DepositCash(DepositCash);
 
             if (m != null)
             {
@@ -80,9 +80,9 @@ namespace Smallbank.Pages.Accounts
 
             }
 
-            await SetModel(DepositCheck.CustomerId);
+            await SetModel(DepositCash.CustomerId);
             
-            if (DepositCheck.CustomerId == null)
+            if (DepositCash.CustomerId == null)
             {
                 return NotFound();
             }

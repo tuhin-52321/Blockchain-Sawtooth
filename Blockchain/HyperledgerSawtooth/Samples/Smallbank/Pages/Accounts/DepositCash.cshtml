@@ -1,12 +1,12 @@
 ﻿@page
-@model Smallbank.Pages.Accounts.DepositCheckModel
+@model Smallbank.Pages.Accounts.DepositCashModel
 
 @{
-    ViewData["Title"] = "Deposit Check";
+    ViewData["Title"] = "Deposit Cash";
     string StatusMessage = ViewData["StatusMessage"] as string;  
 }
 
-<h1>Deposit Check</h1>
+<h1>Deposit Cash</h1>
 
 <h4>Account</h4>
 <hr />
@@ -14,22 +14,22 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="DepositCheck.CustomerId" />
+            <input type="hidden" asp-for="DepositCash.CustomerId" />
             <div class="form-group">
-               <label>Customer Name: </label> @Html.DisplayFor(model => model.DepositCheck.CustomerName)
+               <label>Customer Name: </label> @Html.DisplayFor(model => model.DepositCash.CustomerName)
             </div>
             <div class="form-group">
-               <label>Current Checking Balance: </label>@Html.DisplayFor(model => model.DepositCheck.CheckingBalance)
+               <label>Current Savings Balance: </label>@Html.DisplayFor(model => model.DepositCash.SavingsBalance)
             </div>
             <p/>
             <div>
-                <label asp-for="DepositCheck.CheckAmount" class="control-label"></label>
-                <input asp-for="DepositCheck.CheckAmount" class="form-control" />
-                <span asp-validation-for="DepositCheck.CheckAmount" class="text-danger"></span>
+                <label asp-for="DepositCash.CashAmount" class="control-label"></label>
+                <input asp-for="DepositCash.CashAmount" class="form-control" />
+                <span asp-validation-for="DepositCash.CashAmount" class="text-danger"></span>
             </div>
             <p/>
             <div class="form-group">
-                <input type="submit" value="Deposit Check" class="btn btn-primary" />
+                <input type="submit" value="Deposit Cash" class="btn btn-primary" />
             </div>
         </form>
     </div>
