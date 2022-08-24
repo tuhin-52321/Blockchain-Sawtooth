@@ -124,6 +124,29 @@ namespace Smallbank.Blockchain
             }
         }
 
+        public async Task<string?> SendMoney(Transaction send)
+        {
+            try
+            {
+                //1. Create transaction payload
+
+                var payload = SmallbankTransaction.CreateSendPaymentTransaction(send.CustomerId, send.DestCustomerId, send.CheckAmount);
+
+                //2. Post the Batch
+
+                string? message = await CallSmallBankTxn(payload);
+
+
+                //3. return message
+                return message;
+
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
         public async Task<string?> WriteCheck(Transaction writeCheck)
         {
             try
