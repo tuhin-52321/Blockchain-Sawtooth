@@ -160,7 +160,11 @@ namespace Sawtooth.Sdk.Net.Transactions
         {
             return new SmallbankTransaction { Payload = SmallbankTransactionPayload.CreateSendPaymentTransactionPayload(cutomerId, destCustomerId, amount) };
         }
-        
+
+        public static SmallbankTransaction CreateAmalgamateTransaction(uint? cutomerId, uint destCustomerId)
+        {
+            return new SmallbankTransaction { Payload = SmallbankTransactionPayload.CreateAmalgamateTransactionPayload(cutomerId, destCustomerId) };
+        }
 
         public static SmallbankTransaction CreateWriteCheckTransaction(uint? cutomerId, uint amount)
         {

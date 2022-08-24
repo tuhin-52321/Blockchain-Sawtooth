@@ -68,6 +68,17 @@
 
             return payload;
         }
+        public static SmallbankTransactionPayload CreateAmalgamateTransactionPayload(uint? customerId, uint destCustomerId)
+        {
+            SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
+
+            payload.TxnType = PayloadType.Amalgamate;
+
+            payload.Amalgamate = new AmalgamateTransactionData(customerId, destCustomerId);
+
+            return payload;
+        }
+        
         public static SmallbankTransactionPayload CreateWriteCheckTransactionPayload(uint? customerId, uint amount)
         {
             SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
@@ -249,10 +260,17 @@
                 => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
             [ProtoBuf.ProtoMember(1, Name = @"source_customer_id")]
-            public uint SourceCustomerId { get; set; }
+            public uint? SourceCustomerId { get; set; }
 
             [ProtoBuf.ProtoMember(2, Name = @"dest_customer_id")]
             public uint DestCustomerId { get; set; }
+
+            public AmalgamateTransactionData(uint? sourceCustomerId, uint destCustomerId)
+            {
+                SourceCustomerId = sourceCustomerId;
+                DestCustomerId = destCustomerId;
+            }
+
 
         }
 
