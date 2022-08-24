@@ -80,7 +80,25 @@ namespace Smallbank.Blockchain
 
         public async Task<string?> DepositCheck(DepositCheck depositCheck)
         {
-            return "To be implemented";
+            try
+            {
+                //1. Create transaction payload
+
+                var payload = SmallbankTransaction.CreateDepositCheckTransaction(depositCheck.CustomerId, depositCheck.Amount);
+
+                //2. Post the Batch
+
+                string? message = await CallSmallBankTxn(payload);
+
+
+                //3. return message
+                return message;
+
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public async Task<string?> Add(Account acc)
@@ -130,22 +148,22 @@ namespace Smallbank.Blockchain
                             }
                             if (status.Status == "COMMITTED")
                             {
-                                return "Account Created.";
+                                return "Transaction committed.";
                             }
                             else
                             {
-                                return "Account creation failes: status returned : " + status.Status;
+                                return "Transaction failed: status returned : " + status.Status;
                             }
                         }
                     }
                 }
                 else
                 {
-                    return "Account creation failed: no status found!";
+                    return "Transaction failed: no status found!";
                 }
             }
 
-            return "Account creation status check timed out.";
+            return "Transaction status check timed out.";
         }
 
         public async Task<bool> Any(Func<Account, bool> value)

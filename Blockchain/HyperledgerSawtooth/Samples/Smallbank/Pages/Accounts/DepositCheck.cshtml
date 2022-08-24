@@ -16,14 +16,18 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DepositCheck.CustomerId" />
             <div class="form-group">
-                @Html.DisplayFor(model => model.DepositCheck.CustomerName)
+               <label>Customer Name: </label> @Html.DisplayFor(model => model.DepositCheck.CustomerName)
             </div>
             <div class="form-group">
-                @Html.DisplayFor(model => model.DepositCheck.CheckingBalance)
+               <label>Current Checking Balance: </label>@Html.DisplayFor(model => model.DepositCheck.CheckingBalance)
             </div>
+            <p/>
+            <div>
                 <label asp-for="DepositCheck.Amount" class="control-label"></label>
                 <input asp-for="DepositCheck.Amount" class="form-control" />
                 <span asp-validation-for="DepositCheck.Amount" class="text-danger"></span>
+            </div>
+            <p/>
             <div class="form-group">
                 <input type="submit" value="Deposit Check" class="btn btn-primary" />
             </div>

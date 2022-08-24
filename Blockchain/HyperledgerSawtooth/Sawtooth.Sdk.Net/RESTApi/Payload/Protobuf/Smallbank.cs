@@ -25,13 +25,24 @@
     [ProtoBuf.ProtoContract()]
     public partial class SmallbankTransactionPayload : ProtoBuf.IExtensible
     {
-        internal static SmallbankTransactionPayload CreateAccountTransactionPayload(uint customerId, string customerName, uint initialSavingsBalance, uint initialCheckingBalance)
+        public static SmallbankTransactionPayload CreateAccountTransactionPayload(uint customerId, string customerName, uint initialSavingsBalance, uint initialCheckingBalance)
         {
             SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
 
             payload.TxnType = PayloadType.CreateAccount;
 
             payload.CreateAccount = new CreateAccountTransactionData(customerId, customerName, initialSavingsBalance, initialCheckingBalance);
+
+            return payload;
+        }
+
+        public static SmallbankTransactionPayload CreateDepositCheckTransactionPayload(uint? customerId, uint amount)
+        {
+            SmallbankTransactionPayload payload = new SmallbankTransactionPayload();
+
+            payload.TxnType = PayloadType.DepositChecking;
+
+            payload.DepositChecking = new DepositCheckingTransactionData(customerId, amount);
 
             return payload;
         }
@@ -108,11 +119,18 @@
         public partial class DepositCheckingTransactionData : ProtoBuf.IExtensible
         {
             private ProtoBuf.IExtension? __pbn__extensionData;
+
+            public DepositCheckingTransactionData(uint? customerId, uint amount)
+            {
+                CustomerId = customerId;
+                Amount = amount;
+            }
+
             ProtoBuf.IExtension ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
                 => ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
             [ProtoBuf.ProtoMember(1, Name = @"customer_id")]
-            public uint CustomerId { get; set; }
+            public uint? CustomerId { get; set; }
 
             [ProtoBuf.ProtoMember(2, Name = @"amount")]
             public uint Amount { get; set; }
@@ -166,6 +184,8 @@
             public uint Amount { get; set; }
 
         }
+
+
 
         [ProtoBuf.ProtoContract()]
         public partial class AmalgamateTransactionData : ProtoBuf.IExtensible

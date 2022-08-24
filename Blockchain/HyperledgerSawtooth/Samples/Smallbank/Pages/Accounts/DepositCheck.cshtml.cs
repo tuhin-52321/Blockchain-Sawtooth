@@ -21,8 +21,25 @@ namespace Smallbank.Pages.Accounts
         }
 
         [BindProperty]
-        public DepositCheck DepositCheck { get; set; } = default!;
+        public DepositCheck? DepositCheck { get; set; } = default!;
 
+        private async Task SetModel(uint? id)
+        {
+            var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
+            if (account == null)
+            {
+                DepositCheck = default;
+                return;
+            }
+
+            DepositCheck = new DepositCheck
+            {
+                CustomerId = id,
+                CustomerName = account.CustomerName,
+                CheckingBalance = account.CheckingBalance
+            };
+
+        }
         public async Task<IActionResult> OnGetAsync(uint? id)
         {
             if (id == null || _context.Account == null)
@@ -30,20 +47,7 @@ namespace Smallbank.Pages.Accounts
                 return NotFound();
             }
 
-            var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
-            if (account == null )
-            {
-                return NotFound();
-            }
-
-            var check = new DepositCheck 
-            { 
-                CustomerId = id,
-                CustomerName = account.CustomerName,
-                CheckingBalance = account.CheckingBalance
-            };
-
-            DepositCheck = check;
+            await SetModel(id);
 
             return Page();
         }
@@ -67,6 +71,8 @@ namespace Smallbank.Pages.Accounts
                 ViewData["StatusMessage"] = m;
 
             }
+
+            await SetModel(DepositCheck.CustomerId);
 
             return Page();
         }
