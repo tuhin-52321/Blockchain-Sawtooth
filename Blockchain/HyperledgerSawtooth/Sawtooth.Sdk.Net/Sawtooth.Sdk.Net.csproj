@@ -1,16 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
-    <PackageReference Include="PeterO.Cbor" Version="4.5.2" />
-    <PackageReference Include="protobuf-net" Version="3.1.17" />
-    <PackageReference Include="Websocket.Client" Version="4.4.43" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <Protobuf Include="Protos/*.proto" ProtoRoot="Protos" />
+    </ItemGroup>
+    <ItemGroup>
+      <Protobuf Include="Transactions\Families\Settings\settings.proto" />
+      <Protobuf Include="Transactions\Families\Smallbank\smallbank.proto" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BouncyCastle.NetCore" Version="1.9.0" />
+        <PackageReference Include="Google.Protobuf" Version="3.21.5" />
+        <PackageReference Include="Grpc.Tools" Version="2.48.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NetMQ" Version="4.0.1.9" />
+        <PackageReference Include="PeterO.Cbor" Version="4.5.2" />
+        <PackageReference Include="Websocket.Client" Version="4.4.43" />
+    </ItemGroup>
 
 </Project>

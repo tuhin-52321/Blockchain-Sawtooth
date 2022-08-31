@@ -4,7 +4,7 @@ using Sawtooth.Sdk.Net.RESTApi.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
 using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
 using Sawtooth.Sdk.Net.Test.RESTApi.WebSocket;
-using Sawtooth.Sdk.Net.Transactions;
+using Sawtooth.Sdk.Net.Transactions.Families.IntKey;
 using Sawtooth.Sdk.Net.Utils;
 using System;
 using System.Collections.Generic;

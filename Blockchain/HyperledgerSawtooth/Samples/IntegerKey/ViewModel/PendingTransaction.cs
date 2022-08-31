@@ -1,5 +1,5 @@
 ﻿using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
-using Sawtooth.Sdk.Net.Transactions;
+using Sawtooth.Sdk.Net.Transactions.Families.IntKey;
 using Sawtooth.Sdk.Net.Utils;
 
 namespace IntegerKeys.ViewModel

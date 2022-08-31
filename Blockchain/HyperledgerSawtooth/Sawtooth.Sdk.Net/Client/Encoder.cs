@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using Sawtooth.Sdk.Net.RESTApi.Payload.Protobuf;
+﻿using Google.Protobuf;
 using Sawtooth.Sdk.Net.Utils;
 
 namespace Sawtooth.Sdk.Net.Client
@@ -52,9 +51,9 @@ namespace Sawtooth.Sdk.Net.Client
             header.PayloadSha512 = payload.ToSha512().ToHexString();
 
             var transaction = new Transaction();
-            transaction.Payload = payload;
-            transaction.Header = header.ToProtobufByteArray();
-            transaction.HeaderSignature = signer.Sign(transaction.Header.ToSha256()).ToHexString();
+            transaction.Payload = ByteString.CopyFrom(payload);
+            transaction.Header = header.ToByteString();
+            transaction.HeaderSignature = signer.Sign(header.ToByteArray().ToSha256()).ToHexString();
 
             return transaction;
         }
@@ -72,8 +71,8 @@ namespace Sawtooth.Sdk.Net.Client
 
             var batch = new Batch();
             batch.Transactions.AddRange(transactions.Select(x => x.Clone()));
-            batch.Header = batchHeader.ToProtobufByteArray();
-            batch.HeaderSignature = signer.Sign(batch.Header.ToSha256()).ToHexString();
+            batch.Header = batchHeader.ToByteString();
+            batch.HeaderSignature = signer.Sign(batchHeader.ToByteArray().ToSha256()).ToHexString();
 
             return batch;
         }

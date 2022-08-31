@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sawtooth.Sdk.Net.Processor
+﻿namespace Sawtooth.Sdk.Net.Processor
 {
     public interface ITransactionHandler
     {
-        /**
-   * Returns the transaction family's name.
-   * @return the transaction family's name
-   */
-        public string TransactionFamilyName { get; }
+        /// <summary>
+        /// Gets the name of the family.
+        /// </summary>
+        /// <value>The name of the family.</value>
+        string FamilyName { get; }
 
-        /**
-         * Returns the transaction family's version.
-         * @return the transaction family's version
-         */
-        public string Version { get; }
+        /// <summary>
+        /// Gets the version.
+        /// </summary>
+        /// <value>The version.</value>
+        string Version { get; }
 
-        /**
-         * Returns the namespaces for this transaction handler.
-         * @return the namespaces for this transaction handler
-         */
-        List<string> NameSpaces { get; }
+        /// <summary>
+        /// Gets the namespaces.
+        /// </summary>
+        /// <value>The namespaces.</value>
+        string[] Namespaces { get; }
 
-
+        /// <summary>
+        /// Called when the processor recieves <see cref="TpProcessRequest" /> message/>
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="request">Request.</param>
+        /// <param name="context">Context.</param>
+        Task ApplyAsync(TpProcessRequest request, TransactionContext context);
     }
 }

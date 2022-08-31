@@ -1,7 +1,7 @@
 ﻿using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.RESTApi.Client;
 using Sawtooth.Sdk.Net.RESTApi.Payload;
-using Sawtooth.Sdk.Net.Transactions;
+using Sawtooth.Sdk.Net.Transactions.Families.Smallbank;
 using Sawtooth.Sdk.Net.Utils;
 using Smallbank.Models;
 
