@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="tbUrl" Text="http://localhost:8008" Grid.Column="0" Margin="5"/>
+            <TextBox x:Name="tbUrl" Text="tcp://localhost:4004" Grid.Column="0" Margin="5"/>
             <Button Content="Fetch Data" Grid.Column="1" Margin="5" Click="SubmitAsync"/>
         </Grid>
         <TabControl x:Name="tabControl" Grid.Row="1">

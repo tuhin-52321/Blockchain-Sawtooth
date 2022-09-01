@@ -1,26 +1,17 @@
 ﻿using IntegerKeys.ViewModel;
 using Sawtooth.Sdk.Net.Client;
-using Sawtooth.Sdk.Net.RESTApi.Client;
-using Sawtooth.Sdk.Net.RESTApi.Payload;
-using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
-using Sawtooth.Sdk.Net.Test.RESTApi.WebSocket;
+using Google.Protobuf;
 using Sawtooth.Sdk.Net.Transactions.Families.IntKey;
 using Sawtooth.Sdk.Net.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using static ClientStateListResponse.Types;
+using Google.Protobuf.Collections;
 
 namespace IntegerKey
 {
@@ -32,9 +23,9 @@ namespace IntegerKey
         public List<CommittedKey> Keys { get; set; } = new List<CommittedKey>();
         public List<PendingTransaction> PendingTxns { get; set; } = new List<PendingTransaction>();
         
-        private SawtoothClient? client;
+        private ValidatorClient? client;
 
-        private SawtoothWSClient? websocket;
+        private ValidatorStateEventClient? eventClient;
 
         private IntKeyTransactionFamily txnFamily;
 
@@ -44,7 +35,7 @@ namespace IntegerKey
 
         private string url;
 
-        private Sawtooth.Sdk.Net.Client.Encoder encoder;
+        private Encoder encoder;
 
         public MainWindow(string url)
         {
@@ -64,7 +55,7 @@ namespace IntegerKey
             settings.Inputs.Add(txnFamily.AddressPrefix);
             settings.Outputs.Add(txnFamily.AddressPrefix);
 
-            encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
+            encoder = new Encoder(settings, signer.GetPrivateKey());
 
             this.url = url;
 
@@ -86,44 +77,54 @@ namespace IntegerKey
 
         private async Task FetchDataAsync()
         {
+            try
+            {
+                //event client
+                if (eventClient != null) eventClient.Dispose();//Dispose previous one
+                eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
 
-            client = new SawtoothClient(url);
+                if (client != null)
+                {
+                    client.Dispose();
+                }
 
-            Keys.Clear();
+                client = ValidatorClient.Create(url);
 
-            await LoadKeysAsync(); //Load All keys
+                Keys.Clear();
 
-            RefreshUI();
+                await LoadKeysAsync(); //Load All keys
+
+                RefreshUI();
 
 
-            //Websocket client
-            if (websocket != null) websocket.Dispose();//Dispose previous one
-            Uri uri = new Uri(url);
-            websocket = new SawtoothWSClient($"ws://{uri.Host}:{uri.Port}/subscriptions", e => AutoRefresh(e), txnFamily.AddressPrefix);
+            }catch(Exception e)
+            {
+                MessageBox.Show("Error: " + e.Message + "[Will retry in 1 seconds]");
 
+                //Resource may not be ready, try again
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                await FetchDataAsync();
+            }
         }
 
-        private void AutoRefresh(WSEvent? e)
+        private void HandleError(ClientEventsSubscribeResponse.Types.Status status, string message)
         {
-            if(e != null)
-            {
-                foreach(var state in e.StateChanges)
-                {
-                    if (state.Value != null)
-                    {
-                        if (state.Type == "SET")
-                        {
-                            IntKeyState ik_state = txnFamily.UnwrapStatePayload(state.Value);
-                            CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
+            MessageBox.Show("Unable to subscribe to state events : " + message + $"({status})");
+        }
 
-                            Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
-                        }
-                        else
-                        {
-                            //TODO: handle deletion via address
-                        }
-                    }
-                }
+        private void AutoRefresh(StateChange stateChange)
+        {
+
+            if (stateChange.Type == StateChange.Types.Type.Set)
+            {
+                IntKeyState ik_state = txnFamily.UnwrapStatePayload(stateChange.Value.ToByteArray());
+                CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
+
+                Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+            }
+            else
+            {
+                //TODO: handle deletion via address
             }
         }
 
@@ -148,7 +149,7 @@ namespace IntegerKey
             PendingTransaction? pending = PendingTxns.Find(k => k.TxnId != null && k.TxnId.Equals(key.TxnId));
             if (pending == null)
             {
-                if (key.Status != "COMMITTED")
+                if (key.Status != ClientBatchStatus.Types.Status.Committed)
                 {
                     PendingTxns.Add(key);
                 }
@@ -156,7 +157,7 @@ namespace IntegerKey
             else
             {
 
-                if(key.Status == "COMMITTED")
+                if(key.Status == ClientBatchStatus.Types.Status.Committed)
                 {
                     PendingTxns.Remove(pending);
                 }
@@ -186,12 +187,12 @@ namespace IntegerKey
         {
             if (client == null) return;
 
-            FullList<StateItem> states = await client.GetStatesWithFilterAsync(txnFamily.AddressPrefix);
+            FullList<Entry> states = await client.GetAllStatesWithFilterAsync(txnFamily.AddressPrefix);
             foreach (var state in states.List)
             {
                 if (state?.Data != null)
                 {
-                    IntKeyState ik_state = txnFamily.UnwrapStatePayload(state.Data);
+                    IntKeyState ik_state = txnFamily.UnwrapStatePayload(state.Data.ToByteArray());
                     CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
 
                     Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
@@ -212,15 +213,13 @@ namespace IntegerKey
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
+                var batchIds = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
-                if (response != null && response.Link != null)
-                {
-                    await CheckStatus(txn, response.Link);
+                await CheckStatus(txn, batchIds);
 
-                    return true;
-                }
-            }catch(Exception e)
+                return true;
+            }
+            catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
@@ -228,36 +227,64 @@ namespace IntegerKey
             return false;
         }
 
-        private async Task CheckStatus( IntKeyTransaction txn, string link)
+        private async Task CheckStatus(IntKeyTransaction txn, RepeatedField<string> batchIds)
         {
-            if (client == null) return;
-
-            var statuses = await client.GetBatchStatusUsingLinkAsync(link);
-
-            if (statuses != null)
+            try
             {
+                if (client == null) return;
+
+                var statuses = await client.GetBatchStatusesAsync(batchIds);
+
+                int index = 0;
                 foreach (var status in statuses)
                 {
-                    if (status.Id != null && status.Status != null)
-                    {
-                        PendingTransaction pending = new PendingTransaction(status.Id, txn, status.Status);
-                        if (status.InvalidTransaction.Count > 0)
-                        {
-                            pending.Message = status.InvalidTransaction[0]?.Message;
-                        }
-                        Dispatcher.Invoke(() => AddOrUpdatePendingToList(pending));
+                    PendingTransaction pending = new PendingTransaction(status.BatchId, txn, status.Status);
 
-                        if (pending.Status == "PENDING")
+                    if (pending.Status == ClientBatchStatus.Types.Status.Pending)
+                    {
+                        //Check after sometime
+                        _ = Task.Run(async () =>
                         {
-                            //Check after sometime
-                            _ = Task.Run(async () =>
+                            await Task.Delay(TimeSpan.FromSeconds(1));
+                            await CheckStatus(txn, batchIds);
+                        });
+                    }
+                    else if (pending.Status == ClientBatchStatus.Types.Status.Invalid)
+                    {
+                        pending.Message = status.InvalidTransactions[index].Message;
+                        Dispatcher.Invoke(() => AddOrUpdatePendingToList(pending));
+                    }
+                    else if (pending.Status == ClientBatchStatus.Types.Status.Committed)
+                    {
+                        Dispatcher.Invoke(() => AddOrUpdatePendingToList(pending));
+                        if (txn.Name != null)
+                        {
+                            var response = await client.GetStateAsync(txnFamily.Address(txn.Name));
+                            if (response.Status == ClientStateGetResponse.Types.Status.Ok)
                             {
-                                await Task.Delay(TimeSpan.FromSeconds(1));
-                                await CheckStatus(txn, link);
-                            });
+                                IntKeyState ik_state = txnFamily.UnwrapStatePayload(response.Value.ToByteArray());
+                                CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
+                                Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
+                            }
                         }
                     }
+                    else
+                    {
+                        //unknown status, retry 
+                        _ = Task.Run(async () =>
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(1));
+                            await CheckStatus(txn, batchIds);
+                        });
+                    }
+                    index++;
                 }
+            }
+            catch
+            {
+                //Resource may not be ready, try again
+                await Task.Delay(TimeSpan.FromSeconds(1));
+                await CheckStatus(txn, batchIds);
             }
         }
 
@@ -326,6 +353,13 @@ namespace IntegerKey
                 Dispatcher.Invoke(() => { tbVariable.Text = ""; tbValue.Text = ""; });
             } 
 
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (eventClient != null) eventClient.Dispose();
+            if (client != null) client.Dispose();
 
         }
     }

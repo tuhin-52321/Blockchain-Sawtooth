@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Google.Protobuf;
+using Google.Protobuf.Collections;
 using static Message.Types;
 
 namespace Sawtooth.Sdk.Net.Utils
@@ -126,5 +127,14 @@ namespace Sawtooth.Sdk.Net.Utils
             return data;
         }
 
+        public static T? Find<T>(this RepeatedField<T> fields, Predicate<T> match)
+        {
+            foreach(T field in fields)
+            {
+                if(match(field)) return field;
+            }
+
+            return default(T);
+        }
     }
 }

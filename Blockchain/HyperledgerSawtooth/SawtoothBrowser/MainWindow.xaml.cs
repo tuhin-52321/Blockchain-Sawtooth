@@ -1,7 +1,5 @@
 ﻿using Sawtooth.Sdk.Net.Transactions;
-using Sawtooth.Sdk.Net.RESTApi.Client;
-using Sawtooth.Sdk.Net.RESTApi.Payload;
-using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
+using Sawtooth.Sdk.Net.Client;
 using SawtoothBrowser.Utils;
 using SawtoothBrowser.ViewModel;
 using System;
@@ -9,6 +7,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using Sawtooth.Sdk.Net.Utils;
+using Google.Protobuf;
+using Sawtooth.Sdk.Net.Transactions.Families.IntKey;
+using Sawtooth.Sdk.Net.Transactions.Families.XO;
+using Sawtooth.Sdk.Net.Transactions.Families.Smallbank;
 
 namespace SawtoothBrowser
 {
@@ -31,7 +33,7 @@ namespace SawtoothBrowser
         public string? TxnVersion { get; set; }
         public string? TxnPayload { get; set; }
 
-        SawtoothClient? client;
+        ValidatorClient? client;
 
         public MainWindow()
         {
@@ -44,14 +46,24 @@ namespace SawtoothBrowser
         private async void SubmitAsync(object sender, RoutedEventArgs e)
         {
             DataContext = null;
+            try
+            {
+                if(client != null)
+                {
+                    client.Dispose();
+                    client = null;
+                }
+                client = ValidatorClient.Create(tbUrl.Text);
 
-            client = new SawtoothClient(tbUrl.Text);
+                Blocks.Clear();
 
-            Blocks.Clear();
+                await LoadBlocksAsync(null); //load first page
 
-            await LoadBlocksAsync(null); //load first page
-
-            DataContext = this;
+                DataContext = this;
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
 
         }
 
@@ -66,7 +78,7 @@ namespace SawtoothBrowser
             else
                 Dispatcher.Invoke(new Action(() => { tbStartBlock.Text = null; bBlocksLoadMore.IsEnabled = false; }));
 
-            string? block_id = blocks.Head;
+            string block_id = blocks.HeadId;
 
             foreach (var block in blocks.List)
             {
@@ -101,22 +113,17 @@ namespace SawtoothBrowser
                 var block = Blocks.Find(x => x.BlockId == blockId);
                 if (block != null)
                 {
-                    List<BatchStatus>? batchStatuses = null;
-                    string?[]? batch_ids = block.Block?.Header?.BatchIds.ToArray();
-                    if (batch_ids != null)
+                    List<ClientBatchStatus> batchStatuses = await client.GetBatchStatusesAsync(block.Header.BatchIds);
+                    int index = 0;
+                    foreach (var batch in block.Block.Batches)
                     {
-                        batchStatuses = await client.GetBatchStatusesAsync(batch_ids);
-                        List<Batch?>? batches = block.Block?.Batches;
-                        if (batches != null)
+                        ClientBatchStatus? status = batchStatuses.Find(x => x.BatchId == block.Header.BatchIds[index]);
+                        if (status != null)
                         {
-                            int index = 0;
-                            foreach (var batch in batches)
-                            {
-                                SawtoothBatch stbatch = new SawtoothBatch(batch_ids[index], batch, batchStatuses?.Find(x => x.Id == batch_ids[index]));
-                                Batches.Add(stbatch);
-                                index++;
-                            }
+                            SawtoothBatch stbatch = new SawtoothBatch(block.Header.BatchIds[index], batch, status);
+                            Batches.Add(stbatch);
                         }
+                        index++;
                     }
                     BatchHeader = $"Batch of Block {block.BlockNum}({Batches.Count})";
                 }
@@ -143,18 +150,13 @@ namespace SawtoothBrowser
                 var batch = Batches.Find(x => x.BatchId == batchId);
                 if (batch != null)
                 {
-                    List<BatchStatus>? batchStatuses = null;
-                    batchStatuses = await client.GetBatchStatusesAsync(batch.BatchId);
-                    List<Transaction?>? txns = batch.Batch?.Transactions;
-                    if (txns != null)
+                    List<ClientBatchStatus> batchStatuses = await client.GetBatchStatusesAsync(batch.BatchId);
+                    int index = 0;
+                    foreach (var txn in batch.Batch.Transactions)
                     {
-                        int index = 0;
-                        foreach (var txn in txns)
-                        {
-                            SawtoothTransaction st_txn = new SawtoothTransaction(batch.Batch?.Header?.TransactionIds[index], txn, batchStatuses?[0]);
-                            Transactions.Add(st_txn);
-                            index++;
-                        }
+                        SawtoothTransaction st_txn = new SawtoothTransaction(batch.Header.TransactionIds[index], txn, batchStatuses[0]);
+                        Transactions.Add(st_txn);
+                        index++;
                     }
                     TxnHeader = $"Txns of Batch {batch.BatchIdShort}({Transactions.Count})";
                 }
@@ -180,45 +182,37 @@ namespace SawtoothBrowser
 
             string? txnId = (sender as FrameworkElement)?.Tag as string;
 
-            if(txnId != null)
+            if (txnId != null)
             {
                 TxnId = txnId;
-                var txnDetail = await client.GetTransactionAsync(txnId);
-                if (txnDetail != null)
+                Transaction txnDetail = await client.GetTransactionAsync(txnId);
+                TransactionHeader txnHeader = new TransactionHeader();
+                txnHeader.MergeFrom(txnDetail.Header);
+
+                TxnFamily = txnHeader.FamilyName;
+                TxnVersion = txnHeader.FamilyVersion;
+                if ("intkey".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
                 {
-                    TxnFamily = txnDetail.Header?.FamilyName;
-                    TxnVersion = txnDetail.Header?.FamilyVersion;
-                    if (txnDetail.Payload != null)
-                    {
-                        if ("intkey".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                        {
-                            TxnPayload = new IntKeyTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
-                        }
-                        else if ("sawtooth_settings".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                        {
-                            TxnPayload = new SawtoothSettingsTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
-                        }
-                        else if ("xo".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                        {
-                            TxnPayload = new XOTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
-                        }
-                        else if ("smallbank".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                        {
-                            TxnPayload = new SmallbankTransactionFamily().UnwrapTxnPayload(txnDetail.Payload).DisplayString;
-                        }
-                        else
-                        {
-                            TxnPayload = "[Raw data: ]\n" + txnDetail.Payload;
-                        }
-                    }
-                    else
-                    {
-                        TxnPayload = "<Null Value>";
-                    }
+                    TxnPayload = new IntKeyTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                }
+                else if ("sawtooth_settings".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                {
+                    TxnPayload = new SawtoothSettingsTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                }
+                else if ("xo".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                {
+                    TxnPayload = new XOTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                }
+                else if ("smallbank".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                {
+                    TxnPayload = new SmallbankTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                }
+                else
+                {
+                    TxnPayload = "[Raw data: ]\n" + txnDetail.Payload;
                 }
                 TxnDetailHeader = $"Txn Detail: {TxnId.Shorten(16)}";
             }
-
             DataContext = this;
 
             tabControl.SelectedItem = tabTxnDetail;

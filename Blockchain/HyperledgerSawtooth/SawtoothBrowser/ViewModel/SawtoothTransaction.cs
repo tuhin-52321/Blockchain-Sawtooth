@@ -1,34 +1,31 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
+﻿using Google.Protobuf.Collections;
 using SawtoothBrowser.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Google.Protobuf;
+using static ClientBatchStatus.Types;
 
 namespace SawtoothBrowser.ViewModel
 {
 
     public class SawtoothTransaction
     {
-        public Transaction? Transaction { get; private set; }
-        public BatchStatus? BatchStatus { get; private set; }
-
-        public string?  TxnId { get; private set; }
+        public Transaction Transaction { get; private set; }
+        public TransactionHeader Header { get; private set; }
+        public ClientBatchStatus BatchStatus { get; private set; }
+        public string TxnId { get; private set; }
         public string TxnIdShort => TxnId.Shorten(16);
 
-        public string? Family => Transaction?.Header?.FamilyName;
+        public string Family => Header.FamilyName;
 
-        public string? Version => Transaction?.Header?.FamilyVersion;
+        public string Version => Header.FamilyVersion;
 
-        public string IsValid => IsTxnIdPresentIn(BatchStatus?.InvalidTransaction)?"No":"Yes";
+        public string IsValid => IsTxnIdPresentIn(BatchStatus.InvalidTransactions)?"No":"Yes";
 
-        private bool IsTxnIdPresentIn(List<InvalidTransaction?>? invalidTransaction)
+        private bool IsTxnIdPresentIn(RepeatedField<InvalidTransaction> invalidTransaction)
         {
             if (invalidTransaction == null) return false;
             foreach(var invalidTxn in invalidTransaction)
             {
-                if(invalidTxn != null && invalidTxn.Id == TxnId)
+                if(invalidTxn != null && invalidTxn.TransactionId == TxnId)
                 {
                     return true;
                 }
@@ -36,11 +33,13 @@ namespace SawtoothBrowser.ViewModel
             return false;
         }
 
-        public SawtoothTransaction(string? txnId, Transaction? txn, BatchStatus? status)
+        public SawtoothTransaction(string txnId, Transaction txn, ClientBatchStatus status)
         {
             TxnId = txnId;
             Transaction = txn;
             BatchStatus = status;
+            Header = new TransactionHeader();
+            Header.MergeFrom(txn.Header);
         }
 
     }

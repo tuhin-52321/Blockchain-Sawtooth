@@ -1,33 +1,31 @@
-﻿using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
-using SawtoothBrowser.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SawtoothBrowser.Utils;
+using Google.Protobuf;
 
 namespace SawtoothBrowser.ViewModel
 {
 
     public class SawtoothBatch
     {
-        public Batch? Batch { get; private set; }
-        public BatchStatus? BatchStatus { get; private set; }
+        public Batch Batch { get; private set; }
+        public BatchHeader Header { get; private set; }
+        public ClientBatchStatus BatchStatus { get; private set; }
 
-        public string?  BatchId { get; private set; }
+        public string  BatchId { get; private set; }
         public string BatchIdShort => BatchId.Shorten(16);
 
-        public string? Status => BatchStatus?.Status;
+        public string Status => BatchStatus.Status.ToString();
 
-        public int? TxnCount => Batch?.Transactions.Count;
+        public int TxnCount => Batch.Transactions.Count;
 
-        public int? InvalidTxnCount => BatchStatus?.InvalidTransaction.Count;
+        public int InvalidTxnCount => BatchStatus.InvalidTransactions.Count;
 
-        public SawtoothBatch(string? batchId, Batch? batch, BatchStatus? status)
+        public SawtoothBatch(string batchId, Batch batch, ClientBatchStatus status)
         {
             BatchId = batchId;
             Batch = batch;
             BatchStatus = status;
+            Header = new BatchHeader();
+            Header.MergeFrom(Batch.Header);
         }
 
     }
