@@ -5,6 +5,8 @@ namespace Sawtooth.Sdk.Net.Client
 {
     public class ValidatorStateEventClient : IDisposable
     {
+        private static readonly Logger log = Logger.GetLogger(typeof(ValidatorStateEventClient));
+
         readonly EventStream Stream;
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Client.ValidatorClient"/> class.
@@ -20,6 +22,7 @@ namespace Sawtooth.Sdk.Net.Client
 
             foreach (string filter in address_filter)
             {
+                log.Debug("Subscribing to state change with address prefix {0} ...", filter);
                 eventSubscription.Filters.Add(new EventFilter
                 {
                     FilterType = global::EventFilter.Types.FilterType.RegexAny,
@@ -29,6 +32,8 @@ namespace Sawtooth.Sdk.Net.Client
             }
             ClientEventsSubscribeRequest request = new ClientEventsSubscribeRequest();
             request.Subscriptions.Add(eventSubscription);
+
+
             Stream = new EventStream(address, request, OnStateChange, OnError);
         }
 
@@ -40,12 +45,16 @@ namespace Sawtooth.Sdk.Net.Client
         /// <param name="address">Address.</param>
         public static ValidatorStateEventClient Create(string address, Action<StateChange> OnStateChange, Action<ClientEventsSubscribeResponse.Types.Status, string> OnError, params string[] address_filter)
         {
+            log.Debug("Creating ValidatorStateEventClient: {0} {1} ...", address, address_filter);
+
             return new ValidatorStateEventClient(address, OnStateChange, OnError, address_filter);
         }
 
 
         public void Dispose()
         {
+            log.Debug("Disposing ValidatorStateEventClient ...");
+
             Stream.Disconnect();
         }
 

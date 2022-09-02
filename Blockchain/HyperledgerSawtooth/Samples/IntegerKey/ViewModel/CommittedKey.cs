@@ -6,11 +6,11 @@ namespace IntegerKeys.ViewModel
     {
 
         public string Name{get;private set;}
-        public int Value { get; set; }
+        public uint Value { get; set; }
 
         public CommittedKey IntKey => this;
 
-        public CommittedKey(string name, int value)
+        public CommittedKey(string name, uint value)
         {
             Name = name;
             Value = value;

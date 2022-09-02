@@ -13,12 +13,15 @@ namespace Sawtooth.Sdk.Net.Messaging
     /// </summary>
     public class EventStream
     {
-        readonly string Address;
-        readonly string CorrelationId;
-        readonly Action<ClientEventsSubscribeResponse.Types.Status, string> OnError;
-        readonly Action<StateChange> OnStateChange;
-        readonly NetMQSocket Socket;
-        readonly NetMQPoller Poller;
+        private static readonly Logger log = Logger.GetLogger(typeof(EventStream));
+
+        private readonly string Address;
+        private readonly string CorrelationId;
+        private string UnsubCorrelationId = String.Empty;
+        private readonly Action<ClientEventsSubscribeResponse.Types.Status, string> OnError;
+        private readonly Action<StateChange> OnStateChange;
+        private readonly NetMQSocket Socket;
+        private readonly NetMQPoller Poller;
 
 
         /// <summary>
@@ -45,6 +48,8 @@ namespace Sawtooth.Sdk.Net.Messaging
 
             Connect();
 
+            log.Debug("Subscribing for state changes...", message.MessageType);
+
             Send(message);
         }
 
@@ -53,6 +58,9 @@ namespace Sawtooth.Sdk.Net.Messaging
             var message = new Message();
             message.MergeFrom(Socket.ReceiveMultipartBytes().SelectMany(x => x).ToArray());
 
+            log.Debug("Received Message: {0}", message.MessageType);
+
+
             //Check the subscription response
             if (message.MessageType == MessageType.ClientEventsSubscribeResponse && message.CorrelationId == CorrelationId)
             {
@@ -60,6 +68,8 @@ namespace Sawtooth.Sdk.Net.Messaging
 
                 if (response.Status != ClientEventsSubscribeResponse.Types.Status.Ok)
                 {
+                    log.Error("Subscription to state events failed: {0} ({1})", response.ResponseMessage, response.Status);
+
                     OnError(response.Status, response.ResponseMessage);
                 }
             }
@@ -67,6 +77,8 @@ namespace Sawtooth.Sdk.Net.Messaging
             //Respond to Pings
             if (message.MessageType == MessageType.PingRequest)
             {
+                log.Debug("Sending Ping Response.");
+
                 Socket.SendFrame(new PingResponse().Wrap(message, MessageType.PingResponse).ToByteArray());
                 return;
             }
@@ -79,10 +91,29 @@ namespace Sawtooth.Sdk.Net.Messaging
                 {
                     StateChangeList StateChanges = new StateChangeList();
                     StateChanges.MergeFrom(ev.Data);
+
+                    log.Debug("Received {0} State Changes.", StateChanges.StateChanges.Count);
+
                     foreach (var state in StateChanges.StateChanges)
                     {
+                        log.Debug("State change for '{0}' -> Type: {1}", state.Address, state.Type);
+
                         OnStateChange(state);
                     }
+                }
+            }
+
+            //Check the Unsubscribe response
+            if (message.MessageType == MessageType.ClientEventsUnsubscribeResponse && message.CorrelationId == UnsubCorrelationId)
+            {
+                ClientEventsUnsubscribeResponse response = message.Unwrap<ClientEventsUnsubscribeResponse>();
+                if(response.Status != ClientEventsUnsubscribeResponse.Types.Status.Ok)
+                {
+                    log.Error("Unsubscription to state events failed: {0}", response.Status);
+                }
+                else
+                {
+                    log.Info("Unsubscribed to State Events.");
                 }
             }
 
@@ -102,6 +133,8 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// </summary>
         private void Connect()
         {
+            log.Debug("Connecting to {0} for event subscriptions.", Address);
+
             Socket.Connect(Address);
             Poller.RunAsync();
         }
@@ -111,7 +144,18 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// </summary>
         public void Disconnect()
         {
+            log.Debug("Disconnecting from {0} for event subscriptions.", Address);
+
+            //Unsubscribe
+            ClientEventsUnsubscribeRequest request = new ClientEventsUnsubscribeRequest();
+            Message message = request.Wrap(MessageType.ClientEventsUnsubscribeRequest);
+            UnsubCorrelationId =  message.CorrelationId;
+            Send(message);
+
+            //Diconnect
             Socket.Disconnect(Address);
+  
+            //Stop Poller
             Poller.StopAsync();
         }
     }

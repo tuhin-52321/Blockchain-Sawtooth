@@ -13,12 +13,16 @@ namespace Sawtooth.Sdk.Net.Messaging
     /// </summary>
     public class Stream
     {
+        private static readonly Logger log = Logger.GetLogger(typeof(Stream));
+
         readonly string Address;
 
         readonly NetMQSocket Socket;
         readonly NetMQPoller Poller;
 
         readonly IStreamListener? Listener;
+
+        readonly object _sendLock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Messaging.Stream"/> class.
@@ -43,9 +47,10 @@ namespace Sawtooth.Sdk.Net.Messaging
         {
             var message = new Message();
             message.MergeFrom(Socket.ReceiveMultipartBytes().SelectMany(x => x).ToArray());
-
+            log.Debug("Received Message: {0}", message.MessageType);
             if (message.MessageType == MessageType.PingRequest)
             {
+                log.Debug("Sending Ping Response.");
                 Socket.SendFrame(new PingResponse().Wrap(message, MessageType.PingResponse).ToByteArray());
                 return;
             }
@@ -58,13 +63,20 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// </summary>
         /// <returns>The send.</returns>
         /// <param name="message">Message.</param>
-        public void Send(Message message) => Socket.SendFrame(message.ToByteString().ToByteArray());
-
+        public void Send(Message message)
+        {
+            lock (_sendLock)
+            {
+                log.Info("Sending message {0} {1} ...", message.MessageType, message.CorrelationId);
+                Socket.SendFrame(message.ToByteString().ToByteArray());
+            }
+        }
         /// <summary>
         /// Connects to the validator
         /// </summary>
         public void Connect()
         {
+            log.Debug("Connecting to {0} ...", Address);
             Socket.Connect(Address);
             Poller.RunAsync();
         }
@@ -74,6 +86,7 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// </summary>
         public void Disconnect()
         {
+            log.Debug("Disconnecting from {0} ...", Address);
             Socket.Disconnect(Address);
             Poller.StopAsync();
         }

@@ -150,7 +150,7 @@ namespace SawtoothBrowser
                 var batch = Batches.Find(x => x.BatchId == batchId);
                 if (batch != null)
                 {
-                    List<ClientBatchStatus> batchStatuses = await client.GetBatchStatusesAsync(batch.BatchId);
+                    List<ClientBatchStatus> batchStatuses = await client.GetBatchStatusAsync(batch.BatchId);
                     int index = 0;
                     foreach (var txn in batch.Batch.Transactions)
                     {
@@ -185,33 +185,41 @@ namespace SawtoothBrowser
             if (txnId != null)
             {
                 TxnId = txnId;
-                Transaction txnDetail = await client.GetTransactionAsync(txnId);
-                TransactionHeader txnHeader = new TransactionHeader();
-                txnHeader.MergeFrom(txnDetail.Header);
+                Transaction? txnDetail = await client.GetTransactionAsync(txnId);
+                if (txnDetail != null)
+                {
+                    TransactionHeader txnHeader = new TransactionHeader();
+                    txnHeader.MergeFrom(txnDetail.Header);
 
-                TxnFamily = txnHeader.FamilyName;
-                TxnVersion = txnHeader.FamilyVersion;
-                if ("intkey".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                {
-                    TxnPayload = new IntKeyTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
-                }
-                else if ("sawtooth_settings".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                {
-                    TxnPayload = new SawtoothSettingsTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
-                }
-                else if ("xo".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                {
-                    TxnPayload = new XOTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
-                }
-                else if ("smallbank".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
-                {
-                    TxnPayload = new SmallbankTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                    TxnFamily = txnHeader.FamilyName;
+                    TxnVersion = txnHeader.FamilyVersion;
+                    if ("intkey".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                    {
+                        TxnPayload = new IntKeyTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                    }
+                    else if ("sawtooth_settings".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                    {
+                        TxnPayload = new SawtoothSettingsTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                    }
+                    else if ("xo".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                    {
+                        TxnPayload = new XOTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                    }
+                    else if ("smallbank".Equals(TxnFamily) && "1.0".Equals(TxnVersion))
+                    {
+                        TxnPayload = new SmallbankTransactionFamily().UnwrapTxnPayload(txnDetail.Payload.ToByteArray()).DisplayString;
+                    }
+                    else
+                    {
+                        TxnPayload = "[Raw data: ]\n" + txnDetail.Payload;
+                    }
                 }
                 else
                 {
-                    TxnPayload = "[Raw data: ]\n" + txnDetail.Payload;
+                    TxnPayload = "<Txn Not Found>";
                 }
                 TxnDetailHeader = $"Txn Detail: {TxnId.Shorten(16)}";
+                
             }
             DataContext = this;
 

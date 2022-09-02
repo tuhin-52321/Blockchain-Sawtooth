@@ -12,7 +12,7 @@ namespace IntegerKeys.ViewModel
         public string ShortId => TxnId.First(8);
         public string? Name => Transaction.Name;
         public string? Verb => Transaction.Verb;
-        public int? Value => Transaction.Value;
+        public uint? Value => Transaction.Value;
         public ClientBatchStatus.Types.Status Status { get; set; }
 
         public string? Message { get; set; }

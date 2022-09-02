@@ -25,7 +25,7 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.IntKey
     public class IntKeyState : CBORPayload, IState
     {
         public string Name { get; private set; } = "";
-        public int Value { get; private set; } = 0;
+        public uint Value { get; private set; } = 0;
 
         public string DisplayString => "[CBOR Object: Map]\n"
                  + $"    Name : {Name} \n"
@@ -41,7 +41,13 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.IntKey
             if (keys.MoveNext())
             {
                 Name = keys.Current.ToObject<string>();
-                Value = cbor[Name].ToObject<int>();
+                try
+                {
+                    Value = cbor[Name].ToObject<uint>();
+                }catch(System.OverflowException)
+                {
+                    Value = int.MaxValue;
+                }
             }
         }
 
@@ -56,7 +62,7 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.IntKey
 
         public string? Name { get; set; }
         public string? Verb { get; set; }
-        public int? Value { get; set; }
+        public uint? Value { get; set; }
 
         public string DisplayString =>
              "[CBOR Object: Map]\n"
@@ -70,7 +76,7 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.IntKey
             Verb = cbor["Verb"].ToObject<string>();
 
             if ("set".Equals(Verb))
-                Value = cbor["Value"].ToObject<int>();
+                Value = cbor["Value"].ToObject<uint>();
         }
 
         public override CBORObject Serialize()

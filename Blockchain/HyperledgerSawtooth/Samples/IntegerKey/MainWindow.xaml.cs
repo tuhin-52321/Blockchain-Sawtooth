@@ -201,7 +201,7 @@ namespace IntegerKey
 
         }
 
-        private async Task<bool> CallIntKeyTxn(string name, string verb, int value)
+        private async Task<bool> CallIntKeyTxn(string name, string verb, uint value)
         {
             if (client == null) return false;
 
@@ -215,8 +215,16 @@ namespace IntegerKey
             {
                 var batchIds = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
-                await CheckStatus(txn, batchIds);
+                //Create pending entries
+                Dispatcher.Invoke(() => 
+                {
+                    foreach (var batchId in batchIds) {
+                        AddOrUpdatePendingToList(new PendingTransaction(batchId,txn,ClientBatchStatus.Types.Status.Pending));
+                    }
+                });
 
+                //Now check status 
+                await CheckStatus(txn, batchIds);
                 return true;
             }
             catch (Exception e)
@@ -257,25 +265,6 @@ namespace IntegerKey
                     else if (pending.Status == ClientBatchStatus.Types.Status.Committed)
                     {
                         Dispatcher.Invoke(() => AddOrUpdatePendingToList(pending));
-                        if (txn.Name != null)
-                        {
-                            var response = await client.GetStateAsync(txnFamily.Address(txn.Name));
-                            if (response.Status == ClientStateGetResponse.Types.Status.Ok)
-                            {
-                                IntKeyState ik_state = txnFamily.UnwrapStatePayload(response.Value.ToByteArray());
-                                CommittedKey key = new CommittedKey(ik_state.Name, ik_state.Value);
-                                Dispatcher.Invoke(() => { AddOrUpdateKeyToList(key); });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //unknown status, retry 
-                        _ = Task.Run(async () =>
-                        {
-                            await Task.Delay(TimeSpan.FromSeconds(1));
-                            await CheckStatus(txn, batchIds);
-                        });
                     }
                     index++;
                 }
@@ -346,9 +335,17 @@ namespace IntegerKey
                 return;
             }
 
-            int intValue = int.Parse(value);
+            uint uintValue = uint.MaxValue;
+            try
+            {
+                uintValue = uint.Parse(value);
+            }
+            catch
+            {
+                //ignore
+            }
 
-            if(await CallIntKeyTxn(name, "set", intValue))
+            if(await CallIntKeyTxn(name, "set", uintValue))
             {
                 Dispatcher.Invoke(() => { tbVariable.Text = ""; tbValue.Text = ""; });
             } 
