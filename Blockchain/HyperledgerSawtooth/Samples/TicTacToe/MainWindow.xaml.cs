@@ -1,7 +1,5 @@
-﻿using Sawtooth.Sdk.Net.Client;
-using Sawtooth.Sdk.Net.RESTApi.Client;
-using Sawtooth.Sdk.Net.RESTApi.Payload.Json;
-using Sawtooth.Sdk.Net.Test.RESTApi.WebSocket;
+﻿using Google.Protobuf.Collections;
+using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.Transactions.Families.XO;
 using Sawtooth.Sdk.Net.Utils;
 using System;
@@ -12,14 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using State = Sawtooth.Sdk.Net.RESTApi.Payload.Json.State;
 
 namespace TicTacToe
 {
@@ -29,8 +19,8 @@ namespace TicTacToe
     public partial class MainWindow : Window
     {
 
-        private SawtoothClient client;
-
+        private ValidatorClient client;
+        private ValidatorStateEventClient eventClient;
 
         private XOTransactionFamily txnFamily;
 
@@ -64,36 +54,64 @@ namespace TicTacToe
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            client = new SawtoothClient(url);
+            eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
+
+            client = ValidatorClient.Create(url);
 
             Title = $"TicTacToe Client - {name} {url}";
 
-            //Uri uri = new Uri(url);
-            //websocket = new SawtoothWSClient($"ws://{uri.Host}:{uri.Port}/subscriptions", e => Task.Run(RefreshAllGames), txnFamily.AddressPrefix);
 
             Task.Run(async () =>
             {
-                while(true)
-                {
-                    await RefreshAllGames();
-                    await Task.Delay(1000);
-                }
+                await LoadAllGames();
             });
         }
 
-        private async Task RefreshAllGames()
+        private void HandleError(ClientEventsSubscribeResponse.Types.Status status, string message)
+        {
+            MessageBox.Show("Unable to subscribe to state events : " + message + $"({status})");
+        }
+
+        private void AutoRefresh(StateChange stateChange)
+        {
+
+            if (stateChange.Type == StateChange.Types.Type.Set)
+            {
+                XOState xo_state = txnFamily.UnwrapStatePayload(stateChange.Value.ToByteArray());
+
+                if (xo_state.Name != null)
+                {
+                    if (!games.TryGetValue(xo_state.Name, out var area))
+                    {
+                        area = CreateNewGame(xo_state.Name);
+                        SetStatus($"New game {xo_state.Name} created.");
+                    }
+                    if (area != null && xo_state.Status != null && xo_state.Board != null)
+                    {
+                        if (area.UpdateGame(xo_state.Status, xo_state.Board, xo_state.Player1, xo_state.Player2))
+                            SetStatus($"Game {xo_state.Name} updated.");
+
+                    }
+                }
+            }
+            else
+            {
+                //TODO: handle deletion via address
+            }
+        }
+        private async Task LoadAllGames()
         {
             if (client == null) return;
 
             try
             {
-                var items = await client.GetStatesWithFilterAsync(txnFamily.AddressPrefix);
+                var items = await client.GetAllStatesWithFilterAsync(txnFamily.AddressPrefix);
                 List<string> current_list = new List<string>();
                 foreach (var item in items.List)
                 {
                     if (item?.Data != null)
                     {
-                        XOState xo_state = txnFamily.UnwrapStatePayload(item.Data);
+                        XOState xo_state = txnFamily.UnwrapStatePayload(item.Data.ToByteArray());
 
                         if (xo_state.Name != null)
                         {
@@ -137,31 +155,28 @@ namespace TicTacToe
 
         }
 
-        private async Task CheckStatus(XOTransaction txn, string link)
+        private async Task CheckStatus(XOTransaction txn, RepeatedField<string> batchIds)
         {
             if (client == null) return;
 
-            var statuses = await client.GetBatchStatusUsingLinkAsync(link);
+            var statuses = await client.GetBatchStatusesAsync(batchIds);
 
             if (statuses != null)
             {
                 foreach (var status in statuses)
                 {
-                    if (status.Id != null && status.Status != null)
+                    if (status.InvalidTransactions.Count > 0)
                     {
-                        if (status.InvalidTransaction.Count > 0)
+                        SetStatus(status.InvalidTransactions[0]?.Message);
+                    }
+                    if (status.Status == ClientBatchStatus.Types.Status.Pending)
+                    {
+                        //Check after sometime
+                        _ = Task.Run(async () =>
                         {
-                            SetStatus(status.InvalidTransaction[0]?.Message);
-                        }
-                        if (status.Status == "PENDING")
-                        {
-                            //Check after sometime
-                            _ = Task.Run(async () =>
-                            {
-                                await Task.Delay(TimeSpan.FromSeconds(1));
-                                await CheckStatus(txn, link);
-                            });
-                        }
+                            await Task.Delay(TimeSpan.FromSeconds(1));
+                            await CheckStatus(txn, batchIds);
+                        });
                     }
                 }
             }
@@ -198,14 +213,9 @@ namespace TicTacToe
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
+                var batchIds = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
-                if (response != null && response.Link != null)
-                {
-                    await CheckStatus(txn, response.Link);
-
-                    return true;
-                }
+                await CheckStatus(txn, batchIds);
             }
             catch (Exception e)
             {
@@ -277,6 +287,13 @@ namespace TicTacToe
                 }
                 return null;
             });
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            eventClient.Dispose();
+            client.Dispose();
 
         }
     }
