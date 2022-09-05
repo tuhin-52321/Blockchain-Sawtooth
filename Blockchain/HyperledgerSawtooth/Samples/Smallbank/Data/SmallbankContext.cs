@@ -16,5 +16,10 @@ namespace Smallbank.Data
         }
 
         public BlockchainAccountSet Account;
+
+        internal void Close()
+        {
+            Account.Close();
+        }
     }
 }

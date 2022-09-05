@@ -5,9 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.Add(new BlockchainService("http://20.235.2.18:8008"));
+var service =  new BlockchainService("tcp://localhost:4004");
+
+builder.Services.Add(service);
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -23,3 +26,4 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+

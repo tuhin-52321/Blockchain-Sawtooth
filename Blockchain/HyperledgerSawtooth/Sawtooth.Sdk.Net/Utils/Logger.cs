@@ -41,7 +41,7 @@ namespace Sawtooth.Sdk.Net.Utils
             {
 
                 PatternLayout patternLayout = new PatternLayout();
-                patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
+                patternLayout.ConversionPattern = "%date %-5level [%thread] %logger - %message%newline";
                 
                 patternLayout.ActivateOptions();
 

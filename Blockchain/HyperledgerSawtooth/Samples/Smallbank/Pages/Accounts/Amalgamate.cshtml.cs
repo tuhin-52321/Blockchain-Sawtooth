@@ -21,21 +21,18 @@ namespace Smallbank.Pages.Accounts
         }
 
         [BindProperty]
-        public Transaction Amalgamate { get; set; } = default!;
+        public VMTransaction Amalgamate { get; set; } = default!;
 
-        private async Task SetModel(uint? id)
+        private async Task SetModel(uint id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                Amalgamate = new Transaction
-                {
-                    CustomerId = null
-                }; 
+                Amalgamate = new VMTransaction();
                 return;
             }
 
-            Amalgamate = new Transaction
+            Amalgamate = new VMTransaction
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,
@@ -44,16 +41,16 @@ namespace Smallbank.Pages.Accounts
             };
 
         }
-        public async Task<IActionResult> OnGetAsync(uint? id)
+        public async Task<IActionResult> OnGetAsync(uint id)
         {
-            if (id == null || _context.Account == null)
+            if (id == 0 || _context.Account == null)
             {
                 return NotFound();
             }
 
             await SetModel(id);
 
-            if(Amalgamate.CustomerId == null)
+            if(Amalgamate.CustomerId == 0)
             {
                 return NotFound();
             }
@@ -83,7 +80,7 @@ namespace Smallbank.Pages.Accounts
 
             await SetModel(Amalgamate.CustomerId);
             
-            if (Amalgamate.CustomerId == null)
+            if (Amalgamate.CustomerId == 0)
             {
                 return NotFound();
             }

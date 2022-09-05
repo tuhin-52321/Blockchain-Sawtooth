@@ -21,21 +21,18 @@ namespace Smallbank.Pages.Accounts
         }
 
         [BindProperty]
-        public Transaction WriteCheck { get; set; } = default!;
+        public VMTransaction WriteCheck { get; set; } = default!;
 
-        private async Task SetModel(uint? id)
+        private async Task SetModel(uint id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                WriteCheck = new Transaction
-                {
-                    CustomerId = null
-                }; 
+                WriteCheck = new VMTransaction();
                 return;
             }
 
-            WriteCheck = new Transaction
+            WriteCheck = new VMTransaction
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,
@@ -43,16 +40,16 @@ namespace Smallbank.Pages.Accounts
             };
 
         }
-        public async Task<IActionResult> OnGetAsync(uint? id)
+        public async Task<IActionResult> OnGetAsync(uint id)
         {
-            if (id == null || _context.Account == null)
+            if (id == 0 || _context.Account == null)
             {
                 return NotFound();
             }
 
             await SetModel(id);
 
-            if (WriteCheck.CustomerId == null)
+            if (WriteCheck.CustomerId == 0)
             {
                 return NotFound();
             }
@@ -83,7 +80,7 @@ namespace Smallbank.Pages.Accounts
 
             await SetModel(WriteCheck.CustomerId);
 
-            if (WriteCheck.CustomerId == null)
+            if (WriteCheck.CustomerId == 0)
             {
                 return NotFound();
             }

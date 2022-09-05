@@ -2,9 +2,9 @@
 
 namespace Smallbank.Models
 {
-    public class Transaction
+    public class VMTransaction
     {
-        public uint? CustomerId { get; set; }
+        public uint CustomerId { get; set; }
 
         [Display(Name = "Customer Name", Description = "Name of the customer")]
         public string CustomerName { get; set; } = string.Empty;

@@ -21,21 +21,19 @@ namespace Smallbank.Pages.Accounts
         }
 
         [BindProperty]
-        public Transaction DepositCheck { get; set; } = default!;
+        public VMTransaction DepositCheck { get; set; } = default!;
 
-        private async Task SetModel(uint? id)
+        private async Task SetModel(uint id)
         {
             var account = await _context.Account.FirstOrDefaultAsync(m => m.CustomerId == id);
             if (account == null)
             {
-                DepositCheck = new Transaction
-                {
-                    CustomerId = null
-                }; 
+                DepositCheck = new VMTransaction();
+  
                 return;
             }
 
-            DepositCheck = new Transaction
+            DepositCheck = new VMTransaction
             {
                 CustomerId = id,
                 CustomerName = account.CustomerName,
@@ -43,16 +41,16 @@ namespace Smallbank.Pages.Accounts
             };
 
         }
-        public async Task<IActionResult> OnGetAsync(uint? id)
+        public async Task<IActionResult> OnGetAsync(uint id)
         {
-            if (id == null || _context.Account == null)
+            if (id == 0 || _context.Account == null)
             {
                 return NotFound();
             }
 
             await SetModel(id);
 
-            if(DepositCheck.CustomerId == null)
+            if(DepositCheck.CustomerId == 0)
             {
                 return NotFound();
             }
@@ -82,7 +80,7 @@ namespace Smallbank.Pages.Accounts
 
             await SetModel(DepositCheck.CustomerId);
             
-            if (DepositCheck.CustomerId == null)
+            if (DepositCheck.CustomerId == 0)
             {
                 return NotFound();
             }

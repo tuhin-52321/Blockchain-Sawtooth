@@ -1,6 +1,5 @@
-﻿using Sawtooth.Sdk.Net.Client;
-using Sawtooth.Sdk.Net.RESTApi.Client;
-using Sawtooth.Sdk.Net.RESTApi.Payload;
+﻿using Google.Protobuf.Collections;
+using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.Transactions.Families.Smallbank;
 using Sawtooth.Sdk.Net.Utils;
 using Smallbank.Models;
@@ -9,7 +8,7 @@ namespace Smallbank.Blockchain
 {
     public class BlockchainAccountSet
     {
-        private SawtoothClient client;
+        private ValidatorClient client;
 
         private SmallbankTransactionFamily txnFamily;
 
@@ -37,7 +36,12 @@ namespace Smallbank.Blockchain
 
             encoder = new Encoder(settings, signer.GetPrivateKey());
 
-            client = new SawtoothClient(url);
+            client = ValidatorClient.Create(url);
+        }
+
+        internal void Close()
+        {
+            client.Dispose();
         }
 
         public async Task<IList<Account>> ToListAsync()
@@ -62,23 +66,18 @@ namespace Smallbank.Blockchain
 
             try
             {
-                var response = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
+                var batchIds = await client.PostBatchListAsync(encoder.EncodeSingleTransaction(txnFamily.WrapTxnPayload(txn)));
 
-                if (response != null && response.Link != null)
-                {
-                    return await CheckStatus( response.Link);
-
-                }
+                return await CheckStatus(batchIds);
             }
             catch (Exception e)
             {
                 return e.Message;
             }
 
-            return null;
         }
 
-        public async Task<string?> DepositCheck(Transaction depositCheck)
+        public async Task<string?> DepositCheck(VMTransaction depositCheck)
         {
             try
             {
@@ -101,7 +100,7 @@ namespace Smallbank.Blockchain
             }
         }
 
-        public async Task<string?> DepositCash(Transaction depositCash)
+        public async Task<string?> DepositCash(VMTransaction depositCash)
         {
             try
             {
@@ -124,7 +123,7 @@ namespace Smallbank.Blockchain
             }
         }
         
-        public async Task<string?> SendMoney(Transaction send)
+        public async Task<string?> SendMoney(VMTransaction send)
         {
             try
             {
@@ -147,7 +146,7 @@ namespace Smallbank.Blockchain
             }
         }
 
-        public async Task<string?> Amalgamate(Transaction send)
+        public async Task<string?> Amalgamate(VMTransaction send)
         {
             try
             {
@@ -170,7 +169,7 @@ namespace Smallbank.Blockchain
             }
         }
 
-        public async Task<string?> WriteCheck(Transaction writeCheck)
+        public async Task<string?> WriteCheck(VMTransaction writeCheck)
         {
             try
             {
@@ -215,30 +214,30 @@ namespace Smallbank.Blockchain
             }
         }
 
-        private async Task<string?> CheckStatus(string link)
+        private async Task<string?> CheckStatus(RepeatedField<string> batchIds)
         {
             int tries = 30; //Wil try 30 times => 30x1 = 30 seconds max
             while (tries > 0)
             {
-                var statuses = await client.GetBatchStatusUsingLinkAsync(link);
+                var statuses = await client.GetBatchStatusesAsync(batchIds);
 
                 if (statuses != null)
                 {
                     foreach (var status in statuses)
                     {
-                        if (status.Id != null && status.Status != null)
+                        if (status.BatchId != null)
                         {
-                            if (status.InvalidTransaction.Count > 0)
+                            if (status.InvalidTransactions.Count > 0)
                             {
-                                return status.InvalidTransaction[0]?.Message;
+                                return status.InvalidTransactions[0]?.Message;
                             }
-                            if (status.Status == "PENDING")
+                            if (status.Status == ClientBatchStatus.Types.Status.Pending)
                             {
                                 Thread.Sleep(1000);
                                 tries--;
                                 continue;
                             }
-                            if (status.Status == "COMMITTED")
+                            if (status.Status == ClientBatchStatus.Types.Status.Committed)
                             {
                                 return "Transaction committed.";
                             }
@@ -273,12 +272,12 @@ namespace Smallbank.Blockchain
         public async Task<List<Account>> FetchAllAsync()
         {
             List<Account> accounts = new List<Account>(); ;
-            var full = await client.GetStatesWithFilterAsync(txnFamily.AddressPrefix);
+            var full = await client.GetAllStatesWithFilterAsync(txnFamily.AddressPrefix);
             foreach (var data in full.List)
             {
                 if (data?.Data != null)
                 {
-                    SmallbankState smallbank = txnFamily.UnwrapStatePayload(data.Data);
+                    SmallbankState smallbank = txnFamily.UnwrapStatePayload(data.Data.ToByteArray());
                     if (smallbank.Payload != null)
                     {
                         Account account = new Account

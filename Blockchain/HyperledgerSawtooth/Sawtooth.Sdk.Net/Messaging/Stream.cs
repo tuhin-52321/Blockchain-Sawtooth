@@ -65,7 +65,7 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <param name="message">Message.</param>
         public void Send(Message message)
         {
-            lock (_sendLock)
+            //lock (_sendLock)
             {
                 log.Info("Sending message {0} {1} ...", message.MessageType, message.CorrelationId);
                 Socket.SendFrame(message.ToByteString().ToByteArray());
