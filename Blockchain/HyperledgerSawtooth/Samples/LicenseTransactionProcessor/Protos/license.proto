@@ -1,0 +1,53 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "tally.protobuf";
+option go_package = "license_pb2";
+
+enum LicenseType {
+  LICENSE_TYPE_UNSET = 0;
+  GOLD = 1;
+  SILVER = 2;
+}
+
+message CreateLicense {
+  string license_id = 1;
+  LicenseType type = 2;
+  string authorization = 3;
+}
+
+message ApproveLicense {
+  string license_id = 1;
+  string authorization = 2;
+}
+
+message AssignLicense {
+  LicenseType type = 1;
+  string assignee = 2;
+}
+
+message UnassignLicense {
+  string assignee = 1;
+}
+
+enum LicenseTxnType {
+  LICENSE_TXN_TYPE_UNSET = 0;
+  CREATE = 1;
+  APPROVE = 2;
+  ASSIGN = 3;
+  UNASSIGN = 4;
+}
+message LicenseTransactionPayload
+{
+    LicenseTxnType txn_type = 1;
+    //Appropriate protobuf byte array
+    bytes txn_data = 2;
+}
+
+message License
+{
+    string LicenseId = 1;
+    LicenseType type = 2;
+    string created_by = 3;
+    string approved_by = 4;
+    string assigned_to = 5;
+}

@@ -7,8 +7,4 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Sawtooth.Sdk.Net\Sawtooth.Sdk.Net.csproj" />
-  </ItemGroup>
-
 </Project>

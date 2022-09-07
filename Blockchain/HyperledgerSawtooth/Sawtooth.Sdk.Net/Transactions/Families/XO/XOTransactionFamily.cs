@@ -106,6 +106,5 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.XO
                 return Name + "," + Action + ",";
         }
 
-        public string? AddressContext => Name;
     }
 }

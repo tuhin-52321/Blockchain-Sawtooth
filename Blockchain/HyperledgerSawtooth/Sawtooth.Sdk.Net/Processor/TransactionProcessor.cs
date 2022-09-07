@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using Google.Protobuf;
 using Sawtooth.Sdk.Net.Messaging;
 using Sawtooth.Sdk.Net.Utils;
@@ -11,6 +12,8 @@ namespace Sawtooth.Sdk.Net.Processor
     /// </summary>
     public class TransactionProcessor : StreamListenerBase
     {
+        private static Logger log = Logger.GetLogger(typeof(TransactionProcessor));
+
         readonly List<ITransactionHandler> Handlers;
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace Sawtooth.Sdk.Net.Processor
                 request.Namespaces.AddRange(handler.Namespaces);
 
                 var response = await SendAsync(request.Wrap(MessageType.TpRegisterRequest), CancellationToken.None);
-                Console.WriteLine($"Transaction processor registration: {response.Unwrap<TpRegisterResponse>().Status}");
+                log.Info("Transaction processor registration: {0}", response.Unwrap<TpRegisterResponse>().Status);
             }
         }
 

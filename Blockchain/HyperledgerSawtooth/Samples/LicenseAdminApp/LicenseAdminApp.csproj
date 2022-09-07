@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sawtooth.Sdk.Net\Sawtooth.Sdk.Net.csproj" />
+    <ProjectReference Include="..\LicenseTransactionProcessor\LicenseTransactionProcessor.csproj" />
   </ItemGroup>
 
 </Project>

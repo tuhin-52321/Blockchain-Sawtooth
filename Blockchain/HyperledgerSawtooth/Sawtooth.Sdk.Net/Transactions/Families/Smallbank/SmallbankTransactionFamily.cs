@@ -252,24 +252,6 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.Smallbank
             };
         }
 
-        public string? AddressContext
-        {
-            get
-            {
-                switch (Payload?.PayloadType)
-                {
-                    case SmallbankTransactionPayload.Types.PayloadType.CreateAccount: return Payload?.CreateAccount?.CustomerId + "";
-                    case SmallbankTransactionPayload.Types.PayloadType.DepositChecking: return Payload?.DepositChecking?.CustomerId + "";
-                    case SmallbankTransactionPayload.Types.PayloadType.TransactSavings: return Payload?.TransactSavings?.CustomerId + "";
-                    case SmallbankTransactionPayload.Types.PayloadType.WriteCheck: return Payload?.WriteCheck?.CustomerId + "";
-                    case SmallbankTransactionPayload.Types.PayloadType.SendPayment: return Payload?.SendPayment?.SourceCustomerId + "";
-                    case SmallbankTransactionPayload.Types.PayloadType.Amalgamate: return Payload?.Amalgamate?.SourceCustomerId + "";
-                }
-
-                return null;
-            }
-        }
-
     }
 
 }

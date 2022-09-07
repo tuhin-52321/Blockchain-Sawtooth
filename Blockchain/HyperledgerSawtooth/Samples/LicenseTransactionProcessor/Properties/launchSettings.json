@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LicenseTransactionProcessor": {
+      "commandName": "Project",
+      "commandLineArgs": "tcp://localhost:4004"
+    }
+  }
+}

@@ -8,6 +8,5 @@ namespace Sawtooth.Sdk.Net.Transactions
 {
     public interface ITransaction : IDisplayable
     {
-        public string? AddressContext { get; }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LicenseAdminApp": {
+      "commandName": "Project",
+      "commandLineArgs": "tcp://localhost:4004 tuhin"
+    }
+  }
+}

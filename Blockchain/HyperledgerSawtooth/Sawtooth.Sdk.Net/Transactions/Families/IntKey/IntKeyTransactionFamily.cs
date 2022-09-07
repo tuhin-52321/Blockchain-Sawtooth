@@ -89,8 +89,5 @@ namespace Sawtooth.Sdk.Net.Transactions.Families.IntKey
 
             return cbor;
         }
-
-        public string AddressContext => Name != null ? Name : "<NotSet>";
-
     }
 }

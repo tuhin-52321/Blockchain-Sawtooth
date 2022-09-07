@@ -87,8 +87,6 @@ namespace Sawtooth.Sdk.Net.Transactions
 
     public class SawtoothSettingsTransaction : ProtobufPayload<SettingsPayload>, ITransaction
     {
-        private string? proposal_key;
-
         public string DisplayString
         {
             get
@@ -110,7 +108,6 @@ namespace Sawtooth.Sdk.Net.Transactions
                             buf += $"   Value   : {proposal.Value}\n";
                             buf += $"   Nonce   : {proposal.Nonce}\n";
 
-                            proposal_key = proposal.Setting;
                         }
 
                         if (Payload.Action == SettingsPayload.Types.Action.Vote)
@@ -129,9 +126,6 @@ namespace Sawtooth.Sdk.Net.Transactions
                 return buf;
             }
         }
-
-
-        public string? AddressContext => proposal_key;
 
     }
 
