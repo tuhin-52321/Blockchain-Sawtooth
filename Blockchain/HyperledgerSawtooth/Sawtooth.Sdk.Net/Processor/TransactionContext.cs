@@ -1,7 +1,10 @@
 ﻿using Google.Protobuf;
+using log4net;
+using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.Messaging;
 using Sawtooth.Sdk.Net.Utils;
 using static Message.Types;
+using static Policy.Types;
 
 namespace Sawtooth.Sdk.Net.Processor
 {
@@ -37,6 +40,50 @@ namespace Sawtooth.Sdk.Net.Processor
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpStateGetRequest), CancellationToken.None);
             return response.Unwrap<TpStateGetResponse>()
                            .Entries.ToDictionary(x => x.Address, x => x.Data);
+        }
+
+        private async Task<ClientStateListResponse> GetStatesAsync(ClientStateListRequest request)
+        {
+
+            var response = await Stream.SendAsync(request.Wrap(MessageType.ClientStateListRequest), CancellationToken.None);
+
+            return response.Unwrap<ClientStateListResponse>();
+        }
+        public async Task<T?> GetFirstMatchingStateAsync<T>(string address_prefix, Predicate<T> filter) where T:IMessage, new()
+        {
+            string? start = null;
+            do
+            {
+                ClientStateListRequest request = new ClientStateListRequest { Address = address_prefix };
+                if (start != null)
+                {
+                    request.Paging.Start = start;
+                }
+                ClientStateListResponse response = await GetStatesAsync(request);
+
+                if (response.Status == ClientStateListResponse.Types.Status.Ok)
+                {
+                    foreach (var state in response.Entries)
+                    {
+                        T data = state.Data.ToProtobufClass<T>();
+                        if (filter(data))
+                        {
+                            return data;
+                        }
+                    }
+                    if (string.IsNullOrEmpty(response.Paging.Next))
+                    {
+                        break;
+                    }
+                    start = response.Paging.Next;
+                }
+                else
+                {
+                    break;
+                }
+            } while (true);
+            return default(T);
+
         }
 
         /// <summary>

@@ -13,5 +13,19 @@ namespace LicenseUserApp
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            if (e.Args.Length != 2)
+            {
+                MessageBox.Show("Usage: LicenseUserApp <url> <login>");
+                Console.WriteLine("Usage: LicenseUserApp <url> <login>");
+                Current.Shutdown();
+            }
+            else
+            {
+                MainWindow wnd = new MainWindow(e.Args[0], e.Args[1]);
+                wnd.Show();
+            }
+        }
     }
 }

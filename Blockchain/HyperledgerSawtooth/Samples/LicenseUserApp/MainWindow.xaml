@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LicenseUserApp"
         mc:Ignorable="d"
+        Closed="OnClosed"
         Title="License User App" Height="100" Width="200">
     <Grid>
 
@@ -17,8 +18,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Content="Licence: " Grid.Row="0" Grid.Column="0" Padding="5,0,0,0" Margin="5"/>
-        <TextBlock Text="Unassigned" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="5"/>
-        <Button Content="Check License" Grid.Row="1" Grid.Column="0" Margin="5"/>
-        <Button Content="Assign License" Grid.Row="1" Grid.Column="1" Margin="5"/>
+        <TextBlock Name="tbStatus" Text="Unassigned" Grid.Row="0" Grid.Column="1" FontWeight="Bold" Margin="5"/>
+        <Button Content="Check License" Grid.Row="1" Grid.Column="0" Margin="5" Click="OnValidate"/>
+        <Button Name="bAssign" Content="Assign License" Grid.Row="1" Grid.Column="1" Margin="5" Click="OnAssign" IsEnabled="False"/>
     </Grid>
 </Window>

@@ -24,7 +24,7 @@
                     <GridViewColumn Header="Type" Width="50" DisplayMemberBinding="{Binding Type}" />
                     <GridViewColumn Header="Status" Width="100" DisplayMemberBinding="{Binding Status}" />
                     <GridViewColumn Header="Assigned To" Width="100" DisplayMemberBinding="{Binding AssigneeShort}" />
-                    <GridViewColumn Header="Action" Width="100">
+                    <GridViewColumn Header="Action" Width="130">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>

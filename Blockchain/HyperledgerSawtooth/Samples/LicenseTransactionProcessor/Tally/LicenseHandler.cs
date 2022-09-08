@@ -117,8 +117,13 @@ namespace LicenseTransactionProcessor.Tally
         }
         private async Task AssignLicenseAsync(AssignLicense license, TransactionContext context)
         {
-            var state = await context.GetStateAsync(Arrayify(PREFIX)); //get all licenses
-            License? currentLicense = FindAFreeLicense(state, license.Type, out string key);
+            License? assignedLicense = await context.GetFirstMatchingStateAsync<License>(PREFIX, x => { return license.Assignee.Equals(x.AssignedTo); }); //get the assigned license
+            if(assignedLicense != null)
+            {
+                log.Error("Client '{0}' already assigned a license!", license.Assignee);
+                throw new InvalidTransactionException($"Client '{license.Assignee}' already assigned a license!");
+            }
+            License? currentLicense = await context.GetFirstMatchingStateAsync<License>(PREFIX, x => { return license.Type == x.Type && !string.IsNullOrEmpty(x.ApprovedBy) && string.IsNullOrEmpty(x.AssignedTo); }); //get a first free license
             if (currentLicense != null)
             {
                 currentLicense.AssignedTo = license.Assignee;
@@ -126,7 +131,7 @@ namespace LicenseTransactionProcessor.Tally
                 log.Debug("Updating license state...");
                 await context.SetStateAsync(new Dictionary<string, ByteString>
                 {
-                    { key, currentLicense.ToByteString() }
+                    { GetAddress(currentLicense.LicenseId), currentLicense.ToByteString() }
                 });
                 log.Info("A '{0}' licence is assigned to '{1}'.", currentLicense.Type, currentLicense.AssignedTo);
                 return;
@@ -137,15 +142,14 @@ namespace LicenseTransactionProcessor.Tally
 
         private async Task UnassignLicenseAsync(UnassignLicense license, TransactionContext context)
         {
-            var state = await context.GetStateAsync(Arrayify(PREFIX)); //get all licenses
-            License? currentLicense = FindAssignedLicense(state, license.Assignee, out string key);
+            License? currentLicense = await context.GetFirstMatchingStateAsync<License>(PREFIX, x => { return license.Assignee.Equals(x.AssignedTo); }); //get the assigned license
             if (currentLicense != null)
             {
-                currentLicense.AssignedTo = null;
+                currentLicense.AssignedTo = "";
                 log.Debug("Updating license state...");
                 await context.SetStateAsync(new Dictionary<string, ByteString>
                 {
-                    { key, currentLicense.ToByteString() }
+                    { GetAddress(currentLicense.LicenseId), currentLicense.ToByteString() }
                 });
                 log.Info("A '{0}' licence is unassigned from '{1}'.", currentLicense.Type, license.Assignee);
                 return;
@@ -154,47 +158,6 @@ namespace LicenseTransactionProcessor.Tally
 
             throw new InvalidTransactionException($"No license is assigned to '{license.Assignee}'.");
         }
-
-        private License? FindAFreeLicense(Dictionary<string, ByteString> state, LicenseType type, out string address)
-        {
-            if (state != null)
-            {
-                foreach (string key in state.Keys)
-                {
-                    ByteString data = state[key];
-                    var license = data.ToByteArray().ToProtobufClass<License>();
-                    if (license.Type == type && !string.IsNullOrEmpty(license.ApprovedBy) && string.IsNullOrEmpty(license.AssignedTo))
-                    {
-                        address = key;
-                        return license;
-                    }
-                }
-            }
-            address = string.Empty;
-            return null;
-        }
-
-        private License? FindAssignedLicense(Dictionary<string, ByteString> state, string assignee, out string address)
-        {
-            if (state != null)
-            {
-                foreach (string key in state.Keys)
-                {
-                    ByteString data = state[key];
-                    var license = data.ToByteArray().ToProtobufClass<License>();
-                    if (assignee.Equals(license.AssignedTo))
-                    {
-                        address = key;
-                        return license;
-                    }
-                }
-            }
-            address = string.Empty;
-            return null;
-        }
-
-
-
 
     }
 }

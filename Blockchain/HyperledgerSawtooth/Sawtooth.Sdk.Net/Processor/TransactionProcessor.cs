@@ -106,15 +106,14 @@ namespace Sawtooth.Sdk.Net.Processor
                     break;
 
                 case TaskStatus.Faulted:
-                    var errorData = ByteString.CopyFrom(task.Exception?.ToString() ?? string.Empty, Encoding.UTF8);
                     if (task.Exception != null && task.Exception.InnerException is InvalidTransactionException)
                     {
-                        await SendAsync(new TpProcessResponse { Status = TpProcessResponse.Types.Status.InvalidTransaction }
+                        await SendAsync(new TpProcessResponse { Status = TpProcessResponse.Types.Status.InvalidTransaction , Message = task.Exception.InnerException.Message, ExtendedData = ByteString.CopyFrom(task.Exception.Message, Encoding.UTF8) }
                              .Wrap(message, MessageType.TpProcessResponse), CancellationToken.None);
                     }
                     else
                     {
-                        await SendAsync(new TpProcessResponse { Status = TpProcessResponse.Types.Status.InternalError }
+                        await SendAsync(new TpProcessResponse { Status = TpProcessResponse.Types.Status.InternalError, Message = "Internal Error", ExtendedData = ByteString.CopyFrom(task.Exception?.Message??string.Empty, Encoding.UTF8) }
                              .Wrap(message, MessageType.TpProcessResponse), CancellationToken.None);
                     }
                     break;

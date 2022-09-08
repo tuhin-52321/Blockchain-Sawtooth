@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml.Linq;
+using Google.Protobuf.Collections;
 using LicenseTransactionProcessor.Tally;
 using log4net.Core;
 using Org.BouncyCastle.Cms;
@@ -126,6 +127,21 @@ namespace LicenseAdminApp
             MessageBox.Show("Unable to subscribe to state events : " + message + $"({status})");
         }
 
+        private void UpdateLicenseItem(License license)
+        {
+            VuLicense? vulicense = items.Find(x => x.Id.Equals(license.LicenseId));
+            if (vulicense == null)
+            {
+                vulicense = new VuLicense(signer.GetPublicKey().ToHexString(), license);
+                items.Add(vulicense);
+            }
+            else
+            {
+                vulicense.Update(license);
+            }
+            Refresh();
+        }
+
         private void AutoRefresh(StateChange stateChange)
         {
 
@@ -134,17 +150,7 @@ namespace LicenseAdminApp
                 LicenseState state = txnFamily.UnwrapStatePayload(stateChange.Value.ToByteArray());
                 if (state?.Payload != null)
                 {
-                    VuLicense? license = items.Find(x => x.Id.Equals(state.Payload.LicenseId));
-                    if (license == null)
-                    {
-                        license = new VuLicense(signer.GetPublicKey().ToHexString(), state.Payload);
-                        items.Add(license);
-                    }
-                    else
-                    {
-                        license.Update(state.Payload);
-                    }
-                    Refresh();
+                    UpdateLicenseItem(state.Payload);
                 }
             }
             else
@@ -223,6 +229,7 @@ namespace LicenseAdminApp
             try
             {
                 var batchIds = await client.PostBatchListAsync(encoder.Encode(encoder.CreateBatch(txns)));
+                await CheckStatus(batchIds);
             }
             catch (Exception e)
             {
@@ -230,6 +237,34 @@ namespace LicenseAdminApp
             }
 
         }
+
+        private async Task CheckStatus(RepeatedField<string> batchIds)
+        {
+            if (client == null) return;
+
+            var statuses = await client.GetBatchStatusesAsync(batchIds);
+
+            if (statuses != null)
+            {
+                foreach (var status in statuses)
+                {
+                    if (status.InvalidTransactions.Count > 0)
+                    {
+                        MessageBox.Show(status.InvalidTransactions[0]?.Message);
+                    }
+                    if (status.Status == ClientBatchStatus.Types.Status.Pending)
+                    {
+                        //Check after sometime
+                        _ = Task.Run(async () =>
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(1));
+                            await CheckStatus(batchIds);
+                        });
+                    }
+                }
+            }
+        }
+
 
         private void OnClosed(object sender, EventArgs e)
         {
