@@ -154,9 +154,12 @@ namespace Sawtooth.Sdk.Net.Messaging
 
             //Diconnect
             Socket.Disconnect(Address);
-  
+
             //Stop Poller
             Poller.StopAsync();
+
+            Poller.RemoveAndDispose(Socket);
+
         }
     }
 }

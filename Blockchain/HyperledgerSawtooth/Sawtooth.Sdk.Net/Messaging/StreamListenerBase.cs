@@ -42,7 +42,7 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public Task<Message> SendAsync(Message message, CancellationToken cancellationToken)
+        private Task<Message> SendImplAsync(Message message, CancellationToken cancellationToken)
         {
             var source = new TaskCompletionSource<Message>();
             cancellationToken.Register(() => source.SetCanceled());
@@ -59,6 +59,40 @@ namespace Sawtooth.Sdk.Net.Messaging
             throw new InvalidOperationException("Cannot get or set future context for this message.");
         }
 
+
+        /// <summary>
+        /// Sends the message to the stream (with timeout
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="message">Message.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public async Task<ZMQResponse> SendAsync(Message message,  CancellationToken cancellationToken, int timeout_seconds = -1)
+        {
+            try
+            {
+                if (timeout_seconds > 0)
+                {
+                    var task = SendImplAsync(message, cancellationToken);
+                    if (await Task.WhenAny(task, Task.Delay(timeout_seconds * 1000)) == task)
+                    {
+                        return new ZMQResponse { IsSuccess = true, Message = task.Result };
+                    }
+                    else
+                    {
+                        Futures.TryRemove(message.CorrelationId, out var _); //Remove the tracker
+                        return new ZMQResponse { IsSuccess = false, Error = $"Operation timeout : waited for {timeout_seconds} seconds." };
+                    }
+                }
+                else
+                {
+                    return new ZMQResponse { IsSuccess = true, Message = await SendImplAsync(message, cancellationToken) }; //Infinite wait
+                }
+            }catch(Exception ex)
+            {
+                return new ZMQResponse { IsSuccess = false, Error = ex.Message };
+            }
+        }
+
         /// <summary>
         /// Connects to the stream
         /// </summary>
@@ -68,5 +102,8 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// Disconnects from the stream
         /// </summary>
         protected void Disconnect() => Stream.Disconnect();
+
+        public abstract void OnPingRequest();
+
     }
 }

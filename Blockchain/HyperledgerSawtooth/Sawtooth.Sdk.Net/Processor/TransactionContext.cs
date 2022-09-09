@@ -3,6 +3,7 @@ using log4net;
 using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.Messaging;
 using Sawtooth.Sdk.Net.Utils;
+using static ClientReceiptGetResponse.Types;
 using static Message.Types;
 using static Policy.Types;
 
@@ -38,16 +39,17 @@ namespace Sawtooth.Sdk.Net.Processor
             request.Addresses.AddRange(addresses);
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpStateGetRequest), CancellationToken.None);
-            return response.Unwrap<TpStateGetResponse>()
+            if (response.IsSuccess) return response.Message.Unwrap<TpStateGetResponse>()
                            .Entries.ToDictionary(x => x.Address, x => x.Data);
+            throw new IOException(response.Error);
         }
 
         private async Task<ClientStateListResponse> GetStatesAsync(ClientStateListRequest request)
         {
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.ClientStateListRequest), CancellationToken.None);
-
-            return response.Unwrap<ClientStateListResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientStateListResponse>();
+            throw new IOException(response.Error);
         }
         public async Task<T?> GetFirstMatchingStateAsync<T>(string address_prefix, Predicate<T> filter) where T:IMessage, new()
         {
@@ -97,8 +99,8 @@ namespace Sawtooth.Sdk.Net.Processor
             request.Entries.AddRange(addressValuePairs.Select(x => new TpStateEntry { Address = x.Key, Data = x.Value }));
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpStateSetRequest), CancellationToken.None);
-            return response.Unwrap<TpStateSetResponse>()
-                             .Addresses.ToArray();
+            if (response.IsSuccess) return response.Message.Unwrap<TpStateSetResponse>().Addresses.ToArray();
+            throw new IOException(response.Error);
         }
 
         /// <summary>
@@ -112,8 +114,8 @@ namespace Sawtooth.Sdk.Net.Processor
             request.Addresses.AddRange(addresses);
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpStateDeleteRequest), CancellationToken.None);
-            return response.Unwrap<TpStateDeleteResponse>()
-                             .Addresses.ToArray();
+            if (response.IsSuccess) return response.Message.Unwrap<TpStateDeleteResponse>().Addresses.ToArray();
+            throw new IOException(response.Error);
         }
 
         /// <summary>
@@ -127,8 +129,8 @@ namespace Sawtooth.Sdk.Net.Processor
             request.Data = data;
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpReceiptAddDataRequest), CancellationToken.None);
-            return response.Unwrap<TpReceiptAddDataResponse>()
-                             .Status == TpReceiptAddDataResponse.Types.Status.Ok;
+            if (response.IsSuccess) return response.Message.Unwrap<TpReceiptAddDataResponse>().Status == TpReceiptAddDataResponse.Types.Status.Ok;
+            throw new IOException(response.Error);
         }
 
         /// <summary>
@@ -146,8 +148,8 @@ namespace Sawtooth.Sdk.Net.Processor
             var request = new TpEventAddRequest { ContextId = ContextId, Event = addEvent };
 
             var response = await Stream.SendAsync(request.Wrap(MessageType.TpEventAddRequest), CancellationToken.None);
-            return response.Unwrap<TpEventAddResponse>()
-                             .Status == TpEventAddResponse.Types.Status.Ok;
+            if (response.IsSuccess) return response.Message.Unwrap<TpEventAddResponse>().Status == TpEventAddResponse.Types.Status.Ok;
+            throw new IOException(response.Error);
         }
     }
 }

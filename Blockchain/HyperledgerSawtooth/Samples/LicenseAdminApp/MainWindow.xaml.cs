@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,13 +14,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using Google.Protobuf.Collections;
 using LicenseTransactionProcessor.Tally;
+using log4net;
 using log4net.Core;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Utilities.Encoders;
 using Sawtooth.Sdk.Net.Client;
+using Sawtooth.Sdk.Net.Processor;
 using Sawtooth.Sdk.Net.Transactions.Families.XO;
 using Sawtooth.Sdk.Net.Utils;
 
@@ -43,8 +47,18 @@ namespace LicenseAdminApp
 
         Sawtooth.Sdk.Net.Client.Encoder encoder;
 
+        readonly string url;
+
+        DateTime lastPingReceived = DateTime.Now;
+
+        public void OnPingRequest()
+        {
+            lastPingReceived = DateTime.Now;
+        }
         public MainWindow(string url, string loginid)
         {
+            this.url = url;
+
             InitializeComponent();
 
             lvLicenses.ItemsSource = items;
@@ -72,13 +86,37 @@ namespace LicenseAdminApp
 
             client = ValidatorClient.Create(url);
 
+            client.PingRequestEvent += new EventHandler((s,e) => OnPingRequest());
+
             Title = $"License Admin - {loginid} [{url}]";
 
+            DispatcherTimer timer = new DispatcherTimer(TimeSpan.FromSeconds(SawtoothConstants.PingIntervals), DispatcherPriority.Normal, OnTimeEvent, Dispatcher);
+
+            DisableUI();
 
             Task.Run(async () =>
             {
-                await LoadAllLicenses();
+                try
+                {
+                    await LoadAllLicenses();
+                }
+                finally
+                {
+                    EnableUI();
+                }
             });
+        }
+
+        private void OnTimeEvent(object? sender, EventArgs e)
+        {
+            DateTime now = DateTime.Now;
+
+            TimeSpan ping_interval = now.Subtract(lastPingReceived);
+
+            if (ping_interval.Seconds > SawtoothConstants.PingIntervals)
+            {
+                OnRefresh(sender, e);
+            }
         }
 
         private async Task RefreshAsync()
@@ -95,14 +133,30 @@ namespace LicenseAdminApp
                 CollectionViewSource.GetDefaultView(lvLicenses.ItemsSource).Refresh();
             });
         }
+        private void DisableUI()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                panel.IsEnabled = false;
+            });
+        }
+        private void EnableUI()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                panel.IsEnabled = true;
+            });
+        }
+
         private async Task LoadAllLicenses()
         {
             if (client == null) return;
 
             try
             {
-                var items = await client.GetAllStatesWithFilterAsync(txnFamily.AddressPrefix);
                 this.items.Clear();
+                await RefreshAsync();
+                var items = await client.GetAllStatesWithFilterAsync(txnFamily.AddressPrefix, 30); //Expect 30 seconds
                 foreach (var item in items.List)
                 {
                     if (item?.Data != null)
@@ -116,8 +170,9 @@ namespace LicenseAdminApp
                 await RefreshAsync();
 
             }
-            catch
+            catch (Exception e)
             {
+                MessageBox.Show(e.Message);
 
             }
         }
@@ -177,6 +232,7 @@ namespace LicenseAdminApp
         }
         private void OnCreate(object sender, RoutedEventArgs e)
         {
+
             LicenseTransaction[] transactions = new LicenseTransaction[(int)tbNumbers.Value];
             for (int i = 0; i < transactions.Length; i++)
             {
@@ -186,6 +242,8 @@ namespace LicenseAdminApp
             Task.Run(async () =>
             {
                 await CallLicenseTxn(transactions);
+
+                OnRefresh(sender, e);
             });
         }
 
@@ -200,6 +258,9 @@ namespace LicenseAdminApp
                 Task.Run(async () =>
                 {
                     await CallLicenseTxn(new LicenseTransaction[] { LicenseTransaction.ApproveLicenseTransaction(licenseId,signer.GetPublicKey().ToHexString()) });
+
+                    OnRefresh(sender, e);
+
                 });
             }
         }
@@ -215,6 +276,9 @@ namespace LicenseAdminApp
                 Task.Run(async () =>
                 {
                     await CallLicenseTxn(new LicenseTransaction[] { LicenseTransaction.UnassignLicenseTransaction(assignee) });
+
+                    OnRefresh(sender, e);
+
                 });
             }
         }
@@ -271,6 +335,32 @@ namespace LicenseAdminApp
             if (eventClient != null) eventClient.Dispose();
             if (client != null) client.Dispose();
 
+        }
+
+        private void OnRefresh(object sender, EventArgs e)
+        {
+            DisableUI();
+
+            eventClient.Dispose();
+            client.Dispose();
+
+            eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
+
+            client = ValidatorClient.Create(url);
+            lastPingReceived = DateTime.Now;
+            client.PingRequestEvent += new EventHandler((s, e) => OnPingRequest());
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await LoadAllLicenses();
+                }
+                finally
+                {
+                    EnableUI();
+                }
+            });
         }
     }
     public class VuLicense

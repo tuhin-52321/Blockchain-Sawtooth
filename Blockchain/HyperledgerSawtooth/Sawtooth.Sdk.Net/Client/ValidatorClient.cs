@@ -3,6 +3,7 @@ using Google.Protobuf.Collections;
 using NetMQ;
 using NetMQ.Sockets;
 using Sawtooth.Sdk.Net.Messaging;
+using Sawtooth.Sdk.Net.Processor;
 using Sawtooth.Sdk.Net.Utils;
 using System.Runtime.Serialization;
 using static ClientStateListResponse.Types;
@@ -14,6 +15,8 @@ namespace Sawtooth.Sdk.Net.Client
 
         private static readonly Logger log = Logger.GetLogger(typeof(ValidatorClient));
 
+        public event EventHandler? PingRequestEvent;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Client.ValidatorClient"/> class.
         /// </summary>
@@ -21,6 +24,11 @@ namespace Sawtooth.Sdk.Net.Client
         ValidatorClient(string address) : base(address)
         {
             Connect();
+        }
+
+        public override void OnPingRequest()
+        {
+            if (PingRequestEvent != null) PingRequestEvent.Invoke(this, new EventArgs());
         }
 
         /// <summary>
@@ -47,7 +55,8 @@ namespace Sawtooth.Sdk.Net.Client
             request.Batches.AddRange(batchList.Batches);
 
             var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientBatchSubmitRequest), CancellationToken.None);
-            return response.Unwrap<ClientBatchSubmitResponse>();
+            if(response.IsSuccess) return response.Message.Unwrap<ClientBatchSubmitResponse>();
+            throw new IOException(response.Error);
         }
 
         /// <summary>
@@ -61,7 +70,8 @@ namespace Sawtooth.Sdk.Net.Client
 
             var response = await SendAsync(new ClientBatchGetRequest() { BatchId = batchId }
                                            .Wrap(Message.Types.MessageType.ClientBatchGetRequest), CancellationToken.None);
-            return response.Unwrap<ClientBatchGetResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientBatchGetResponse>();
+            throw new IOException(response.Error);
         }
 
         public async Task<PageOf<Block>> GetBlocksAsync(string? start)
@@ -121,7 +131,8 @@ namespace Sawtooth.Sdk.Net.Client
                 Address = address,
                 StateRoot = stateRoot
             }.Wrap(Message.Types.MessageType.ClientStateGetRequest), CancellationToken.None);
-            return response.Unwrap<ClientStateGetResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientStateGetResponse>();
+            throw new IOException(response.Error);
         }
 
         public async Task<ClientStateGetResponse> GetStateAsync(string address)
@@ -132,18 +143,20 @@ namespace Sawtooth.Sdk.Net.Client
             {
                 Address = address
             }.Wrap(Message.Types.MessageType.ClientStateGetRequest), CancellationToken.None);
-            return response.Unwrap<ClientStateGetResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientStateGetResponse>();
+            throw new IOException(response.Error);
         }
 
-        public async Task<ClientStateListResponse> GetStatesAsync(ClientStateListRequest request)
+        public async Task<ClientStateListResponse> GetStatesAsync(ClientStateListRequest request, int timeout_seconds = -1)
         {
             log.Debug("Get State {0} {1}", request.Address, request.StateRoot);
 
-            var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientStateListRequest), CancellationToken.None);
+            var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientStateListRequest), CancellationToken.None, timeout_seconds);
 
-            return response.Unwrap<ClientStateListResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientStateListResponse>();
+            throw new IOException(response.Error);
         }
-        public async Task<FullList<Entry>> GetAllStatesWithFilterAsync(string addressPrefix)
+        public async Task<FullList<Entry>> GetAllStatesWithFilterAsync(string addressPrefix, int timeout_seconds = -1)
         {
             log.Debug("Get All States with filter {0}", addressPrefix);
 
@@ -157,7 +170,7 @@ namespace Sawtooth.Sdk.Net.Client
                 {
                     request.Paging.Start = start;
                 }
-                ClientStateListResponse response = await GetStatesAsync(request);
+                ClientStateListResponse response = await GetStatesAsync(request, timeout_seconds);
 
                 list = new FullList<Entry>(response.StateRoot);
 
@@ -243,14 +256,16 @@ namespace Sawtooth.Sdk.Net.Client
             log.Debug("Get Block list");
 
             var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientBlockListRequest), CancellationToken.None);
-            return response.Unwrap<ClientBlockListResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientBlockListResponse>();
+            throw new IOException(response.Error);
         }
 
         public async Task<ClientBatchStatusResponse> GetBatchStatusesAsync(ClientBatchStatusRequest request)
         {
             log.Debug("Get Batch Statuses");
             var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientBatchStatusRequest), CancellationToken.None);
-            return response.Unwrap<ClientBatchStatusResponse>();
+            if (response.IsSuccess) return response.Message.Unwrap<ClientBatchStatusResponse>();
+            throw new IOException(response.Error);
         }
         public async Task<List<ClientBatchStatus>> GetBatchStatusAsync(string batchId)
         {
@@ -305,8 +320,9 @@ namespace Sawtooth.Sdk.Net.Client
         {
             log.Debug("Get State List");
 
-            var respoonse = await SendAsync(request.Wrap(Message.Types.MessageType.ClientStateListRequest), CancellationToken.None);
-            return respoonse.Unwrap<ClientStateListResponse>();
+            var response = await SendAsync(request.Wrap(Message.Types.MessageType.ClientStateListRequest), CancellationToken.None);
+            if (response.IsSuccess) return response.Message.Unwrap<ClientStateListResponse>();
+            throw new IOException(response.Error);
         }
 
         /// <summary>
@@ -320,7 +336,9 @@ namespace Sawtooth.Sdk.Net.Client
 
             var response = await SendAsync(new ClientTransactionGetRequest { TransactionId = trasnactionId }
                                            .Wrap(Message.Types.MessageType.ClientTransactionGetRequest), CancellationToken.None);
-            ClientTransactionGetResponse clientTxnResponse =  response.Unwrap<ClientTransactionGetResponse>();
+            if (!response.IsSuccess) throw new IOException(response.Error);
+
+            ClientTransactionGetResponse clientTxnResponse =  response.Message.Unwrap<ClientTransactionGetResponse>();
 
             if (CheckStatus(clientTxnResponse.Status))
             {
@@ -352,11 +370,15 @@ namespace Sawtooth.Sdk.Net.Client
         /// </summary>
         /// <returns>The message async.</returns>
         /// <param name="message">Message.</param>
-        public Task<Message> SendMessageAsync(Message message)
+        public async Task<Message> SendMessageAsync(Message message)
         {
             log.Info("Sending Message {0}", message.MessageType);
 
-            return SendAsync(message, CancellationToken.None);
+            var response = await SendAsync(message, CancellationToken.None);
+
+            if (response.IsSuccess) return response.Message;
+            throw new IOException(response.Error);
+
         }
 
         /// <summary>

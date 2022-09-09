@@ -15,12 +15,14 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <param name="message">Message.</param>
         void OnMessage(Message message);
 
+        void OnPingRequest();
+
         /// <summary>
         /// Send a message to the validator
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="message">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<Message> SendAsync(Message message, CancellationToken cancellationToken);
+        Task<ZMQResponse> SendAsync(Message message, CancellationToken cancellationToken, int timeout_seconds = -1);
     }
 }
