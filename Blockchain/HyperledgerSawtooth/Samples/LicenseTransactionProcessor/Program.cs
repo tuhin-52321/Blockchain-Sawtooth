@@ -8,6 +8,8 @@ class LicenseTP
 
     public static void Main(string[] args)
     {
+        Thread.CurrentThread.Name = "Main";
+
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
         log4net.Config.XmlConfigurator.Configure(new FileInfo("Log4Net.Config"));
@@ -23,6 +25,7 @@ class LicenseTP
 
     private static void CloseProcess(object? sender, ConsoleCancelEventArgs e)
     {
+        Thread.CurrentThread.Name = "CancelKeyHandler";
         if (processor != null)
         {
             log.Info("Stop requested ...");

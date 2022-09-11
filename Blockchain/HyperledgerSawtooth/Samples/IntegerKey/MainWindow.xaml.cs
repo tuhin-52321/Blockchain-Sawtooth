@@ -25,8 +25,6 @@ namespace IntegerKey
         
         private ValidatorClient? client;
 
-        private ValidatorStateEventClient? eventClient;
-
         private IntKeyTransactionFamily txnFamily;
 
         private Signer signer;
@@ -79,16 +77,15 @@ namespace IntegerKey
         {
             try
             {
-                //event client
-                if (eventClient != null) eventClient.Dispose();//Dispose previous one
-                eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
 
                 if (client != null)
                 {
                     client.Dispose();
                 }
 
-                client = ValidatorClient.Create(url);
+                client = ValidatorClient.Create(url, null);
+
+                await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
 
                 Keys.Clear();
 
@@ -355,9 +352,11 @@ namespace IntegerKey
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (eventClient != null) eventClient.Dispose();
-            if (client != null) client.Dispose();
-
+            if (client != null)
+            {
+                _ = client.UnsubscribeFromAllEvents();
+                client.Dispose();
+            }
         }
     }
 }

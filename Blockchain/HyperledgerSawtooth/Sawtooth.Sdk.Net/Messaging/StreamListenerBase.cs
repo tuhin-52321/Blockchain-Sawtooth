@@ -1,4 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using Google.Protobuf;
+using log4net;
+using Sawtooth.Sdk.Net.Utils;
+using System.Collections.Concurrent;
+using static Message.Types;
 
 namespace Sawtooth.Sdk.Net.Messaging
 {
@@ -7,6 +11,11 @@ namespace Sawtooth.Sdk.Net.Messaging
     /// </summary>
     public abstract class StreamListenerBase : IStreamListener
     {
+        private static readonly Logger log = Logger.GetLogger(typeof(StreamListenerBase));
+
+        protected readonly List<EventSubscription> subscriptions = new List<EventSubscription>();
+        protected readonly Dictionary<string, Action<StateChange>> stateChangeHandlers = new Dictionary<string, Action<StateChange>>();
+
         readonly ConcurrentDictionary<string, TaskCompletionSource<Message>> Futures;
         /// <summary>
         /// The stream.
@@ -33,6 +42,30 @@ namespace Sawtooth.Sdk.Net.Messaging
             {
                 if (source.Task.Status != TaskStatus.RanToCompletion) source.SetResult(message);
                 Futures.TryRemove(message.CorrelationId, out var _);
+            }
+
+            //Check client events
+            if (message.MessageType == MessageType.ClientEvents)
+            {
+                //Do we have a handler?
+                if (stateChangeHandlers.TryGetValue(message.CorrelationId, out var handler))
+                {
+                    EventList eventList = message.Unwrap<EventList>();
+                    foreach (Event ev in eventList.Events)
+                    {
+                        StateChangeList StateChanges = new StateChangeList();
+                        StateChanges.MergeFrom(ev.Data);
+
+                        log.Debug("Received {0} State Changes.", StateChanges.StateChanges.Count);
+
+                        foreach (var state in StateChanges.StateChanges)
+                        {
+                            log.Debug("State change for '{0}' -> Type: {1}", state.Address, state.Type);
+
+                            handler(state);
+                        }
+                    }
+                }
             }
         }
 
@@ -96,14 +129,12 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <summary>
         /// Connects to the stream
         /// </summary>
-        protected void Connect() => Stream.Connect();
+        protected void Connect(Action? OncommunicationLost) => Stream.Connect(OncommunicationLost);
 
         /// <summary>
         /// Disconnects from the stream
         /// </summary>
         protected void Disconnect() => Stream.Disconnect();
-
-        public abstract void OnPingRequest();
 
     }
 }

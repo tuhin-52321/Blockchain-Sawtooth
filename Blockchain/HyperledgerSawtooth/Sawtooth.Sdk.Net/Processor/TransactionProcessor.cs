@@ -28,8 +28,6 @@ namespace Sawtooth.Sdk.Net.Processor
 
         private ManualResetEvent trackRegistration = new ManualResetEvent(false);
 
-        private DateTime lastPingReceived = DateTime.Now;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Processor.TransactionProcessor"/> class.
@@ -42,45 +40,6 @@ namespace Sawtooth.Sdk.Net.Processor
 
         }
 
-        private void StayConnected()
-        {
-            bool restart;
-            while (true)
-            {
-                restart = false;
-                int? delay_id = null;
-                try
-                {
-                    var taskCancellationTokenSource = new CancellationTokenSource();
-                    Task delay = Task.Delay(SawtoothConstants.PingIntervals, taskCancellationTokenSource.Token);
-                    delay_id = delay.Id;
-                    taskCancellationTokenSources.Add((int)delay_id, taskCancellationTokenSource);
-                    delay.Wait();
-                    if (stopping) break;
-                }
-                catch { break;}
-                finally
-                {
-                    if(delay_id != null) taskCancellationTokenSources.Remove((int)delay_id);
-                }
-
-                DateTime now = DateTime.Now;
-
-                TimeSpan ping_interval = now.Subtract(lastPingReceived);
-
-                if(ping_interval.Seconds > SawtoothConstants.PingIntervals)
-                {
-                    log.Debug("No ping response received within {0} seconds, rstarting ...", SawtoothConstants.Timeout);
-                    restart = true;
-                    break;
-
-                }
-
-            }
-            if(restart) Restart();
-
-
-        }
 
         private void Restart()
         {
@@ -104,7 +63,7 @@ namespace Sawtooth.Sdk.Net.Processor
             stopping = false;
             if (!restart)
             {
-                Connect();
+                Connect(Restart);
             }
 
             if (restart)
@@ -156,6 +115,7 @@ namespace Sawtooth.Sdk.Net.Processor
             {
                 Task.Run(() =>
                 {
+                    Thread.CurrentThread.Name = "Receiver";
                     while (true)
                     {
                         log.Info("Wating for registration responses ...");
@@ -176,9 +136,6 @@ namespace Sawtooth.Sdk.Net.Processor
                                     if (registration_resp.Status == TpRegisterResponse.Types.Status.Ok)
                                     {
                                         log.Info("[Handler:{0}] Registration Successful", i);
-                                        //Monitor Connectivity
-                                        lastPingReceived = DateTime.Now;//Just received a response, assume, this is last ping received.
-                                        Task.Run(StayConnected);
                                     }
                                     else
                                     {
@@ -264,10 +221,6 @@ namespace Sawtooth.Sdk.Net.Processor
             }
         }
 
-        public override void OnPingRequest()
-        {
-            lastPingReceived = DateTime.Now;
-        }
 
         /// <summary>
         /// Processes the received message from the validator

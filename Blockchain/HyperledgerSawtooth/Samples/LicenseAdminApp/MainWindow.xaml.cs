@@ -37,7 +37,6 @@ namespace LicenseAdminApp
         List<VuLicense> items = new List<VuLicense>();
 
         private ValidatorClient client;
-        private ValidatorStateEventClient eventClient;
 
         private LicenseTransactionFamily txnFamily;
 
@@ -49,12 +48,6 @@ namespace LicenseAdminApp
 
         readonly string url;
 
-        DateTime lastPingReceived = DateTime.Now;
-
-        public void OnPingRequest()
-        {
-            lastPingReceived = DateTime.Now;
-        }
         public MainWindow(string url, string loginid)
         {
             this.url = url;
@@ -82,15 +75,10 @@ namespace LicenseAdminApp
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
-
-            client = ValidatorClient.Create(url);
-
-            client.PingRequestEvent += new EventHandler((s,e) => OnPingRequest());
+            client = ValidatorClient.Create(url, AutoRefresh);
 
             Title = $"License Admin - {loginid} [{url}]";
 
-            DispatcherTimer timer = new DispatcherTimer(TimeSpan.FromSeconds(SawtoothConstants.PingIntervals), DispatcherPriority.Normal, OnTimeEvent, Dispatcher);
 
             DisableUI();
 
@@ -98,6 +86,7 @@ namespace LicenseAdminApp
             {
                 try
                 {
+                    await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
                     await LoadAllLicenses();
                 }
                 finally
@@ -105,18 +94,6 @@ namespace LicenseAdminApp
                     EnableUI();
                 }
             });
-        }
-
-        private void OnTimeEvent(object? sender, EventArgs e)
-        {
-            DateTime now = DateTime.Now;
-
-            TimeSpan ping_interval = now.Subtract(lastPingReceived);
-
-            if (ping_interval.Seconds > SawtoothConstants.PingIntervals)
-            {
-                OnRefresh(sender, e);
-            }
         }
 
         private async Task RefreshAsync()
@@ -243,7 +220,7 @@ namespace LicenseAdminApp
             {
                 await CallLicenseTxn(transactions);
 
-                OnRefresh(sender, e);
+                AutoRefresh();
             });
         }
 
@@ -259,7 +236,7 @@ namespace LicenseAdminApp
                 {
                     await CallLicenseTxn(new LicenseTransaction[] { LicenseTransaction.ApproveLicenseTransaction(licenseId,signer.GetPublicKey().ToHexString()) });
 
-                    OnRefresh(sender, e);
+                    AutoRefresh();
 
                 });
             }
@@ -277,7 +254,7 @@ namespace LicenseAdminApp
                 {
                     await CallLicenseTxn(new LicenseTransaction[] { LicenseTransaction.UnassignLicenseTransaction(assignee) });
 
-                    OnRefresh(sender, e);
+                    AutoRefresh();
 
                 });
             }
@@ -332,28 +309,27 @@ namespace LicenseAdminApp
 
         private void OnClosed(object sender, EventArgs e)
         {
-            if (eventClient != null) eventClient.Dispose();
-            if (client != null) client.Dispose();
-
+            if (client != null)
+            {
+                _ = client.UnsubscribeFromAllEvents();
+                client.Dispose();
+            }
         }
 
-        private void OnRefresh(object sender, EventArgs e)
+        private void AutoRefresh()
         {
             DisableUI();
 
-            eventClient.Dispose();
+            _ = client.UnsubscribeFromAllEvents();
             client.Dispose();
 
-            eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
-
-            client = ValidatorClient.Create(url);
-            lastPingReceived = DateTime.Now;
-            client.PingRequestEvent += new EventHandler((s, e) => OnPingRequest());
+            client = ValidatorClient.Create(url, AutoRefresh);
 
             Task.Run(async () =>
             {
                 try
                 {
+                    await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
                     await LoadAllLicenses();
                 }
                 finally

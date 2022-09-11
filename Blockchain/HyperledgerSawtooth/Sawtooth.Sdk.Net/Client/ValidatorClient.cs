@@ -7,6 +7,7 @@ using Sawtooth.Sdk.Net.Processor;
 using Sawtooth.Sdk.Net.Utils;
 using System.Runtime.Serialization;
 using static ClientStateListResponse.Types;
+using static Message.Types;
 
 namespace Sawtooth.Sdk.Net.Client
 {
@@ -15,21 +16,16 @@ namespace Sawtooth.Sdk.Net.Client
 
         private static readonly Logger log = Logger.GetLogger(typeof(ValidatorClient));
 
-        public event EventHandler? PingRequestEvent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Client.ValidatorClient"/> class.
         /// </summary>
         /// <param name="address">Address.</param>
-        ValidatorClient(string address) : base(address)
+        ValidatorClient(string address, Action? CommunicationLostHandler) : base(address)
         {
-            Connect();
+            Connect(CommunicationLostHandler);
         }
 
-        public override void OnPingRequest()
-        {
-            if (PingRequestEvent != null) PingRequestEvent.Invoke(this, new EventArgs());
-        }
 
         /// <summary>
         /// Creates a <see cref="ValidatorClient"/> instance and connects to the specified address.
@@ -37,9 +33,9 @@ namespace Sawtooth.Sdk.Net.Client
         /// </summary>
         /// <returns>The create.</returns>
         /// <param name="address">Address.</param>
-        public static ValidatorClient Create(string address)
+        public static ValidatorClient Create(string address, Action? OnCommunicationLost)
         {
-            return new ValidatorClient(address);
+            return new ValidatorClient(address, OnCommunicationLost);
         }
 
         /// <summary>
@@ -363,6 +359,77 @@ namespace Sawtooth.Sdk.Net.Client
                 case ClientTransactionGetResponse.Types.Status.InvalidId: throw new ValidatorClientException("Invalid Id Sent.");
             }
             return false;
+        }
+
+        public async Task SubscribeStateChangeEvents(Action<StateChange> OnStateChange, params string[] address_filter)
+        {
+
+            EventSubscription eventSubscription = new EventSubscription
+            {
+                EventType = "sawtooth/state-delta"
+            };
+
+            foreach (string filter in address_filter)
+            {
+                log.Debug("Subscribing to state change with address prefix {0} ...", filter);
+                eventSubscription.Filters.Add(new EventFilter
+                {
+                    FilterType = global::EventFilter.Types.FilterType.RegexAny,
+                    Key = "address",
+                    MatchString = filter + ".*"
+                });
+            }
+
+            subscriptions.Add(eventSubscription);
+
+            ClientEventsSubscribeRequest request = new ClientEventsSubscribeRequest();
+            request.Subscriptions.Add(eventSubscription);
+            var message = request.Wrap(MessageType.ClientEventsSubscribeRequest);
+            var response = await SendAsync(message, CancellationToken.None, SawtoothConstants.Timeout);
+
+            if(response.IsSuccess)
+            {
+                var clientEventsSubscribeResponse = response.Message.Unwrap<ClientEventsSubscribeResponse>();
+                if(clientEventsSubscribeResponse.Status == ClientEventsSubscribeResponse.Types.Status.Ok)
+                {
+                    stateChangeHandlers.Add(message.CorrelationId, OnStateChange);
+                }
+                else
+                {
+                    throw new ValidatorClientException($"Unable to subscribe: {clientEventsSubscribeResponse.Status} : {clientEventsSubscribeResponse.ResponseMessage}" );
+                }
+            }
+            else
+            {
+                throw new ValidatorClientException(response.Error);
+            }
+        }
+
+        public async Task UnsubscribeFromAllEvents()
+        {
+            //Unsubscribe
+            ClientEventsUnsubscribeRequest request = new ClientEventsUnsubscribeRequest();
+            Message message = request.Wrap(MessageType.ClientEventsUnsubscribeRequest);
+
+            var response = await SendAsync(message, CancellationToken.None, SawtoothConstants.Timeout);
+
+            if (response.IsSuccess)
+            {
+                var clientEventsUnubscribeResponse = response.Message.Unwrap<ClientEventsUnsubscribeResponse>();
+                if (clientEventsUnubscribeResponse.Status == ClientEventsUnsubscribeResponse.Types.Status.Ok)
+                {
+                    subscriptions.Clear();
+                    stateChangeHandlers.Clear();
+                }
+                else
+                {
+                    throw new ValidatorClientException($"Unable to unsubscribe: {clientEventsUnubscribeResponse.Status}");
+                }
+            }
+            else
+            {
+                throw new ValidatorClientException(response.Error);
+            }
         }
         /// <summary>
         /// Sends a message to the validator.

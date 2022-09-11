@@ -20,7 +20,6 @@ namespace TicTacToe
     {
 
         private ValidatorClient client;
-        private ValidatorStateEventClient eventClient;
 
         private XOTransactionFamily txnFamily;
 
@@ -54,15 +53,14 @@ namespace TicTacToe
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            eventClient = ValidatorStateEventClient.Create(url, m => AutoRefresh(m), (e, m) => HandleError(e, m), txnFamily.AddressPrefix);
-
-            client = ValidatorClient.Create(url);
+            client = ValidatorClient.Create(url, null); //TODO: do restart on comm lost
 
             Title = $"TicTacToe Client - {name} {url}";
 
 
             Task.Run(async () =>
             {
+                await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
                 await LoadAllGames();
             });
         }
@@ -292,7 +290,7 @@ namespace TicTacToe
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            eventClient.Dispose();
+            _ = client.UnsubscribeFromAllEvents();
             client.Dispose();
 
         }

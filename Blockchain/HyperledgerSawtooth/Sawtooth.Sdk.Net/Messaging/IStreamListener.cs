@@ -15,7 +15,6 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <param name="message">Message.</param>
         void OnMessage(Message message);
 
-        void OnPingRequest();
 
         /// <summary>
         /// Send a message to the validator
