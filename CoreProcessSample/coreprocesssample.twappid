@@ -1,8 +1,0 @@
-
-#include "TWCoreProcess.twappid"
-
-TWAPIMainEnum eTWAPI : TUInt16 {
-
-TWEventHandlerTest(TWEVENTHANDLERTEST),
-
-};
