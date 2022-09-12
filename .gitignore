@@ -27,7 +27,6 @@
 *.out
 *.pch
 *.pem
-*.sln
 *.slo
 *.smod
 *.so
