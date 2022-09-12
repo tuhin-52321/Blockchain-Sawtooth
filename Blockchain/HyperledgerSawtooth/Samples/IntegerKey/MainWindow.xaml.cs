@@ -83,7 +83,13 @@ namespace IntegerKey
                     client.Dispose();
                 }
 
-                client = ValidatorClient.Create(url, null);
+                client = ValidatorClient.Create(url, () =>
+                {
+                    Task.Run(async () =>
+                    {
+                        await FetchDataAsync();
+                    });
+                });
 
                 await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
 

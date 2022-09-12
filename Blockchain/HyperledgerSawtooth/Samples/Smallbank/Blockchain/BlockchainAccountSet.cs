@@ -3,6 +3,7 @@ using Sawtooth.Sdk.Net.Client;
 using Sawtooth.Sdk.Net.Transactions.Families.Smallbank;
 using Sawtooth.Sdk.Net.Utils;
 using Smallbank.Models;
+using System.Security.Policy;
 
 namespace Smallbank.Blockchain
 {
@@ -36,7 +37,13 @@ namespace Smallbank.Blockchain
 
             encoder = new Encoder(settings, signer.GetPrivateKey());
 
-            client = ValidatorClient.Create(url);
+            CreateClient(url);
+        }
+
+        private void CreateClient(string url)
+        {
+            if (client != null) client.Dispose();
+            client = ValidatorClient.Create(url, () => CreateClient(url));
         }
 
         internal void Close()

@@ -5,6 +5,7 @@ using Sawtooth.Sdk.Net.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -54,7 +55,7 @@ namespace LicenseUserApp
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            client = ValidatorClient.Create(url);
+            client = ValidatorClient.Create(url, () => Reconnect(url));
 
             Title = $"User App - {loginid} [{url}]";
 
@@ -63,6 +64,19 @@ namespace LicenseUserApp
                 await ValidateLicense();
             });
 
+        }
+
+        private void Reconnect(string url)
+        {
+            if (client != null) client.Dispose();
+
+            client = ValidatorClient.Create(url, () => Reconnect(url));
+
+
+            Task.Run(async () =>
+            {
+                await ValidateLicense();
+            });
         }
 
         private void OnClosed(object sender, EventArgs e)

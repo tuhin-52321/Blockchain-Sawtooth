@@ -99,7 +99,7 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <summary>
         /// Connects to the validator
         /// </summary>
-        public void Connect(Action? CommunicationLostHandler)
+        public void Connect(Action CommunicationLostHandler)
         {
             log.Debug("Connecting to {0} ...", Address);
             Socket.Connect(Address);
@@ -175,17 +175,29 @@ namespace Sawtooth.Sdk.Net.Messaging
             _backGroundWorkerThread?.Join(); //Wait till monitor thread exits
 
             log.Debug("Disconnecting from {0} ...", Address);
-            Socket.Options.Linger = TimeSpan.Zero;
-            Socket.Disconnect(Address);
-            Poller.RemoveAndDispose(Socket);
 
-            log.Debug("Disconnected and sockets closed.");
+            if (!Socket.IsDisposed)
+            {
+                Socket.Options.Linger = TimeSpan.Zero;
+                Socket.Disconnect(Address);
+                
+                if(!Poller.IsDisposed)
+                {
+                    Poller.RemoveAndDispose(Socket);
+                }
+                else
+                {
+                    Socket.Dispose();
+                }
+                log.Debug("Socket disconnected and disposed.");
+            }
 
-
-            Poller.Stop();
-            Poller.Dispose();
-
-            log.Debug("Poller stopped and disposed.");
+            if (!Poller.IsDisposed)
+            {
+                Poller.Stop();
+                Poller.Dispose();
+                log.Debug("Poller stopped and disposed.");
+            }
 
         }
     }

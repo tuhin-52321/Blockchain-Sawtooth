@@ -42,8 +42,12 @@ namespace SawtoothBrowser
             DataContext = this;
         }
 
+        private async void Submit(object sender, RoutedEventArgs e)
+        {
+            await SubmitAsync();
+        }
 
-        private async void SubmitAsync(object sender, RoutedEventArgs e)
+        private async Task SubmitAsync()
         {
             DataContext = null;
             try
@@ -53,7 +57,7 @@ namespace SawtoothBrowser
                     client.Dispose();
                     client = null;
                 }
-                client = ValidatorClient.Create(tbUrl.Text);
+                client = ValidatorClient.Create(tbUrl.Text, () => Task.Run(async () => await SubmitAsync()));
 
                 Blocks.Clear();
 

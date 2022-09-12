@@ -47,22 +47,26 @@ namespace Sawtooth.Sdk.Net.Messaging
             //Check client events
             if (message.MessageType == MessageType.ClientEvents)
             {
-                //Do we have a handler?
-                if (stateChangeHandlers.TryGetValue(message.CorrelationId, out var handler))
+                EventList eventList = message.Unwrap<EventList>();
+                foreach (Event ev in eventList.Events)
                 {
-                    EventList eventList = message.Unwrap<EventList>();
-                    foreach (Event ev in eventList.Events)
+                    StateChangeList StateChanges = new StateChangeList();
+                    StateChanges.MergeFrom(ev.Data);
+
+                    log.Debug("Received {0} State Changes.", StateChanges.StateChanges.Count);
+
+                    foreach (var state in StateChanges.StateChanges)
                     {
-                        StateChangeList StateChanges = new StateChangeList();
-                        StateChanges.MergeFrom(ev.Data);
+                        log.Debug("State change for '{0}' -> Type: {1}", state.Address, state.Type);
 
-                        log.Debug("Received {0} State Changes.", StateChanges.StateChanges.Count);
-
-                        foreach (var state in StateChanges.StateChanges)
+                        //Do we have an handler for this state address?
+                        foreach(string address_prefix in stateChangeHandlers.Keys)
                         {
-                            log.Debug("State change for '{0}' -> Type: {1}", state.Address, state.Type);
-
-                            handler(state);
+                            if(state.Address.StartsWith(address_prefix))
+                            {
+                                stateChangeHandlers[address_prefix](state);
+                                break; //Found handler, no need to search more (assuming we have one handler per address prefix
+                            }
                         }
                     }
                 }
@@ -129,7 +133,7 @@ namespace Sawtooth.Sdk.Net.Messaging
         /// <summary>
         /// Connects to the stream
         /// </summary>
-        protected void Connect(Action? OncommunicationLost) => Stream.Connect(OncommunicationLost);
+        protected void Connect(Action OncommunicationLost) => Stream.Connect(OncommunicationLost);
 
         /// <summary>
         /// Disconnects from the stream

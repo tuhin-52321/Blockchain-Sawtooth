@@ -6,10 +6,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml.Linq;
+using static ClientReceiptGetResponse.Types;
 
 namespace TicTacToe
 {
@@ -53,22 +56,37 @@ namespace TicTacToe
 
             encoder = new Sawtooth.Sdk.Net.Client.Encoder(settings, signer.GetPrivateKey());
 
-            client = ValidatorClient.Create(url, null); //TODO: do restart on comm lost
-
             Title = $"TicTacToe Client - {name} {url}";
 
+            Init(url);
+
+        }
+
+        private void Init(string url)
+        {
+            if (client != null) client.Dispose();
+
+            client = ValidatorClient.Create(url, () => Init(url));
 
             Task.Run(async () =>
             {
-                await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
-                await LoadAllGames();
+                do
+                {
+                    try
+                    {
+                        await client.SubscribeStateChangeEvents(m => AutoRefresh(m), txnFamily.AddressPrefix);
+                        await LoadAllGames();
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show($"Error : {e.Message}, press OK to retry...");
+                    }
+                } while (true);
             });
+
         }
 
-        private void HandleError(ClientEventsSubscribeResponse.Types.Status status, string message)
-        {
-            MessageBox.Show("Unable to subscribe to state events : " + message + $"({status})");
-        }
 
         private void AutoRefresh(StateChange stateChange)
         {
@@ -92,9 +110,25 @@ namespace TicTacToe
                     }
                 }
             }
-            else
+            if (stateChange.Type == StateChange.Types.Type.Delete)
             {
-                //TODO: handle deletion via address
+                string? game_to_delete = null;
+                foreach(string name in games.Keys)
+                {
+                    if (txnFamily.Address(name).Equals(stateChange.Address))
+                    {
+                        game_to_delete = name;
+                        break;
+                    }
+                }
+                if(game_to_delete != null)
+                {
+                    if(games.TryRemove(game_to_delete, out _))
+                    {
+                        DeleteTab(game_to_delete);
+                        SetStatus($"Game {game_to_delete} deleted.");
+                    }
+                }
             }
         }
         private async Task LoadAllGames()
@@ -288,9 +322,11 @@ namespace TicTacToe
 
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+ 
+
+        private async void Window_Closed(object sender, EventArgs e)
         {
-            _ = client.UnsubscribeFromAllEvents();
+            await client.UnsubscribeFromAllEvents();
             client.Dispose();
 
         }

@@ -21,7 +21,7 @@ namespace Sawtooth.Sdk.Net.Client
         /// Initializes a new instance of the <see cref="T:Sawtooth.Sdk.Client.ValidatorClient"/> class.
         /// </summary>
         /// <param name="address">Address.</param>
-        ValidatorClient(string address, Action? CommunicationLostHandler) : base(address)
+        ValidatorClient(string address, Action CommunicationLostHandler) : base(address)
         {
             Connect(CommunicationLostHandler);
         }
@@ -33,7 +33,7 @@ namespace Sawtooth.Sdk.Net.Client
         /// </summary>
         /// <returns>The create.</returns>
         /// <param name="address">Address.</param>
-        public static ValidatorClient Create(string address, Action? OnCommunicationLost)
+        public static ValidatorClient Create(string address, Action OnCommunicationLost)
         {
             return new ValidatorClient(address, OnCommunicationLost);
         }
@@ -361,7 +361,7 @@ namespace Sawtooth.Sdk.Net.Client
             return false;
         }
 
-        public async Task SubscribeStateChangeEvents(Action<StateChange> OnStateChange, params string[] address_filter)
+        public async Task SubscribeStateChangeEvents(Action<StateChange> OnStateChange, params string[] address_prefixes)
         {
 
             EventSubscription eventSubscription = new EventSubscription
@@ -369,15 +369,29 @@ namespace Sawtooth.Sdk.Net.Client
                 EventType = "sawtooth/state-delta"
             };
 
-            foreach (string filter in address_filter)
+            if (address_prefixes.Length > 0)
             {
-                log.Debug("Subscribing to state change with address prefix {0} ...", filter);
+                foreach (string address_prefix in address_prefixes)
+                {
+                    log.Debug("Subscribing to state change with address prefix {0} ...", address_prefix);
+                    eventSubscription.Filters.Add(new EventFilter
+                    {
+                        FilterType = global::EventFilter.Types.FilterType.RegexAny,
+                        Key = "address",
+                        MatchString = address_prefix + ".*"
+                    });
+                }
+            }
+            else
+            {
+                log.Debug("Subscribing to state change for all addresses.");
                 eventSubscription.Filters.Add(new EventFilter
                 {
                     FilterType = global::EventFilter.Types.FilterType.RegexAny,
                     Key = "address",
-                    MatchString = filter + ".*"
+                    MatchString = ".*"
                 });
+
             }
 
             subscriptions.Add(eventSubscription);
@@ -392,7 +406,17 @@ namespace Sawtooth.Sdk.Net.Client
                 var clientEventsSubscribeResponse = response.Message.Unwrap<ClientEventsSubscribeResponse>();
                 if(clientEventsSubscribeResponse.Status == ClientEventsSubscribeResponse.Types.Status.Ok)
                 {
-                    stateChangeHandlers.Add(message.CorrelationId, OnStateChange);
+                    if (address_prefixes.Length > 0)
+                    {
+                        foreach (var address_prefix in address_prefixes)
+                        {
+                            stateChangeHandlers.Add(address_prefix, OnStateChange); //Handler for each address prefix
+                        }
+                    }
+                    else
+                    {
+                        stateChangeHandlers.Add("", OnStateChange); //Handler for all address prefix
+                    }
                 }
                 else
                 {
